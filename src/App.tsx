@@ -1,26 +1,53 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { createGlobalStyle } from "styled-components";
+import Navbar from "./Component/Navbar/Navbar";
+import { TasksProvider } from "./Component/Task/TasksProvider";
+import Tasks from "./Page/Tasks";
+import DayView from "./Page/CalendarViews/DayView";
+import WeekView from "./Page/CalendarViews/WeekView";
+import MonthView from "./Page/CalendarViews/MonthView";
+import YearView from "./Page/CalendarViews/YearView";
 
-function App() {
+const GlobalStyle = createGlobalStyle`
+body{
+  margin:0;
+  padding:0;
+  font-family: Noto Sans, sans-serif;
+}
+`;
+
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <GlobalStyle />
+      <TasksProvider>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Navigate to="/tasks" />} />
+          <Route
+            path="/calendar/day/:year/:month/:dayIndex"
+            element={<DayView />}
+          />
+          <Route
+            path="/calendar/week/:year/:month/:dayIndex"
+            element={<WeekView />}
+          />
+          <Route
+            path="/calendar/month/:year/:month/:dayIndex"
+            element={<MonthView />}
+          />
+          <Route
+            path="/calendar/year/:year/:month/:dayIndex"
+            element={<YearView />}
+          />
+          <Route path="/tasks" element={<Tasks />} />
+        </Routes>
+      </TasksProvider>
+    </Router>
   );
 }
-
-export default App;
