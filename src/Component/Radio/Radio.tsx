@@ -13,7 +13,7 @@ const Form = styled.form`
 
 type RadioType = {
   id: string;
-  value: string  ;
+  value: string;
   isChecked: boolean;
 };
 
@@ -21,7 +21,7 @@ type RadioProps = {
   name: string;
   values: string[];
   radioChecked: number | null;
-  setRadio: (radio: string  ) => void;
+  setRadio: (radio: string) => void;
 };
 
 const initRadioValues = (values: string[]): RadioType[] =>
@@ -49,9 +49,9 @@ const Radio: React.FC<RadioProps> = ({
         isChecked: Number(radio.value) === radioChecked,
       }))
     );
-  }, [radioChecked, radioValues]);
+  }, [radioChecked]);
 
-  const toggleIsChecked = (radioId: string, radioValue: string  ) => {
+  const toggleIsChecked = (radioId: string, radioValue: string) => {
     setRadioValues(
       radioValues.map((radio) => ({
         ...radio,

@@ -17,29 +17,16 @@ const tasksReducer = (state: Task[], action: TasksAction): Task[] => {
     case "SET_TASKS":
       return action.state;
     case "ADD_TASK":
-      return [...state, action.state];
+      return [
+        ...state,
+        {
+          ...action.state,
+          id: state.length,
+          title: !action.state.title ? "No title" : action.state.title,
+        },
+      ];
     case "REMOVE_TASK":
       return state.filter((task: Task) => task.id !== action.state);
-      case "ASCENDING_COMPLEXITY_TASKS":
-      return [...state].sort((a: Task, b: Task) => a.complexity - b.complexity);
-    case "DESCENDING_COMPLEXITY_TASKS":
-      return [...state].sort((a: Task, b: Task) => b.complexity - a.complexity);
-    case "ASCENDING_PRIORITY_TASKS":
-      return [...state].sort((a: Task, b: Task) => a.priority - b.priority);
-    case "DESCENDING_PRIORITY_TASKS":
-      return [...state].sort((a: Task, b: Task) => b.priority - a.priority);
-    case "ASCENDING_DUE_DATE_TASKS":
-      return [...state].sort((a: Task, b: Task) => {
-        const dateA = new Date(a.dueDate);
-        const dateB = new Date(b.dueDate);
-        return dateA.getTime() - dateB.getTime();
-      });
-    case "DESCENDING_DUE_DATE_TASKS":
-      return [...state].sort((a: Task, b: Task) => {
-        const dateA = new Date(a.dueDate);
-        const dateB = new Date(b.dueDate);
-        return dateB.getTime() - dateA.getTime();
-      });
     default:
       return state;
   }

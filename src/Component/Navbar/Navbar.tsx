@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import useGetCalendarView from "../../hooks/useGetCalendarView";
+import useGetUrlCalendarView from "../../hooks/useGetUrlCalendarView";
 import { MonthCalendar } from "../../Component/Calendar/Calendar";
 import { useGetTodayCalendar } from "../../hooks/useGetTodayCalendar";
 
@@ -46,7 +46,7 @@ const calendarViews = ["day", "week", "month", "year"];
 
 const Navbar = () => {
   const [calendar, calendarDispatch] = useGetTodayCalendar();
-  const view = useGetCalendarView();
+  const view = useGetUrlCalendarView();
   const [calendarView, setCalendarView] = useState<string>("day");
   const navigate = useNavigate();
 
