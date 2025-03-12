@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { CalendarContainer } from "../../Component/Calendar/Calendar";
 import { TasksContext } from "../../Component/Task/TasksProvider";
 import { Task, AddTask, ViewTask } from "../../Component/Task/TaskHandler";
-import {getFormattedHour} from "../../utils/getFormattedHour";
+import { getFormattedHour } from "../../utils/getFormattedHour";
 
 const DayViewContainer = styled.div`
   border-inline: solid #7b7364 1px;
@@ -39,22 +39,22 @@ const HoursTitle = styled.div`
   font-size: 12px;
 `;
 
-const HoursContainer = styled.div`
+const HourRangeContainer = styled.div`
   display: flex;
   flex-direction: row;
   border-radius: 5px;
+  border-bottom: solid #7b7364 1px;
+  &:hover {
+    background-color: lightgrey;
+  }
 `;
 
 const Hour = styled.div`
   width: 100%;
-  border-bottom: solid #7b7364 1px;
   position: relative;
   right: 3rem;
   height: 50px;
   margin-left: 30px;
-  &:hover {
-    background-color: lightgrey;
-  }
 `;
 
 const TasksContainer = styled.div`
@@ -145,9 +145,13 @@ const DayView = () => {
   };
 
   const toggleAddTaskModal = (clickedHour: number) => {
+    if (isViewTaskModalVisible) {
+      setIsViewTaskModalVisible(false);
+      return;
+    }
+
     setIsAddTaskModalVisible(!isAddTaskModalVisible);
-    isAddTaskModalVisible ? setClickedHour(0) : setClickedHour(clickedHour);
-    if (isViewTaskModalVisible) setIsViewTaskModalVisible(false);
+    setClickedHour(clickedHour);
   };
 
   const toggleViewTaskModal = (taskId: number) => {
@@ -159,7 +163,6 @@ const DayView = () => {
 
     setClickedTask(task);
     setIsViewTaskModalVisible(true);
-    if (isAddTaskModalVisible) setIsAddTaskModalVisible(false);
   };
 
   return (
@@ -198,33 +201,35 @@ const DayView = () => {
             {dayViewTasks.map((task) => task.isAllDay && task.title)}
           </AllDayTasksContainer>
           {hours.map((hour) => (
-            <HoursContainer key={hour.id}>
+            <HourRangeContainer key={hour.id}>
               <HoursTitle>{getFormattedHour(hour.id)}</HoursTitle>
+
+              {dayViewTasks.map(
+                (task) =>
+                  !task.isAllDay &&
+                  task.hour === hour.id && (
+                    <TaskContainer
+                      key={task.id}
+                      onClick={() => toggleViewTaskModal(task.id)}
+                    >
+                      {task.title}
+                      {!task.isAllDay && `, ${getFormattedHour(task.hour)}`}
+                    </TaskContainer>
+                  )
+              )}
 
               <Hour onClick={() => toggleAddTaskModal(hour.id)}>
                 <TasksContainer>
-                  {isAddTaskModalVisible && clickedHour === hour.id && (
-                    <TaskContainer>
-                      (No title) {getFormattedHour(clickedHour)}
-                    </TaskContainer>
-                  )}
-
-                  {dayViewTasks.map(
-                    (task) =>
-                      !task.isAllDay &&
-                      task.hour === hour.id && (
-                        <TaskContainer
-                          key={task.id}
-                          onClick={() => toggleViewTaskModal(task.id)}
-                        >
-                          {task.title}
-                          {!task.isAllDay && `, ${getFormattedHour(task.hour)}`}
-                        </TaskContainer>
-                      )
-                  )}
+                  {isAddTaskModalVisible &&
+                    !isViewTaskModalVisible &&
+                    clickedHour === hour.id && (
+                      <TaskContainer>
+                        (No title) {getFormattedHour(clickedHour)}
+                      </TaskContainer>
+                    )}
                 </TasksContainer>
               </Hour>
-            </HoursContainer>
+            </HourRangeContainer>
           ))}
         </DayViewContainer>
       </CalendarContainer>
