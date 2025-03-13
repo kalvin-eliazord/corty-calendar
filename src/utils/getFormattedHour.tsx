@@ -1,5 +1,5 @@
-const getFormattedHour = (hour: number | null): string => {
-  if (hour === null) return "";
+const getFormattedHour = (hour: number): string => {
+  if (hour === 0) return "12 AM";
   else if (hour < 12) return `${hour} AM`;
   else if (hour === 12) return `${hour} PM`;
   else if (hour > 12) return `${hour - 12} PM`;
@@ -9,7 +9,7 @@ const getFormattedHour = (hour: number | null): string => {
 
 const getNonFormattedHour = (hourValue: number, hourFormat: string): number => {
   if (hourFormat === "AM") {
-    return hourValue === 12 ? 0 : hourValue;
+    return hourValue;
   } else {
     return hourValue === 12 ? hourValue : hourValue + 12;
   }

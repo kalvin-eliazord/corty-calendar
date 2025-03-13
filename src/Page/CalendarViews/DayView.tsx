@@ -4,7 +4,12 @@ import { format } from "date-fns";
 import styled from "styled-components";
 import { CalendarContainer } from "../../Component/Calendar/Calendar";
 import { TasksContext } from "../../Component/Task/TasksProvider";
-import { Task, AddTask, ViewTask } from "../../Component/Task/TaskHandler";
+import {
+  Task,
+  AddTask,
+  ViewTask,
+  ModalVisibilityContext,
+} from "../../Component/Task/TaskHandler";
 import { getFormattedHour } from "../../utils/getFormattedHour";
 
 const DayViewContainer = styled.div`
@@ -96,39 +101,21 @@ type DayType = {
 
 const DayView = () => {
   const params = useParams();
-  const context = useContext(TasksContext);
-  if (!context)
+  const tasksContext = useContext(TasksContext);
+  if (!tasksContext)
     throw new Error("Day View must be wrapped within TasksProvider");
+
+  const { tasks, tasksDispatch } = tasksContext;
+
+  const modalsContext = useContext(ModalVisibilityContext);
+  if (!modalsContext)
+    throw new Error("Day View must be wrapped within AreModalsVisibleProvider");
 
   const [day, setDay] = useState<DayType>();
   const [date, setDate] = useState<Date>(new Date());
-  const { tasks, tasksDispatch } = context;
   const [clickedHour, setClickedHour] = useState<number>(0);
-  const [isAddTaskModalVisible, setIsAddTaskModalVisible] =
-    useState<boolean>(false);
-  const [isViewTaskModalVisible, setIsViewTaskModalVisible] =
-    useState<boolean>(false);
   const [clickedTask, setClickedTask] = useState<Task>();
   const [dayViewTasks, setDayViewTasks] = useState<Task[]>([]);
-
-  useEffect(() => {
-    const { year, month, dayIndex } = params;
-    const newDate = new Date(Number(year), Number(month), Number(dayIndex));
-    setDate(newDate);
-    setDay({ name: format(newDate, "eee"), index: dayIndex || "" });
-  }, [params]);
-
-  useEffect(() => {
-    if (tasks.length < 1) return;
-    setDayViewTasks(
-      tasks.filter((task: Task) => task.dueDate.getTime() === date?.getTime())
-    );
-  }, [date, tasks]);
-
-  const addTask = (task: Task) => {
-    tasksDispatch({ type: "ADD_TASK", state: task });
-    setIsAddTaskModalVisible(!isAddTaskModalVisible);
-  };
 
   const setTask = (task: Task) => {
     tasksDispatch({
@@ -140,8 +127,21 @@ const DayView = () => {
     setIsViewTaskModalVisible(false);
   };
 
-  const removeTask = (taskId: number) => {
+  const removeTask = (taskId: string) => {
     tasksDispatch({ type: "REMOVE_TASK", state: taskId });
+  };
+
+  const addTask = (task: Task, recurringValue: string) => {
+    if (recurringValue === "onTime")
+      tasksDispatch({ type: "ADD_TASK", state: task });
+    else
+      tasksDispatch({
+        type: "ADD_TASKS_RECURRING",
+        task: task,
+        recurring: recurringValue,
+      });
+
+    setIsAddTaskModalVisible(!isAddTaskModalVisible);
   };
 
   const toggleAddTaskModal = (clickedHour: number) => {
@@ -154,7 +154,7 @@ const DayView = () => {
     setClickedHour(clickedHour);
   };
 
-  const toggleViewTaskModal = (taskId: number) => {
+  const toggleViewTaskModal = (taskId: string) => {
     const task = dayViewTasks.find((task) => task.id === taskId);
     if (!task) {
       console.warn("Task not found for ID:", taskId);
@@ -165,6 +165,20 @@ const DayView = () => {
     setIsViewTaskModalVisible(true);
   };
 
+  useEffect(() => {
+    if (tasks.length < 1) return;
+    setDayViewTasks(
+      tasks.filter((task: Task) => task.dueDate.getTime() === date?.getTime())
+    );
+  }, [date, tasks]);
+
+  useEffect(() => {
+    const { year, month, dayIndex } = params;
+    const newDate = new Date(Number(year), Number(month) - 1, Number(dayIndex));
+    setDate(newDate);
+    setDay({ name: format(newDate, "eee"), index: dayIndex || "" });
+  }, [params]);
+
   return (
     <div className="App">
       {isAddTaskModalVisible && (
@@ -172,7 +186,7 @@ const DayView = () => {
           addTask={addTask}
           setIsAddTaskModalVisible={setIsAddTaskModalVisible}
           defaultTask={{
-            id: tasks.length,
+            id: crypto.randomUUID(),
             title: "",
             hour: clickedHour,
             description: "",

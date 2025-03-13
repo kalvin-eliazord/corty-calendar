@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
 import Navbar from "./Component/Navbar/Navbar";
+import { AreModalsVisibleProvider } from "./Component/Task/TaskHandler";
 import { TasksProvider } from "./Component/Task/TasksProvider";
 import Tasks from "./Page/Tasks";
 import DayView from "./Page/CalendarViews/DayView";
@@ -26,27 +27,29 @@ export default function App() {
     <Router>
       <GlobalStyle />
       <TasksProvider>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Navigate to="/tasks" />} />
-          <Route
-            path="/calendar/day/:year/:month/:dayIndex"
-            element={<DayView />}
-          />
-          <Route
-            path="/calendar/week/:year/:month/:dayIndex"
-            element={<WeekView />}
-          />
-          <Route
-            path="/calendar/month/:year/:month/:dayIndex"
-            element={<MonthView />}
-          />
-          <Route
-            path="/calendar/year/:year/:month/:dayIndex"
-            element={<YearView />}
-          />
-          <Route path="/tasks" element={<Tasks />} />
-        </Routes>
+        <AreModalsVisibleProvider>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Navigate to="/tasks" />} />
+            <Route
+              path="/calendar/day/:year/:month/:dayIndex"
+              element={<DayView />}
+            />
+            <Route
+              path="/calendar/week/:year/:month/:dayIndex"
+              element={<WeekView />}
+            />
+            <Route
+              path="/calendar/month/:year/:month/:dayIndex"
+              element={<MonthView />}
+            />
+            <Route
+              path="/calendar/year/:year/:month/:dayIndex"
+              element={<YearView />}
+            />
+            <Route path="/tasks" element={<Tasks />} />
+          </Routes>
+        </AreModalsVisibleProvider>
       </TasksProvider>
     </Router>
   );

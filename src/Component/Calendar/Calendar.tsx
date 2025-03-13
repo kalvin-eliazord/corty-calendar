@@ -12,24 +12,21 @@ import { getMonthByIndex } from "../../utils/getMonth";
 import { CalendarType, CalendarAction } from "../../utils/calendarTypes";
 
 const CalendarContainer = styled.div`
-  width: 70%;
-  height: 90%;
-
+  width: 73%;
+  height: 95%;
   border-radius: 20px;
   background-color: #0f1011;
   margin-left: 5%;
   position: absolute;
-  left: 22%;
-  top: 9%;
+  left: 21%;
+  top: 10%;
   overflow-y: auto;
-
-  &::-webkit-scrollbar {
-  }
   overflow-x: hidden;
 `;
 
 const MonthCalendarContainer = styled.div`
   border: solid 1px black;
+  width: 220%;
   display: flex;
   flex-direction: column;
 `;
@@ -47,13 +44,20 @@ const MonthCalendarHeader = styled.div`
 `;
 const DaysLetterContainer = styled.div`
   display: flex;
-  gap: 15px;
+  padding: 10px;
 `;
 
-const WeekContainer = styled.div``;
+const WeekContainer = styled.div`
+  &:hover {
+    background-color: lightgrey;
+  }
+`;
 const DayContainer = styled.div`
+  padding-inline: 10px;
+  border-radius: 10px;
   font-size: 12px;
   &:hover {
+    background-color: lightBlue;
     cursor: pointer;
   }
 `;

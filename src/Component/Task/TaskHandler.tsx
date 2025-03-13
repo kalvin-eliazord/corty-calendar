@@ -1,4 +1,10 @@
-import { useState, useReducer, useEffect, useRef } from "react";
+import {
+  useState,
+  useReducer,
+  useEffect,
+  createContext,
+  ReactNode,
+} from "react";
 import { format } from "date-fns";
 import styled from "styled-components";
 import Radio from "../Radio/Radio";
@@ -75,18 +81,18 @@ const DateInput = styled.input``;
 const HourInput = styled.input``;
 
 type Check = {
-  id: number;
+  id: string;
   name: string;
   isDone: boolean;
 };
 
 type Label = {
-  id: number;
+  id: string;
   name: string;
 };
 
 export type Task = {
-  id: number;
+  id: string;
   title: string;
   description: string;
   isAllDay: boolean;
@@ -100,7 +106,6 @@ export type Task = {
 };
 
 type TaskAction =
-  | { type: "INIT_DEFAULT_TASK"; clickedHour: number; currentDate: Date }
   | { type: "SET_TITLE"; state: string }
   | { type: "SET_DESCRIPTION"; state: string }
   | { type: "SET_ALL_DAY"; state: boolean }
@@ -110,28 +115,13 @@ type TaskAction =
   | { type: "SET_DUE_DATE"; state: Date }
   | { type: "SET_IS_ALL_DAY"; state: boolean }
   | { type: "ADD_CHECK"; state: string }
-  | { type: "REMOVE_CHECK"; state: number }
+  | { type: "REMOVE_CHECK"; state: string }
   | { type: "ADD_LABEL"; state: string }
-  | { type: "REMOVE_LABEL"; state: number }
+  | { type: "REMOVE_LABEL"; state: string }
   | { type: "SET_IS_DONE"; state: boolean };
 
 const taskReducer = (state: Task, action: TaskAction): Task => {
   switch (action.type) {
-    case "INIT_DEFAULT_TASK":
-      return {
-        ...state,
-        id: 0,
-        title: "",
-        hour: action.clickedHour,
-        description: "",
-        complexity: 1,
-        priority: 1,
-        dueDate: action.currentDate,
-        checks: [],
-        labels: [],
-        isAllDay: false,
-        isDone: false,
-      };
     case "SET_TITLE":
       return { ...state, title: action.state };
     case "SET_DESCRIPTION":
@@ -153,7 +143,7 @@ const taskReducer = (state: Task, action: TaskAction): Task => {
         ...state,
         checks: [
           ...state.checks,
-          { id: state.checks.length, name: action.state, isDone: false },
+          { id: crypto.randomUUID(), name: action.state, isDone: false },
         ],
       };
     case "REMOVE_CHECK":
@@ -166,7 +156,7 @@ const taskReducer = (state: Task, action: TaskAction): Task => {
         ...state,
         labels: [
           ...state.labels,
-          { id: state.labels.length, name: action.state },
+          { id: crypto.randomUUID(), name: action.state },
         ],
       };
     case "REMOVE_LABEL":
@@ -181,9 +171,41 @@ const taskReducer = (state: Task, action: TaskAction): Task => {
   }
 };
 
+type ModalVisibilityContextType = {
+  isAddTaskModalVisible: boolean;
+  setIsAddTaskModalVisible(isAddTaskModalVisible: boolean): void;
+  isViewTaskModalVisible: boolean;
+  setIsViewTaskModalVisible(isAddTaskModalVisible: boolean): void;
+};
+
+const ModalVisibilityContext = createContext<
+  ModalVisibilityContextType | undefined
+>(undefined);
+
+const AreModalsVisibleProvider = ({ children }: { children: ReactNode }) => {
+  const [isAddTaskModalVisible, setIsAddTaskModalVisible] =
+    useState<boolean>(false);
+
+  const [isViewTaskModalVisible, setIsViewTaskModalVisible] =
+    useState<boolean>(false);
+
+  return (
+    <ModalVisibilityContext.Provider
+      value={{
+        isAddTaskModalVisible,
+        setIsAddTaskModalVisible,
+        isViewTaskModalVisible,
+        setIsViewTaskModalVisible,
+      }}
+    >
+      {children}
+    </ModalVisibilityContext.Provider>
+  );
+};
+
 type AddTaskProps = {
   defaultTask: Task;
-  addTask: (task: Task) => void;
+  addTask: (task: Task, recurringValue: string) => void;
   setIsAddTaskModalVisible: (isAddTaskModalVisible: boolean) => void;
 };
 
@@ -194,6 +216,7 @@ const AddTask: React.FC<AddTaskProps> = ({
   addTask,
   setIsAddTaskModalVisible,
 }) => {
+  const [isTaskReady, setIsTaskReady] = useState<boolean>(false);
   const [isDateFocused, setIsDateFocused] = useState(false);
   const [isHourFocused, setIsHourFocused] = useState(false);
   const [isRecurringFocused, setIsRecurringFocused] = useState(false);
@@ -201,14 +224,30 @@ const AddTask: React.FC<AddTaskProps> = ({
   const [dateInput, setDateInput] = useState<string>("");
   const [formattedHour, setFormattedHour] = useState<string>("");
   const [hourInput, setHourInput] = useState<string>("");
+  const [recurringValue, setRecurringValue] = useState<string>("");
   const [task, dispatch] = useReducer(taskReducer, defaultTask as Task);
   const [isDateContainerClicked, setIsDateContainerClicked] =
     useState<boolean>(false);
 
+  useEffect(() => {
+    if (!isTaskReady) return;
+    addTask(task, recurringValue);
+    setIsAddTaskModalVisible(false);
+  }, [isTaskReady]);
+
+  const handleAddTask = (): void => {
+    dispatch({
+      type: "SET_TITLE",
+      state: task.title === "" ? "No title" : task.title.trim(),
+    });
+
+    setIsTaskReady(true);
+  };
+
   const handleTitleChange = (titleInputValue: string): void => {
     if (!titleInputValue || !titleInputValue.trim()) return;
 
-    dispatch({ type: "SET_TITLE", state: titleInputValue.trim() });
+    dispatch({ type: "SET_TITLE", state: titleInputValue });
   };
 
   const handleDescriptionChange = (descriptionInputValue: string): void => {
@@ -287,11 +326,6 @@ const AddTask: React.FC<AddTaskProps> = ({
     dispatch({ type: "SET_DUE_DATE", state: date });
   };
 
-  const handleAddTask = (): void => {
-    addTask(task);
-    setIsAddTaskModalVisible(false);
-  };
-
   const handleAutoFocus = (elementName: string): void => {
     switch (elementName) {
       case "date":
@@ -305,10 +339,6 @@ const AddTask: React.FC<AddTaskProps> = ({
         break;
     }
   };
-
-  useEffect(() => {
-    //dispatch({ type: "SET_DUE_DATE", state: formattedDate });
-  }, [dateInput]);
 
   useEffect(() => {
     const newFormattedHour = getFormattedHour(defaultTask.hour);
@@ -376,18 +406,15 @@ const AddTask: React.FC<AddTaskProps> = ({
                   autoFocus={isHourFocused}
                 />
               )}
-              <select autoFocus={isRecurringFocused}>
-                <option value="oneTime" autoFocus={isRecurringFocused}>
-                  Only one time
-                </option>
+              <select
+                onChange={(e) => setRecurringValue(e.target.value)}
+                autoFocus={isRecurringFocused}
+              >
+                <option value="oneTime">Only one time</option>
                 <option value="everyDay"> Everyday </option>
-                <option value="everyWeek"> Every weeks of CURRENT_DAY</option>
-                <option value="everyMonth">
-                  same logic as year and in ui render
-                </option>
-                <option value="everyYear">
-                  {/* Every year format lib, getDiffDays(currentDateObj - 1stJanuary.getFullYear) => for loop x100 => year = year + 1; const date = new Date(nbDays, 1, year), for each date = addTask({...task, dueDate:date  })*/}{" "}
-                </option>
+                <option value="everyWeek"> Every week</option>
+                <option value="everyMonth">Every month</option>
+                <option value="everyYear">Every year</option>
               </select>
 
               <label htmlFor="checkbox"> All day </label>
@@ -598,4 +625,4 @@ const ViewTask: React.FC<ViewTaskProps> = ({ clickedTask, setTask }) => {
   );
 };
 
-export { AddTask, ViewTask };
+export { AddTask, ViewTask, AreModalsVisibleProvider, ModalVisibilityContext };
