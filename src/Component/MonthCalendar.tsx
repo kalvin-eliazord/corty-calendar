@@ -8,8 +8,8 @@ import {
   format,
 } from "date-fns";
 import styled from "styled-components";
-import { getMonthByIndex } from "../../utils/getMonth";
-import { CalendarType, CalendarAction } from "../../utils/calendarTypes";
+import { getMonthByIndex } from "../utils/getMonth";
+import { useCalendarContext } from "../context/CalendarContext";
 
 const CalendarContainer = styled.div`
   width: 73%;
@@ -98,15 +98,8 @@ const getWeeksOfMonth = (year: number, month: number): string[][] => {
 
 const daysLetterWeek = ["M", "T", "W", "T", "F", "Sa", "Su"];
 
-type MonthCalendarProps = {
-  calendar: CalendarType;
-  calendarDispatch: React.Dispatch<CalendarAction>;
-};
-
-const MonthCalendar: React.FC<MonthCalendarProps> = ({
-  calendar,
-  calendarDispatch,
-}) => {
+const MonthCalendar = ({}) => {
+  const { calendar, calendarDispatch } = useCalendarContext();
   const [monthName, setMonthName] = useState<string>("");
   const [weeks, setWeeks] = useState<string[][]>([] as string[][]);
 
@@ -140,9 +133,7 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
           {week.map((day, j) => (
             <DayContainer
               key={j + Math.random()}
-              onClick={() =>
-                calendarDispatch({ type: "SET_DAY", state: Number(day) })
-              }
+              onClick={() => calendarDispatch({ type: "SET_DAY", state: Number(day) })}
             >
               <h4>{day}</h4>
             </DayContainer>

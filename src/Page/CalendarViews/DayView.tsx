@@ -1,16 +1,13 @@
-import { useState, useEffect, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import styled from "styled-components";
-import { CalendarContainer } from "../../Component/Calendar/Calendar";
-import { TasksContext } from "../../Component/Task/TasksProvider";
-import {
-  Task,
-  AddTask,
-  ViewTask,
-  ModalVisibilityContext,
-} from "../../Component/Task/TaskHandler";
+import { CalendarContainer } from "../../Component/MonthCalendar";
+import { useTasksContext } from "../../context/TasksContext";
+import { useAreModalsVisibleContext } from "../../context/ModalsContext";
 import { getFormattedHour } from "../../utils/getFormattedHour";
+import { Task } from "../../context/TasksContext";
+import { useTaskSelectedIdContext } from "../../context/TaskSelectedIdContext";
+import { useCalendarContext } from "../../context/CalendarContext";
 
 const DayViewContainer = styled.div`
   border-inline: solid #7b7364 1px;
@@ -19,7 +16,6 @@ const DayViewContainer = styled.div`
 `;
 
 const DayViewNameContainer = styled.div`
-  border: 1px solid red;
   p {
     color: #246694;
     font-weight: bold;
@@ -100,49 +96,18 @@ type DayType = {
 };
 
 const DayView = () => {
-  const params = useParams();
-  const tasksContext = useContext(TasksContext);
-  if (!tasksContext)
-    throw new Error("Day View must be wrapped within TasksProvider");
-
-  const { tasks, tasksDispatch } = tasksContext;
-
-  const modalsContext = useContext(ModalVisibilityContext);
-  if (!modalsContext)
-    throw new Error("Day View must be wrapped within AreModalsVisibleProvider");
-
+  const { tasks, tasksDispatch } = useTasksContext();
+  const { setTaskSelectedId } = useTaskSelectedIdContext();
+  const { calendar, calendarDispatch } = useCalendarContext();
   const [day, setDay] = useState<DayType>();
   const [date, setDate] = useState<Date>(new Date());
-  const [clickedHour, setClickedHour] = useState<number>(0);
-  const [clickedTask, setClickedTask] = useState<Task>();
   const [dayViewTasks, setDayViewTasks] = useState<Task[]>([]);
-
-  const setTask = (task: Task) => {
-    tasksDispatch({
-      type: "SET_TASKS",
-      state: tasks.map((currentTask: Task) =>
-        currentTask.id === task.id ? task : currentTask
-      ),
-    });
-    setIsViewTaskModalVisible(false);
-  };
-
-  const removeTask = (taskId: string) => {
-    tasksDispatch({ type: "REMOVE_TASK", state: taskId });
-  };
-
-  const addTask = (task: Task, recurringValue: string) => {
-    if (recurringValue === "onTime")
-      tasksDispatch({ type: "ADD_TASK", state: task });
-    else
-      tasksDispatch({
-        type: "ADD_TASKS_RECURRING",
-        task: task,
-        recurring: recurringValue,
-      });
-
-    setIsAddTaskModalVisible(!isAddTaskModalVisible);
-  };
+  const {
+    isAddTaskModalVisible,
+    setIsAddTaskModalVisible,
+    isViewTaskModalVisible,
+    setIsViewTaskModalVisible,
+  } = useAreModalsVisibleContext();
 
   const toggleAddTaskModal = (clickedHour: number) => {
     if (isViewTaskModalVisible) {
@@ -151,59 +116,45 @@ const DayView = () => {
     }
 
     setIsAddTaskModalVisible(!isAddTaskModalVisible);
-    setClickedHour(clickedHour);
+    calendarDispatch({ type: "SET_HOUR", state: clickedHour });
   };
 
   const toggleViewTaskModal = (taskId: string) => {
-    const task = dayViewTasks.find((task) => task.id === taskId);
-    if (!task) {
+    const isTaskFound = dayViewTasks.find((task) => task.id === taskId);
+    if (!isTaskFound) {
       console.warn("Task not found for ID:", taskId);
       return;
     }
 
-    setClickedTask(task);
+    setTaskSelectedId(taskId);
     setIsViewTaskModalVisible(true);
   };
 
+  // START DEBUG
   useEffect(() => {
     if (tasks.length < 1) return;
+
+    console.log("Current Date range Tasks: ", dayViewTasks);
+    console.log("list of tasks: ", tasks);
+  }, [dayViewTasks, tasks]);
+  // END DEBUG
+
+  useEffect(() => {
+    if (tasks.length < 1) return;
+
     setDayViewTasks(
       tasks.filter((task: Task) => task.dueDate.getTime() === date?.getTime())
     );
   }, [date, tasks]);
 
   useEffect(() => {
-    const { year, month, dayIndex } = params;
-    const newDate = new Date(Number(year), Number(month) - 1, Number(dayIndex));
+    const newDate = new Date(calendar.year, calendar.month - 1, calendar.day);
     setDate(newDate);
-    setDay({ name: format(newDate, "eee"), index: dayIndex || "" });
-  }, [params]);
+    setDay({ name: format(newDate, "eee"), index: calendar.day.toString() });
+  }, [calendar.day]);
 
   return (
     <div className="App">
-      {isAddTaskModalVisible && (
-        <AddTask
-          addTask={addTask}
-          setIsAddTaskModalVisible={setIsAddTaskModalVisible}
-          defaultTask={{
-            id: crypto.randomUUID(),
-            title: "",
-            hour: clickedHour,
-            description: "",
-            complexity: 1,
-            priority: 1,
-            dueDate: date,
-            checks: [],
-            labels: [],
-            isAllDay: false,
-            isDone: false,
-          }}
-        />
-      )}
-      {isViewTaskModalVisible && clickedTask && (
-        <ViewTask clickedTask={clickedTask} setTask={setTask} />
-      )}
-
       <CalendarContainer>
         <DayViewContainer>
           <DayViewNameContainer>
@@ -236,9 +187,9 @@ const DayView = () => {
                 <TasksContainer>
                   {isAddTaskModalVisible &&
                     !isViewTaskModalVisible &&
-                    clickedHour === hour.id && (
+                    calendar.hour === hour.id && (
                       <TaskContainer>
-                        (No title) {getFormattedHour(clickedHour)}
+                        (No title) {getFormattedHour(calendar.hour)}
                       </TaskContainer>
                     )}
                 </TasksContainer>

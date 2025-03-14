@@ -1,5 +1,5 @@
 //import styled from "styled-components";
-import { CalendarContainer } from "../../Component/Calendar/Calendar";
+import { CalendarContainer } from "../../Component/MonthCalendar";
 
 const YearView = () => {
   return <CalendarContainer>Year page </CalendarContainer>;

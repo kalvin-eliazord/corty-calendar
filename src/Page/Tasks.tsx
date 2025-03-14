@@ -1,9 +1,10 @@
-import { useState, useEffect, useContext, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
-import { Task } from "../Component/Task/TaskHandler";
-import { CalendarContainer } from "../Component/Calendar/Calendar";
-import { TasksContext } from "../Component/Task/TasksProvider";
+import { Task } from "../context/TasksContext";
+import { CalendarContainer } from "../Component/MonthCalendar";
+import { useTasksContext } from "../context/TasksContext";
 import { format } from "date-fns";
+import { getFormattedHour } from "../utils/getFormattedHour";
 
 const MainContainer = styled.div`
   padding: 20px;
@@ -35,10 +36,7 @@ const Text = styled.p`
 `;
 
 const Tasks = () => {
-  const context = useContext(TasksContext);
-  if (!context)
-    throw new Error("Tasks component must be wrapped within TasksProvider.");
-  const { tasks, tasksDispatch } = context;
+  const { tasks, tasksDispatch } = useTasksContext();
   const [originalTasks, setOriginalTasks] = useState<Task[]>([] as Task[]);
   const [sortType, setSortType] = useState<string>("");
   const [renderedTasks, setRenderedTasks] = useState<number>(10);
@@ -93,9 +91,17 @@ const Tasks = () => {
         {sortedTask.slice(0, renderedTasks).map((task: Task, index) => (
           <TaskContainer key={task.id}>
             <Text>
-              {task.title} {index}
+              id: {index} title: {task.title}
             </Text>
-            <Text>{format(task.dueDate, "d, MMMM yyyy")}</Text>
+            <Text>description: {task.description}</Text>
+            <Text>isAllDay: {`${task.isAllDay}`}</Text>
+
+            <Text>hour: {getFormattedHour(task.hour)}</Text>
+
+            <Text>complexity: {task.complexity}</Text>
+            <Text>priority: {task.priority}</Text>
+            <Text>dueDate: {format(task.dueDate, "d MMMM yyyy")}</Text>
+            <Text>isDone: {`${task.isDone}`}</Text>
           </TaskContainer>
         ))}
       </MainContainer>

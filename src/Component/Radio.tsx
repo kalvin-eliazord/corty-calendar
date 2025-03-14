@@ -19,7 +19,6 @@ type RadioType = {
 
 type RadioProps = {
   name: string;
-  values: string[];
   radioChecked: number | null;
   setRadio: (radio: string) => void;
 };
@@ -33,12 +32,11 @@ const initRadioValues = (values: string[]): RadioType[] =>
 
 const Radio: React.FC<RadioProps> = ({
   name,
-  values,
   radioChecked,
   setRadio,
 }) => {
   const [radioValues, setRadioValues] = useState<RadioType[]>(
-    initRadioValues(values)
+    initRadioValues(["1", "2", "3"])
   );
 
   useEffect(() => {

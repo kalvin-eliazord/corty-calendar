@@ -5,9 +5,13 @@ import {
   Navigate,
 } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
-import Navbar from "./Component/Navbar/Navbar";
-import { AreModalsVisibleProvider } from "./Component/Task/TaskHandler";
-import { TasksProvider } from "./Component/Task/TasksProvider";
+import Navbar from "./Component/Navbar";
+import { useAreModalsVisibleContext } from "./context/ModalsContext";
+import { TasksProvider } from "./context/TasksContext";
+import ViewTaskModal from "./Component/TaskModals/ViewTaskModal";
+import AddTaskModal from "./Component/TaskModals/AddTaskModal";
+import TaskSelectedIdProvider from "./context/TaskSelectedIdContext";
+import CalendarProvider from "./context/CalendarContext";
 import Tasks from "./Page/Tasks";
 import DayView from "./Page/CalendarViews/DayView";
 import WeekView from "./Page/CalendarViews/WeekView";
@@ -23,33 +27,44 @@ body{
 `;
 
 export default function App() {
+  const { isAddTaskModalVisible, isViewTaskModalVisible } =
+    useAreModalsVisibleContext();
+
   return (
     <Router>
       <GlobalStyle />
+
       <TasksProvider>
-        <AreModalsVisibleProvider>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Navigate to="/tasks" />} />
-            <Route
-              path="/calendar/day/:year/:month/:dayIndex"
-              element={<DayView />}
-            />
-            <Route
-              path="/calendar/week/:year/:month/:dayIndex"
-              element={<WeekView />}
-            />
-            <Route
-              path="/calendar/month/:year/:month/:dayIndex"
-              element={<MonthView />}
-            />
-            <Route
-              path="/calendar/year/:year/:month/:dayIndex"
-              element={<YearView />}
-            />
-            <Route path="/tasks" element={<Tasks />} />
-          </Routes>
-        </AreModalsVisibleProvider>
+        <CalendarProvider>
+          {isAddTaskModalVisible && <AddTaskModal />}
+
+          <TaskSelectedIdProvider>
+            {/*isViewTaskModalVisible && (
+        <ViewTaskModal  />
+      )*/}
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<Navigate to="/tasks" />} />
+              <Route
+                path="/calendar/day/:year/:month/:dayIndex"
+                element={<DayView />}
+              />
+              <Route
+                path="/calendar/week/:year/:month/:dayIndex"
+                element={<WeekView />}
+              />
+              <Route
+                path="/calendar/month/:year/:month/:dayIndex"
+                element={<MonthView />}
+              />
+              <Route
+                path="/calendar/year/:year/:month/:dayIndex"
+                element={<YearView />}
+              />
+              <Route path="/tasks" element={<Tasks />} />
+            </Routes>
+          </TaskSelectedIdProvider>
+        </CalendarProvider>
       </TasksProvider>
     </Router>
   );
