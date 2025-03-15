@@ -1,5 +1,5 @@
 //import styled from "styled-components";
-import { CalendarContainer } from "../../Component/MonthCalendar";
+import { CalendarContainer } from "../../component/MonthCalendar";
 
 const WeekView = () => {
   return <CalendarContainer>Week page </CalendarContainer>;

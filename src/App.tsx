@@ -5,18 +5,20 @@ import {
   Navigate,
 } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
-import Navbar from "./Component/Navbar";
+import Navbar from "./component/Navbar";
 import { useAreModalsVisibleContext } from "./context/ModalsContext";
 import { TasksProvider } from "./context/TasksContext";
-import ViewTaskModal from "./Component/TaskModals/ViewTaskModal";
-import AddTaskModal from "./Component/TaskModals/AddTaskModal";
+import ViewTaskModal from "./component/TaskModals/ViewTaskModal";
+import AddTaskModal from "./component/TaskModals/AddTaskModal";
 import TaskSelectedIdProvider from "./context/TaskSelectedIdContext";
-import CalendarProvider from "./context/CalendarContext";
-import Tasks from "./Page/Tasks";
-import DayView from "./Page/CalendarViews/DayView";
-import WeekView from "./Page/CalendarViews/WeekView";
-import MonthView from "./Page/CalendarViews/MonthView";
-import YearView from "./Page/CalendarViews/YearView";
+import {
+  useCalendarContext,
+} from "./context/CalendarContext";
+import Tasks from "./page/Tasks";
+import DayView from "./page/CalendarViews/DayView";
+import WeekView from "./page/CalendarViews/WeekView";
+import MonthView from "./page/CalendarViews/MonthView";
+import YearView from "./page/CalendarViews/YearView";
 
 const GlobalStyle = createGlobalStyle`
 body{
@@ -29,13 +31,13 @@ body{
 export default function App() {
   const { isAddTaskModalVisible, isViewTaskModalVisible } =
     useAreModalsVisibleContext();
+  const { calendar } = useCalendarContext();
 
   return (
     <Router>
       <GlobalStyle />
 
       <TasksProvider>
-        <CalendarProvider>
           {isAddTaskModalVisible && <AddTaskModal />}
 
           <TaskSelectedIdProvider>
@@ -44,7 +46,7 @@ export default function App() {
       )*/}
             <Navbar />
             <Routes>
-              <Route path="/" element={<Navigate to="/tasks" />} />
+              <Route path="/" element={<Navigate to={`/calendar/day/${calendar.year}/${calendar.month}/${calendar.day}`} />} />
               <Route
                 path="/calendar/day/:year/:month/:dayIndex"
                 element={<DayView />}
@@ -64,7 +66,6 @@ export default function App() {
               <Route path="/tasks" element={<Tasks />} />
             </Routes>
           </TaskSelectedIdProvider>
-        </CalendarProvider>
       </TasksProvider>
     </Router>
   );

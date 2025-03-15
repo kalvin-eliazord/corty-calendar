@@ -114,10 +114,6 @@ const Navbar = () => {
       month: calendar.month,
       day: calendar.day,
     });
-
-    setTodayNavigation(
-      `/calendar/day/${calendar.year}/${calendar.month}/${calendar.day}`
-    );
   }, []);
 
   const handleClickToday = () => {
@@ -179,6 +175,8 @@ const Navbar = () => {
           alt="calendarToggleButton"
           src="https://www.svgrepo.com/show/532195/menu.svg"
         />
+        <Link to="/tasks"> My Tasks</Link>
+
         <Link to={todayNavigation} onClick={handleClickToday}>
           Today
         </Link>
@@ -190,7 +188,6 @@ const Navbar = () => {
           onClick={() => handleNextDay()}
           src="https://cdn-icons-png.flaticon.com/512/271/271228.png"
         />
-        <Link to="/tasks"> My Tasks</Link>
         <CalendarDateText>{formattedDate}</CalendarDateText>
         <select onChange={(e) => handleClickDayView(e.target.value)}>
           {calendarViews.map((calendarView) => (
@@ -207,7 +204,7 @@ const Navbar = () => {
       </AddTaskButton>
       <div>
         <LeftSide>
-          <MonthCalendar />
+          <MonthCalendar calendarContainerClass={""} />
         </LeftSide>
       </div>
     </MainContainer>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
 import { Task } from "../context/TasksContext";
-import { CalendarContainer } from "../Component/MonthCalendar";
+import { CalendarContainer } from "../component/MonthCalendar";
 import { useTasksContext } from "../context/TasksContext";
 import { format } from "date-fns";
 import { getFormattedHour } from "../utils/getFormattedHour";

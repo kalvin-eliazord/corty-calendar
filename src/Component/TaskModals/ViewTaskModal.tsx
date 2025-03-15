@@ -1,18 +1,13 @@
-import {
-  useState,
-  useReducer,
-  useEffect,
-} from "react";
+import { useState, useReducer, useEffect } from "react";
 import { format } from "date-fns";
 import styled from "styled-components";
-import Radio from "../Radio";
+//import Radio from "../Radio";
 import { getFilteredMonth } from "../../utils/getMonth";
 import {
   getFormattedHour,
   getNonFormattedHour,
 } from "../../utils/getFormattedHour";
-import {Task, taskReducer} from "../../context/TasksContext"
-
+import { Task, taskReducer, useTasksContext } from "../../context/TasksContext";
 
 const MainContainer = styled.div`
   position: fixed;
@@ -78,8 +73,9 @@ const ChildContainer = styled.div`
   padding-top
 `;
 
-  const ViewTask = () => {
-    /*const {tasks, dispatch} = useReducer(taskReducer, clickedTask as Task);
+const ViewTask = () => {
+  const { removeTask, setTask } = useTasksContext();
+  /*const {tasks, dispatch} = useReducer(taskReducer, clickedTask as Task);
     const [isLabelTitleVisible, setIsLabelTitleVisible] = useState<boolean>(true);
   
     const [dateInput, setDateInput] = useState<string>("");
@@ -216,6 +212,5 @@ const ChildContainer = styled.div`
       </MainContainer>
     );
     */
-  };
-export default  ViewTask;
-  
+};
+export default ViewTask;

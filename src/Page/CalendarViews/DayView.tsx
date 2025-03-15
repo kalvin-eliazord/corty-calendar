@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import styled from "styled-components";
-import { CalendarContainer } from "../../Component/MonthCalendar";
+import { CalendarContainer } from "../../component/MonthCalendar";
 import { useTasksContext } from "../../context/TasksContext";
 import { useAreModalsVisibleContext } from "../../context/ModalsContext";
 import { getFormattedHour } from "../../utils/getFormattedHour";
@@ -17,14 +17,36 @@ const DayViewContainer = styled.div`
 
 const DayViewNameContainer = styled.div`
   p {
+    margin-left: 2%;
     color: #246694;
     font-weight: bold;
+    font-size: 13px;
+  }
+
+  span {
+    font-size: 28px;
+    position: relative;
   }
 `;
 
 const AllDayTasksContainer = styled.div`
   width: 100%;
   border-bottom: solid #7b7364 1px;
+`;
+
+const AllDayTask = styled.div`
+  background-color: #246694;
+  width: 100%;
+  margin-right: 50px;
+  border-radius: 5px;
+  z-index: 1;
+  color: white;
+  font-weight: bold;
+  padding-left: 2%;
+  padding-top: 2%;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const HoursTitle = styled.div`
@@ -34,10 +56,12 @@ const HoursTitle = styled.div`
   right: 6%;
   bottom: 0.5rem;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; 
   justify-content: space-between;
   color: white;
   font-size: 12px;
+  text-wrap: nowrap;
+  font-weight: bold;
 `;
 
 const HourRangeContainer = styled.div`
@@ -96,7 +120,7 @@ type DayType = {
 };
 
 const DayView = () => {
-  const { tasks, tasksDispatch } = useTasksContext();
+  const { tasks } = useTasksContext();
   const { setTaskSelectedId } = useTaskSelectedIdContext();
   const { calendar, calendarDispatch } = useCalendarContext();
   const [day, setDay] = useState<DayType>();
@@ -150,7 +174,10 @@ const DayView = () => {
   useEffect(() => {
     const newDate = new Date(calendar.year, calendar.month - 1, calendar.day);
     setDate(newDate);
-    setDay({ name: format(newDate, "eee"), index: calendar.day.toString() });
+    setDay({
+      name: format(newDate, "eee").toUpperCase(),
+      index: calendar.day.toString(),
+    });
   }, [calendar.day]);
 
   return (
@@ -159,11 +186,13 @@ const DayView = () => {
         <DayViewContainer>
           <DayViewNameContainer>
             <p>
-              {day?.index} <br /> {day?.name}.
+              {day?.name}. <br /> <span>{day?.index} </span>
             </p>
           </DayViewNameContainer>
           <AllDayTasksContainer>
-            {dayViewTasks.map((task) => task.isAllDay && task.title)}
+            {dayViewTasks.map(
+              (task) => task.isAllDay && <AllDayTask>task.title </AllDayTask>
+            )}
           </AllDayTasksContainer>
           {hours.map((hour) => (
             <HourRangeContainer key={hour.id}>
@@ -178,7 +207,7 @@ const DayView = () => {
                       onClick={() => toggleViewTaskModal(task.id)}
                     >
                       {task.title}
-                      {!task.isAllDay && `, ${getFormattedHour(task.hour)}`}
+                      {`, ${getFormattedHour(task.hour)}`}
                     </TaskContainer>
                   )
               )}

@@ -10,6 +10,7 @@ import {
 import { Task, taskReducer, useTasksContext } from "../../context/TasksContext";
 import { useCalendarContext } from "../../context/CalendarContext";
 import { useAreModalsVisibleContext } from "../../context/ModalsContext";
+import { MonthCalendar } from "../MonthCalendar";
 
 const MainContainer = styled.div`
   position: fixed;
@@ -75,13 +76,23 @@ const ChildContainer = styled.div`
   padding-top
 `;
 
+const MonthCalendarWrapper = styled.div`
+  width: 50 px;
+  height: 50px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  position: fixed;
+  z-index: 4;
+`;
+
 const DateInput = styled.input``;
 const HourInput = styled.input``;
 
 const AddTask = () => {
-  const { calendar, calendarDispatch } = useCalendarContext();
-  const { tasks, tasksDispatch, addTask, removeTask, setTask } =
-    useTasksContext();
+  const { calendar } = useCalendarContext();
+  const { addTask } = useTasksContext();
   const { isAddTaskModalVisible, setIsAddTaskModalVisible } =
     useAreModalsVisibleContext();
   const [isTaskReady, setIsTaskReady] = useState<boolean>(false);
@@ -93,6 +104,8 @@ const AddTask = () => {
   const [formattedHour, setFormattedHour] = useState<string>("");
   const [hourInput, setHourInput] = useState<string>("");
   const [recurringValue, setRecurringValue] = useState<string>("oneTime");
+  const [isMonthCalendarVisible, setIsMonthCalendarVisible] =
+    useState<boolean>(false);
   const [isDateContainerClicked, setIsDateContainerClicked] =
     useState<boolean>(false);
   const [task, taskDispatch] = useReducer(taskReducer, {
@@ -103,7 +116,7 @@ const AddTask = () => {
     hour: calendar.hour,
     complexity: 1,
     priority: 1,
-    dueDate: new Date(calendar.year, calendar.month-1, calendar.day),
+    dueDate: new Date(calendar.year, calendar.month - 1, calendar.day),
     checks: [],
     labels: [],
     isDone: false,
@@ -225,6 +238,10 @@ const AddTask = () => {
     }
   };
 
+  const handleDateInputFocus = () => {
+    setIsMonthCalendarVisible(true);
+  };
+
   useEffect(() => {
     const newFormattedHour = getFormattedHour(task.hour);
     setFormattedHour(newFormattedHour);
@@ -278,9 +295,15 @@ const AddTask = () => {
                 type="text"
                 value={dateInput}
                 onChange={(e) => setDateInput(e.target.value)}
+                onFocus={handleDateInputFocus}
                 onBlur={() => handleOnBlurDate()}
                 autoFocus={isDateFocused}
               />
+              {isMonthCalendarVisible && (
+                <MonthCalendarWrapper>
+                  <MonthCalendar calendarContainerClass="month-calendar-container" />
+                </MonthCalendarWrapper>
+              )}
 
               {!task.isAllDay && (
                 <HourInput

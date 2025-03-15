@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import AreModalsVisibleProvider from "./context/ModalsContext";
+import CalendarProvider from "./context/CalendarContext";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -10,9 +11,13 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <React.StrictMode>
+        <CalendarProvider>
+
     <AreModalsVisibleProvider>
       <App />
     </AreModalsVisibleProvider>
+    </CalendarProvider>
+
   </React.StrictMode>
 );
 

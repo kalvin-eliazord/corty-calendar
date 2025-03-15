@@ -98,7 +98,10 @@ const getWeeksOfMonth = (year: number, month: number): string[][] => {
 
 const daysLetterWeek = ["M", "T", "W", "T", "F", "Sa", "Su"];
 
-const MonthCalendar = ({}) => {
+type MonthCalendarProps = {
+  calendarContainerClass: string;
+};
+const MonthCalendar: React.FC<MonthCalendarProps> = ({calendarContainerClass}) => {
   const { calendar, calendarDispatch } = useCalendarContext();
   const [monthName, setMonthName] = useState<string>("");
   const [weeks, setWeeks] = useState<string[][]>([] as string[][]);
@@ -109,7 +112,7 @@ const MonthCalendar = ({}) => {
   }, [calendar]);
 
   return (
-    <MonthCalendarContainer>
+    <MonthCalendarContainer className={calendarContainerClass}>
       <MonthCalendarHeader>
         <p> {monthName}</p>
         <p>{calendar.year}</p>
@@ -132,8 +135,10 @@ const MonthCalendar = ({}) => {
         <WeekContainer key={i}>
           {week.map((day, j) => (
             <DayContainer
-              key={j + Math.random()}
-              onClick={() => calendarDispatch({ type: "SET_DAY", state: Number(day) })}
+              key={j * Math.random()}
+              onClick={() =>
+                calendarDispatch({ type: "SET_DAY", state: Number(day) })
+              }
             >
               <h4>{day}</h4>
             </DayContainer>
