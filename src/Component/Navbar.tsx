@@ -204,7 +204,7 @@ const Navbar = () => {
       </AddTaskButton>
       <div>
         <LeftSide>
-          <MonthCalendar calendarContainerClass={""} />
+          <MonthCalendar />
         </LeftSide>
       </div>
     </MainContainer>

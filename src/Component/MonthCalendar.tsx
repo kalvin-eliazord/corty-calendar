@@ -75,6 +75,11 @@ const RightArrowButton = styled.img`
   border: 1px solid red;
 `;
 
+const WeeksAndDaysContainer = styled.div`
+  display: flex;
+  flex-direction:row;
+`;
+
 const getWeeksOfMonth = (year: number, month: number): string[][] => {
   const monthStart = startOfMonth(new Date(year, month - 1, 1));
   const monthEnd = endOfMonth(new Date(year, month - 1, 1));
@@ -98,10 +103,7 @@ const getWeeksOfMonth = (year: number, month: number): string[][] => {
 
 const daysLetterWeek = ["M", "T", "W", "T", "F", "Sa", "Su"];
 
-type MonthCalendarProps = {
-  calendarContainerClass: string;
-};
-const MonthCalendar: React.FC<MonthCalendarProps> = ({calendarContainerClass}) => {
+const MonthCalendar = () => {
   const { calendar, calendarDispatch } = useCalendarContext();
   const [monthName, setMonthName] = useState<string>("");
   const [weeks, setWeeks] = useState<string[][]>([] as string[][]);
@@ -112,8 +114,8 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({calendarContainerClass}) =
   }, [calendar]);
 
   return (
-    <MonthCalendarContainer className={calendarContainerClass}>
-      <MonthCalendarHeader>
+    <MonthCalendarContainer className={"month-calendar-container"}>
+      <MonthCalendarHeader className={"month-calendar-container"}>
         <p> {monthName}</p>
         <p>{calendar.year}</p>
         <LeftArrowButton
@@ -126,25 +128,27 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({calendarContainerClass}) =
         />
       </MonthCalendarHeader>
 
-      <DaysLetterContainer>
+      <DaysLetterContainer className="month-calendar-header">
         {daysLetterWeek.map((dayLetter, i) => (
           <h4 key={i}> {dayLetter}</h4>
         ))}
       </DaysLetterContainer>
-      {weeks.map((week, i) => (
-        <WeekContainer key={i}>
-          {week.map((day, j) => (
-            <DayContainer
-              key={j * Math.random()}
-              onClick={() =>
-                calendarDispatch({ type: "SET_DAY", state: Number(day) })
-              }
-            >
-              <h4>{day}</h4>
-            </DayContainer>
-          ))}
-        </WeekContainer>
-      ))}
+      <WeeksAndDaysContainer>
+        {weeks.map((week, i) => (
+          <WeekContainer key={i} className="month-calendar-weeks">
+            {week.map((day, j) => (
+              <DayContainer
+                key={j * Math.random()}
+                onClick={() =>
+                  calendarDispatch({ type: "SET_DAY", state: Number(day) })
+                }
+              >
+                <h4>{day}</h4>
+              </DayContainer>
+            ))}
+          </WeekContainer>
+        ))}
+      </WeeksAndDaysContainer>
     </MonthCalendarContainer>
   );
 };

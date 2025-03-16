@@ -77,14 +77,23 @@ const ChildContainer = styled.div`
 `;
 
 const MonthCalendarWrapper = styled.div`
-  width: 50 px;
-  height: 50px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  .month-calendar-container {
+    display: flex;
+    flex-direction: row;
+    background-color: pink;
+    position: absolute;
+    z-index: 2;
+  }
 
-  position: fixed;
-  z-index: 4;
+  .month-calendar-header {
+    background-color: red;
+    transform: translate(-0%, 10%);
+  }
+
+  .month-calendar-weeks {
+
+    background-color: yellow;
+  }
 `;
 
 const DateInput = styled.input``;
@@ -301,7 +310,7 @@ const AddTask = () => {
               />
               {isMonthCalendarVisible && (
                 <MonthCalendarWrapper>
-                  <MonthCalendar calendarContainerClass="month-calendar-container" />
+                  <MonthCalendar />
                 </MonthCalendarWrapper>
               )}
 
