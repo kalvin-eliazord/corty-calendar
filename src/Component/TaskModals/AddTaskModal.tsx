@@ -1,8 +1,8 @@
-import { useState, useReducer, useEffect } from "react";
+import { useState, useRef, useReducer, useEffect } from "react";
 import { format } from "date-fns";
 import styled from "styled-components";
 import Radio from "../Radio";
-import { getFilteredMonth } from "../../utils/getMonth";
+import { getFilteredMonth, getMonthByIndex } from "../../utils/getMonth";
 import {
   getFormattedHour,
   getNonFormattedHour,
@@ -29,6 +29,20 @@ const MainContainer = styled.div`
 `;
 
 const DateLink = styled.p`
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+`;
+
+const HourLink = styled.p`
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+`;
+
+const RecurringLink = styled.p`
   &:hover {
     text-decoration: underline;
     cursor: pointer;
@@ -78,21 +92,25 @@ const ChildContainer = styled.div`
 
 const MonthCalendarWrapper = styled.div`
   .month-calendar-container {
-    display: flex;
-    flex-direction: row;
-    background-color: pink;
     position: absolute;
+    padding: 10px;
+
+    background-color: pink;
     z-index: 2;
+    gap: 20px;
+    width: 80%;
   }
 
   .month-calendar-header {
+    width: 80%;
     background-color: red;
-    transform: translate(-0%, 10%);
+    gap: 20px;
+    justify-content: ;
   }
 
   .month-calendar-weeks {
-
     background-color: yellow;
+    gap: 20px;
   }
 `;
 
@@ -105,9 +123,11 @@ const AddTask = () => {
   const { isAddTaskModalVisible, setIsAddTaskModalVisible } =
     useAreModalsVisibleContext();
   const [isTaskReady, setIsTaskReady] = useState<boolean>(false);
-  const [isDateFocused, setIsDateFocused] = useState(false);
-  const [isHourFocused, setIsHourFocused] = useState(false);
-  const [isRecurringFocused, setIsRecurringFocused] = useState(false);
+  const dateInputRef = useRef<HTMLInputElement | null>(null);
+  const hourInputRef = useRef<HTMLInputElement | null>(null);
+  const recurringSelectorRef = useRef<HTMLSelectElement | null>(null);
+  const monthCalendarModalRef = useRef<HTMLDivElement | null>(null);
+
   const [formattedDate, setFormattedDate] = useState<string>("");
   const [dateInput, setDateInput] = useState<string>("");
   const [formattedHour, setFormattedHour] = useState<string>("");
@@ -233,23 +253,11 @@ const AddTask = () => {
     taskDispatch({ type: "SET_DUE_DATE", state: date });
   };
 
-  const handleAutoFocus = (elementName: string): void => {
-    switch (elementName) {
-      case "date":
-        setIsDateFocused(true);
-        break;
-      case "hour":
-        setIsHourFocused(true);
-        break;
-      case "recurring":
-        setIsRecurringFocused(true);
-        break;
-    }
-  };
-
-  const handleDateInputFocus = () => {
-    setIsMonthCalendarVisible(true);
-  };
+  useEffect(() => {
+    setDateInput(
+      `${calendar.day} ${getMonthByIndex(calendar.month)} ${calendar.year}`
+    );
+  }, [calendar.day]);
 
   useEffect(() => {
     const newFormattedHour = getFormattedHour(task.hour);
@@ -283,49 +291,53 @@ const AddTask = () => {
         <div
           onClick={() => {
             !isDateContainerClicked && setIsDateContainerClicked(true);
-            handleAutoFocus("date");
           }}
         >
           {!isDateContainerClicked ? (
             <>
-              <DateLink onClick={() => handleAutoFocus("date")}>
+              <DateLink onClick={() => dateInputRef.current?.focus()}>
                 {dateInput}
               </DateLink>
-              <DateLink onClick={() => handleAutoFocus("hour")}>
+              <HourLink onClick={() => hourInputRef.current?.focus()}>
                 {hourInput}
-              </DateLink>
-              <DateLink onClick={() => handleAutoFocus("recurring")}>
+              </HourLink>
+              <RecurringLink
+                onClick={() => recurringSelectorRef.current?.focus()}
+              >
                 Only one time
-              </DateLink>
+              </RecurringLink>
             </>
           ) : (
             <>
               <DateInput
+                ref={dateInputRef}
                 type="text"
                 value={dateInput}
                 onChange={(e) => setDateInput(e.target.value)}
-                onFocus={handleDateInputFocus}
+                onFocus={() => setIsMonthCalendarVisible(true)}
                 onBlur={() => handleOnBlurDate()}
-                autoFocus={isDateFocused}
               />
               {isMonthCalendarVisible && (
-                <MonthCalendarWrapper>
+                <MonthCalendarWrapper
+                  ref={monthCalendarModalRef}
+                  onBlur={() => setIsMonthCalendarVisible(false)}
+                >
                   <MonthCalendar />
                 </MonthCalendarWrapper>
               )}
 
               {!task.isAllDay && (
                 <HourInput
+                  ref={hourInputRef}
                   type="text"
                   value={hourInput}
                   onChange={(e) => setHourInput(e.target.value)}
                   onBlur={() => handleOnBlurHour()}
-                  autoFocus={isHourFocused}
                 />
               )}
               <select
+                ref={recurringSelectorRef}
                 onChange={(e) => setRecurringValue(e.target.value)}
-                autoFocus={isRecurringFocused}
               >
                 <option value="oneTime">Only one time</option>
                 <option value="everyDay"> Everyday </option>

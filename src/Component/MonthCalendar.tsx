@@ -26,7 +26,6 @@ const CalendarContainer = styled.div`
 
 const MonthCalendarContainer = styled.div`
   border: solid 1px black;
-  width: 220%;
   display: flex;
   flex-direction: column;
 `;
@@ -73,11 +72,6 @@ const RightArrowButton = styled.img`
   width: 20px;
   height: 20px;
   border: 1px solid red;
-`;
-
-const WeeksAndDaysContainer = styled.div`
-  display: flex;
-  flex-direction:row;
 `;
 
 const getWeeksOfMonth = (year: number, month: number): string[][] => {
@@ -133,22 +127,21 @@ const MonthCalendar = () => {
           <h4 key={i}> {dayLetter}</h4>
         ))}
       </DaysLetterContainer>
-      <WeeksAndDaysContainer>
-        {weeks.map((week, i) => (
-          <WeekContainer key={i} className="month-calendar-weeks">
-            {week.map((day, j) => (
-              <DayContainer
-                key={j * Math.random()}
-                onClick={() =>
-                  calendarDispatch({ type: "SET_DAY", state: Number(day) })
-                }
-              >
-                <h4>{day}</h4>
-              </DayContainer>
-            ))}
-          </WeekContainer>
-        ))}
-      </WeeksAndDaysContainer>
+      {weeks.map((week, i) => (
+        <WeekContainer key={i} className="month-calendar-weeks">
+          {week.map((day, j) => (
+            <DayContainer
+              key={j * Math.random()}
+              onClick={() => {
+                calendarDispatch({ type: "SET_DAY", state: Number(day) });
+                console.log("clicked");
+              }}
+            >
+              <h4>{day}</h4>
+            </DayContainer>
+          ))}
+        </WeekContainer>
+      ))}
     </MonthCalendarContainer>
   );
 };
