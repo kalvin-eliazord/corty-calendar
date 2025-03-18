@@ -17,14 +17,52 @@ const MainContainer = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 50vh;
-  background-color: #17191a;
-  z-index: 2;
-  overflow-y:hidden;
-  border-radius: 30px;
-    font-weight: 500;
-    color: white;
-    text-align: center;
+  width: 30%;
+  background-color: #17181B;
+  z-index: 9;
+    text-align: left;
+  }
+`;
+
+const HeaderContainer = styled.div`
+  padding: 10px;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+  &:hover {
+    cursor: move;
+    background-color: lightgrey;
+  }
+`;
+
+const ExitButton = styled.img`
+  filter: invert(1);
+  width: 20px;
+`;
+
+const TitleTaskInput = styled.input`
+  height: 30px;
+  position: relative;
+  width: 85%;
+  left: 60px;
+  background-color: #17181b;
+  border: 0;
+  font-size: 25px;
+  margin-bottom: 10px;
+  &:placeholder {
+  }
+`;
+
+const TimeSettingsContainerLink = styled.div`
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  img {
+    position: relative;
+    margin-right: 20px;
+    left: 20px;
+    width: 20px;
+    height: 20px;
   }
 `;
 
@@ -47,16 +85,6 @@ const RecurringLink = styled.p`
     text-decoration: underline;
     cursor: pointer;
   }
-`;
-
-const HeaderContainer = styled.div`
-  height: 50px;
-  &:hover {
-    cursor: move;
-    background-color: lightgrey;
-  }
-  :10% ;
-  background-color: lightblue;
 `;
 
 const Form = styled.form`
@@ -90,32 +118,65 @@ const ChildContainer = styled.div`
   padding-top
 `;
 
-const MonthCalendarWrapper = styled.div`
+const MonthCalendarWrapper = styled.div.attrs(() => ({
+  tabIndex: -1,
+}))`
   .month-calendar-container {
-    position: absolute;
-    padding: 10px;
-
-    background-color: pink;
-    z-index: 2;
-    gap: 20px;
-    width: 80%;
   }
 
   .month-calendar-header {
-    width: 80%;
-    background-color: red;
-    gap: 20px;
-    justify-content: ;
+    justify-content: space-between;
   }
 
   .month-calendar-weeks {
-    background-color: yellow;
-    gap: 20px;
+    background-color: #0f1110;
   }
 `;
 
-const DateInput = styled.input``;
-const HourInput = styled.input``;
+const LeftImagesContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 70px;
+  justify-content: space-between;
+  height: 100%;
+`;
+
+const ClockImg = styled.img`
+  width: 20px;
+  filter: invert(1);
+  position: relative;
+  top: 20px;
+`;
+
+const DescriptionImg = styled.img`
+  filter: invert(1);
+  width: 25px;
+`;
+
+const StyledTextArea = styled.textarea`
+  border: 0;
+`;
+
+const DateInput = styled.input`
+  background-color: #292b2c;
+  height: 40px;
+  border: 0;
+  border-radius: 5px;
+  &::placeholder {
+    text-align: center;
+    padding-left: 20px;
+  }
+`;
+const HourInput = styled.input`
+  background-color: #292b2c;
+  height: 40px;
+
+  border: 0;
+  border-radius: 5px;
+  &:placeholder {
+    padding-left: 20px;
+  }
+`;
 
 const AddTask = () => {
   const { calendar } = useCalendarContext();
@@ -269,10 +330,20 @@ const AddTask = () => {
     setDateInput(newFormattedDate);
   }, [isAddTaskModalVisible]);
 
+  useEffect(() => {
+    if (isMonthCalendarVisible && monthCalendarModalRef.current)
+      monthCalendarModalRef.current.focus();
+  }, [isMonthCalendarVisible]);
+
   return (
     <MainContainer>
-      <HeaderContainer />
-      <h2> Add Task </h2>
+      <HeaderContainer>
+        <ExitButton
+          alt="exitButton"
+          src="https://cdn2.iconfinder.com/data/icons/e-commerce-line-10-1/1024/close10-64.png"
+          onClick={() => setIsAddTaskModalVisible(false)}
+        />
+      </HeaderContainer>
       <ChildContainer>
         <Form
           onSubmit={(e: any) => {
@@ -280,11 +351,11 @@ const AddTask = () => {
             handleSubmitTask();
           }}
         >
-          <input
+          <TitleTaskInput
             type="text"
             value={task.title}
             onChange={(e) => handleTitleChange(e.target.value)}
-            placeholder="Insert title"
+            placeholder="Add a title"
             autoFocus
           />
         </Form>
@@ -295,46 +366,62 @@ const AddTask = () => {
         >
           {!isDateContainerClicked ? (
             <>
-              <DateLink onClick={() => dateInputRef.current?.focus()}>
-                {dateInput}
-              </DateLink>
-              <HourLink onClick={() => hourInputRef.current?.focus()}>
-                {hourInput}
-              </HourLink>
-              <RecurringLink
-                onClick={() => recurringSelectorRef.current?.focus()}
-              >
-                Only one time
-              </RecurringLink>
+              <TimeSettingsContainerLink>
+                <LeftImagesContainer>
+                  <ClockImg src="https://cdn-icons-png.flaticon.com/512/3114/3114812.png" />
+                  <DescriptionImg src="https://www.svgrepo.com/show/532195/menu.svg" />
+                </LeftImagesContainer>
+                <DateLink onClick={() => setIsMonthCalendarVisible(true)}>
+                  {dateInput}
+                </DateLink>
+                <HourLink onClick={() => hourInputRef.current?.focus()}>
+                  {hourInput}
+                </HourLink>
+                <RecurringLink
+                  onClick={() => recurringSelectorRef.current?.focus()}
+                >
+                  Only one time
+                </RecurringLink>
+              </TimeSettingsContainerLink>
             </>
           ) : (
             <>
-              <DateInput
-                ref={dateInputRef}
-                type="text"
-                value={dateInput}
-                onChange={(e) => setDateInput(e.target.value)}
-                onFocus={() => setIsMonthCalendarVisible(true)}
-                onBlur={() => handleOnBlurDate()}
-              />
-              {isMonthCalendarVisible && (
-                <MonthCalendarWrapper
-                  ref={monthCalendarModalRef}
-                  onBlur={() => setIsMonthCalendarVisible(false)}
-                >
-                  <MonthCalendar />
-                </MonthCalendarWrapper>
-              )}
-
-              {!task.isAllDay && (
-                <HourInput
-                  ref={hourInputRef}
+              <TimeSettingsContainerLink>
+                <LeftImagesContainer>
+                  <ClockImg src="https://cdn-icons-png.flaticon.com/512/3114/3114812.png" />
+                  <DescriptionImg src="https://www.svgrepo.com/show/532195/menu.svg" />
+                </LeftImagesContainer>
+                <DateInput
                   type="text"
-                  value={hourInput}
-                  onChange={(e) => setHourInput(e.target.value)}
-                  onBlur={() => handleOnBlurHour()}
+                  ref={dateInputRef}
+                  value={dateInput}
+                  onChange={(e) => setDateInput(e.target.value)}
+                  onBlur={() => handleOnBlurDate()}
                 />
-              )}
+
+                {!task.isAllDay && (
+                  <HourInput
+                    ref={hourInputRef}
+                    type="text"
+                    value={hourInput}
+                    onChange={(e) => setHourInput(e.target.value)}
+                    onBlur={() => handleOnBlurHour()}
+                  />
+                )}
+
+                {isMonthCalendarVisible && (
+                  <MonthCalendarWrapper
+                    ref={monthCalendarModalRef}
+                    onBlur={() => {
+                      dateInputRef.current === document.activeElement &&
+                        setIsMonthCalendarVisible(false);
+                    }}
+                  >
+                    <MonthCalendar />
+                  </MonthCalendarWrapper>
+                )}
+              </TimeSettingsContainerLink>
+
               <select
                 ref={recurringSelectorRef}
                 onChange={(e) => setRecurringValue(e.target.value)}
@@ -356,11 +443,11 @@ const AddTask = () => {
             </>
           )}
         </div>
-        <textarea
+        <StyledTextArea
           onChange={(e) => handleDescriptionChange(e.target.value)}
           value={task.description}
           placeholder="Add a description"
-        ></textarea>
+        ></StyledTextArea>
         <Radio
           name={"Priority"}
           setRadio={(priority: string) =>
@@ -402,7 +489,6 @@ const AddTask = () => {
           </div>
         </Form>
         <button onClick={() => handleSubmitTask()}> confirm </button>
-        <button onClick={() => setIsAddTaskModalVisible(false)}> X </button>
       </ChildContainer>
     </MainContainer>
   );

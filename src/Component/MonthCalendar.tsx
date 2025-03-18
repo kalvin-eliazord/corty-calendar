@@ -20,58 +20,85 @@ const CalendarContainer = styled.div`
   position: absolute;
   left: 21%;
   top: 10%;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow-y: hidden;
 `;
 
 const MonthCalendarContainer = styled.div`
-  border: solid 1px black;
+  position: fixed;
+  top: 53.2%;
+  left: 49%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
   display: flex;
+  height: 200px;
   flex-direction: column;
 `;
 const MonthCalendarHeader = styled.div`
+  display: flex;
+  background-color: #0f1110;
+  font-size: 14px;
+  padding-top: 10px;
+  padding-left: 30px;
+  justify-content: space-between;
   p {
+    margin-right: 10px;
     color: black;
     font-weight: bold;
   }
+
   img {
-    padding-top: 1.5vh;
-    &:hover {
-      cursor: pointer;
-    }
+    width: 10px;
+    height: 10px;
   }
-`;
-const DaysLetterContainer = styled.div`
-  display: flex;
-  padding: 10px;
 `;
 
-const WeekContainer = styled.div`
-  &:hover {
-    background-color: lightgrey;
-  }
-`;
-const DayContainer = styled.div`
-  padding-inline: 10px;
-  border-radius: 10px;
-  font-size: 12px;
-  &:hover {
-    background-color: lightBlue;
-    cursor: pointer;
-  }
+const ArrowsContainer = styled.div`
+  display: flex;
+      padding-top: 15px;
+  position: relative;
+  right: 55px;
+  
+  gap: 20px;
+      &:hover {
+      cursor: pointer;
 `;
 
 const LeftArrowButton = styled.img`
-  width: 20px;
-  height: 20px;
-  border: 1px solid red;
+
+  filter: invert(1);
   transform: scaleX(-100%);
 `;
 
 const RightArrowButton = styled.img`
-  width: 20px;
-  height: 20px;
-  border: 1px solid red;
+
+  filter: invert(1);
+`;
+
+const DaysLetterContainer = styled.div`
+  background-color: #0f1110;
+
+  display: flex;
+  font-size: 10px;
+  padding-inline: 35px;
+`;
+
+const WeekContainer = styled.div`
+  display: flex;
+  gap: 20px;
+  padding-inline: 30px;
+
+  &:hover {
+    /background-color: lightgrey;
+  }
+`;
+
+const DayContainer = styled.div`
+  padding-inline: 5px;
+  font-size: 10px;
+  &:hover {
+    cursor: pointer;
+    /background-color: lightgrey;
+  }
 `;
 
 const getWeeksOfMonth = (year: number, month: number): string[][] => {
@@ -110,16 +137,20 @@ const MonthCalendar = () => {
   return (
     <MonthCalendarContainer className={"month-calendar-container"}>
       <MonthCalendarHeader className={"month-calendar-container"}>
-        <p> {monthName}</p>
-        <p>{calendar.year}</p>
-        <LeftArrowButton
-          onClick={() => calendarDispatch({ type: "PREVIOUS_MONTH" })}
-          src="https://cdn-icons-png.flaticon.com/512/271/271228.png"
-        />
-        <RightArrowButton
-          onClick={() => calendarDispatch({ type: "NEXT_MONTH" })}
-          src="https://cdn-icons-png.flaticon.com/512/271/271228.png"
-        />
+        <p>
+          {" "}
+          {monthName} {calendar.year}
+        </p>
+        <ArrowsContainer>
+          <LeftArrowButton
+            onClick={() => calendarDispatch({ type: "PREVIOUS_MONTH" })}
+            src="https://cdn-icons-png.flaticon.com/512/271/271228.png"
+          />
+          <RightArrowButton
+            onClick={() => calendarDispatch({ type: "NEXT_MONTH" })}
+            src="https://cdn-icons-png.flaticon.com/512/271/271228.png"
+          />
+        </ArrowsContainer>
       </MonthCalendarHeader>
 
       <DaysLetterContainer className="month-calendar-header">

@@ -79,6 +79,8 @@ const Tasks = () => {
 
     if (Math.floor(scrollTop + clientHeight) === scrollHeight - 1)
       setRenderedTasks((prev) => prev + 10);
+
+    console.log("scrollTop: ",scrollTop, ) // to fix 
   };
 
   return (

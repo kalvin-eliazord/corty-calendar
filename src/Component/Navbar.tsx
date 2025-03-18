@@ -44,6 +44,7 @@ const LeftSide = styled.div`
 
 const CalendarToggleButton = styled.img`
   width: 40px;
+  filter: invert(1);
   &:hover {
     cursor: pointer;
   }
@@ -61,7 +62,7 @@ const CalendarDateText = styled.p``;
 const LeftArrowButton = styled.img`
   width: 20px;
   height: 20px;
-  border: 1px solid red;
+  filter: invert(1);
   transform: scaleX(-100%);
   &:hover {
     cursor: pointer;
@@ -71,7 +72,7 @@ const LeftArrowButton = styled.img`
 const RightArrowButton = styled.img`
   width: 20px;
   height: 20px;
-  border: 1px solid red;
+  filter: invert(1);
   &:hover {
     cursor: pointer;
   }
@@ -169,7 +170,7 @@ const Navbar = () => {
   };
 
   return (
-    <MainContainer>
+    <MainContainer onClick={() => setIsAddTaskModalVisible(false)}>
       <Header>
         <CalendarToggleButton
           alt="calendarToggleButton"
@@ -204,7 +205,8 @@ const Navbar = () => {
       </AddTaskButton>
       <div>
         <LeftSide>
-          <MonthCalendar />
+         {/* */} 
+         {/* */} 
         </LeftSide>
       </div>
     </MainContainer>
