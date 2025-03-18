@@ -20,13 +20,13 @@ const CalendarContainer = styled.div`
   position: absolute;
   left: 21%;
   top: 10%;
-  overflow-y: hidden;
+  overflow-y: auto;
 `;
 
 const MonthCalendarContainer = styled.div`
   position: fixed;
-  top: 53.2%;
-  left: 49%;
+  top: 37%;
+  left: 54%;
   transform: translate(-50%, -50%);
   z-index: 10;
   display: flex;
@@ -40,9 +40,9 @@ const MonthCalendarHeader = styled.div`
   padding-top: 10px;
   padding-left: 30px;
   justify-content: space-between;
+  
   p {
     margin-right: 10px;
-    color: black;
     font-weight: bold;
   }
 
@@ -64,13 +64,12 @@ const ArrowsContainer = styled.div`
 `;
 
 const LeftArrowButton = styled.img`
-
   filter: invert(1);
   transform: scaleX(-100%);
 `;
 
 const RightArrowButton = styled.img`
-
+  width: 10px;
   filter: invert(1);
 `;
 
@@ -138,7 +137,6 @@ const MonthCalendar = () => {
     <MonthCalendarContainer className={"month-calendar-container"}>
       <MonthCalendarHeader className={"month-calendar-container"}>
         <p>
-          {" "}
           {monthName} {calendar.year}
         </p>
         <ArrowsContainer>
@@ -165,7 +163,6 @@ const MonthCalendar = () => {
               key={j * Math.random()}
               onClick={() => {
                 calendarDispatch({ type: "SET_DAY", state: Number(day) });
-                console.log("clicked");
               }}
             >
               <h4>{day}</h4>

@@ -3,11 +3,19 @@ import styled from "styled-components";
 
 const Form = styled.form`
   display: flex;
-  gap: 50px;
-  justify-content: center;
-  div {
-    display: flex;
-    flex-direction: column;
+  position:relative;
+  top:20px;
+  gap: 20px;
+  h4 {
+  font-size:15px;
+    padding-left: 90px;
+    width: 135px;
+  }
+
+  label,
+  input {
+    position: relative;
+    top: 20px;
   }
 `;
 
@@ -30,11 +38,7 @@ const initRadioValues = (values: string[]): RadioType[] =>
     isChecked: i === 0,
   }));
 
-const Radio: React.FC<RadioProps> = ({
-  name,
-  radioChecked,
-  setRadio,
-}) => {
+const Radio: React.FC<RadioProps> = ({ name, radioChecked, setRadio }) => {
   const [radioValues, setRadioValues] = useState<RadioType[]>(
     initRadioValues(["1", "2", "3"])
   );
@@ -63,7 +67,6 @@ const Radio: React.FC<RadioProps> = ({
   return (
     <Form>
       <h4>{name}</h4>
-
       {radioValues.map((radio) => (
         <div
           key={radio.id}

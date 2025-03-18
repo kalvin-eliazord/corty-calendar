@@ -8,6 +8,8 @@ import { useAreModalsVisibleContext } from "../context/ModalsContext";
 
 const MainContainer = styled.div`
   padding: 10px;
+  background-color: #1b1b1b;
+  color: #e2e3e2;
   div {
     display: flex;
     justify-content: space-between;
@@ -15,10 +17,16 @@ const MainContainer = styled.div`
   p {
     color: white;
   }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
 `;
 
 const AddTaskButton = styled.div`
   padding: 20px;
+  margin-left: 20px;
   border-radius: 10px;
   background-color: #2a2e31;
   width: 10%;
@@ -30,21 +38,25 @@ const AddTaskButton = styled.div`
 
 const Header = styled.div`
   margin-bottom: 60px;
+  padding-top: 15px;
 `;
 
 const LeftSide = styled.div`
   display: flex;
   flex-direction: column;
   width: 10%;
-  height: 100vh;
+  height: 80vh;
   div {
     bottom: 20vh;
   }
 `;
 
 const CalendarToggleButton = styled.img`
-  width: 40px;
+  width: 25px;
   filter: invert(1);
+  position: relative;
+  bottom: 15px;
+  left: 20px;
   &:hover {
     cursor: pointer;
   }
@@ -57,7 +69,19 @@ const CalendarView = styled.div`
   }
 `;
 
-const CalendarDateText = styled.p``;
+const CalendarDateText = styled.p`
+  position: relative;
+  bottom: 15px;
+`;
+
+const ArrowsContainer = styled.div`
+  display: flex;
+  position: relative;
+  right: 55px;
+  gap: 30px;
+      &:hover {
+      cursor: pointer;
+`;
 
 const LeftArrowButton = styled.img`
   width: 20px;
@@ -73,6 +97,22 @@ const RightArrowButton = styled.img`
   width: 20px;
   height: 20px;
   filter: invert(1);
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const CalendarViewSelector = styled.select`
+  position: relative;
+  height: 20px;
+  right: 10px;
+  border: 0;
+  font-weight: bold;
+  font-size: 15px;
+  border: 0;
+  color: white;
+  background-color: #1b1b1b;
+  border-radius: 5px;
   &:hover {
     cursor: pointer;
   }
@@ -170,7 +210,9 @@ const Navbar = () => {
   };
 
   return (
-    <MainContainer onClick={() => setIsAddTaskModalVisible(false)}>
+    <MainContainer
+      onClick={() => isAddTaskModalVisible && setIsAddTaskModalVisible(false)}
+    >
       <Header>
         <CalendarToggleButton
           alt="calendarToggleButton"
@@ -181,22 +223,26 @@ const Navbar = () => {
         <Link to={todayNavigation} onClick={handleClickToday}>
           Today
         </Link>
-        <LeftArrowButton
-          onClick={() => handlePreviousDay()}
-          src="https://cdn-icons-png.flaticon.com/512/271/271228.png"
-        />
-        <RightArrowButton
-          onClick={() => handleNextDay()}
-          src="https://cdn-icons-png.flaticon.com/512/271/271228.png"
-        />
+        <ArrowsContainer>
+          <LeftArrowButton
+            onClick={() => handlePreviousDay()}
+            src="https://cdn-icons-png.flaticon.com/512/271/271228.png"
+          />
+          <RightArrowButton
+            onClick={() => handleNextDay()}
+            src="https://cdn-icons-png.flaticon.com/512/271/271228.png"
+          />
+        </ArrowsContainer>
         <CalendarDateText>{formattedDate}</CalendarDateText>
-        <select onChange={(e) => handleClickDayView(e.target.value)}>
+        <CalendarViewSelector
+          onChange={(e) => handleClickDayView(e.target.value)}
+        >
           {calendarViews.map((calendarView) => (
             <option key={calendarView} value={calendarView}>
-              {calendarView} View
+              {calendarView.charAt(0).toUpperCase() + calendarView.slice(1)}
             </option>
           ))}
-        </select>
+        </CalendarViewSelector>
       </Header>
       <AddTaskButton
         onClick={() => setIsAddTaskModalVisible(!isAddTaskModalVisible)}
@@ -204,10 +250,7 @@ const Navbar = () => {
         + Add Task
       </AddTaskButton>
       <div>
-        <LeftSide>
-         {/* */} 
-         {/* */} 
-        </LeftSide>
+        <LeftSide>{/* <MonthCalendar/>*/}</LeftSide>
       </div>
     </MainContainer>
   );

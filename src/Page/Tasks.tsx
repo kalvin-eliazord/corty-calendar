@@ -80,7 +80,7 @@ const Tasks = () => {
     if (Math.floor(scrollTop + clientHeight) === scrollHeight - 1)
       setRenderedTasks((prev) => prev + 10);
 
-    console.log("scrollTop: ",scrollTop, ) // to fix 
+    console.log("scrollTop: ", scrollTop); // to fix
   };
 
   return (
@@ -103,6 +103,8 @@ const Tasks = () => {
             <Text>complexity: {task.complexity}</Text>
             <Text>priority: {task.priority}</Text>
             <Text>dueDate: {format(task.dueDate, "d MMMM yyyy")}</Text>
+            <Text>Checks: {task.checks.map((check) => check.name)}</Text>
+            <Text>Labels: {task.labels.map((label) => label.name)}</Text>
             <Text>isDone: {`${task.isDone}`}</Text>
           </TaskContainer>
         ))}

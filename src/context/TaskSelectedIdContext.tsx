@@ -23,7 +23,10 @@ const TaskSelectedIdProvider = ({ children }: { children: ReactNode }) => {
 
 export const useTaskSelectedIdContext = () => {
   const context = useContext(TaskSelectedIdContext);
-  if (!context) throw new Error("to do");
+  if (!context)
+    throw new Error(
+      "TaskSelectedIdContext must be used within TaskSelectedIdProvider"
+    );
 
   return context;
 };

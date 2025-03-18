@@ -11,17 +11,21 @@ import { Task, taskReducer, useTasksContext } from "../../context/TasksContext";
 import { useCalendarContext } from "../../context/CalendarContext";
 import { useAreModalsVisibleContext } from "../../context/ModalsContext";
 import { MonthCalendar } from "../MonthCalendar";
+import formattedHours from "../../utils/formattedHours";
 
 const MainContainer = styled.div`
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 30%;
-  background-color: #17181B;
+  width: 450px;
+  background-color: #1e1e21;
   z-index: 9;
-    text-align: left;
-  }
+  text-align: left;
+  border-radius: 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  color: #e2e3e2;
 `;
 
 const HeaderContainer = styled.div`
@@ -38,18 +42,29 @@ const HeaderContainer = styled.div`
 const ExitButton = styled.img`
   filter: invert(1);
   width: 20px;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const TitleTaskInput = styled.input`
   height: 30px;
   position: relative;
-  width: 85%;
-  left: 60px;
-  background-color: #17181b;
+  width: 67%;
+  color: #e2e3e2;
+  left: 80px;
+  background-color: #1e1e21;
   border: 0;
   font-size: 25px;
   margin-bottom: 10px;
-  &:placeholder {
+  border-bottom: 2px solid grey;
+  &:focus {
+    outline: 0;
+    border-bottom: 2px solidrgb(22, 85, 187);
+  }
+  &::placeholder {
+    color: #777472;
+    padding-left: 10px;
   }
 `;
 
@@ -57,6 +72,8 @@ const TimeSettingsContainerLink = styled.div`
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
+  height: 100px;
+  color: #e2e3e2;
   img {
     position: relative;
     margin-right: 20px;
@@ -87,28 +104,86 @@ const RecurringLink = styled.p`
   }
 `;
 
+const AddItemsContainer = styled.div`
+  margin-left: 80px;
+`;
+
 const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 20px;
-`;
 
-const RadioContainer = styled.div`
-  display: flex;
-`;
-
-const ItemsContainer = styled.ul`
-  display: flex;
-  li {
-    margin-right: 40px;
+  div {
+    position: relative;
+    top: 27px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding-left: 5px;
   }
 `;
 
-const Footer = styled.div`
-  text-align: center;
+const ItemsContainer = styled.div``;
 
-  button {
-    margin-right: 50px;
+const ItemInput = styled.input`
+  overflow-x: scroll;
+  margin-bottom: 10px;
+  color: white;
+
+  border: 0;
+  width: 85%;
+  height: 40px;
+  background-color: #292b2c;
+  border-radius: 5px;
+  height: 65px;
+  span {
+    color: #777472;
+  }
+  &:hover {
+    cursor: text;
+  }
+  &::placeholder {
+    padding-left: 10px;
+    color: #777472;
+  }
+`;
+
+const ItemInputContainer = styled.div<{
+  $nbOfLettersItem: number;
+  $nbOfItemPadding: number;
+}>`
+  overflow-x: scroll;
+  margin-bottom:10px;
+  
+  border: 0;
+  width: 85%;
+  height: 40px;
+  text-indent: ${({ $nbOfLettersItem, $nbOfItemPadding }) =>
+    `${$nbOfLettersItem * 10 + $nbOfItemPadding}px;`}
+
+  background-color: #292b2c;
+  border-radius: 5px;
+  height:65px;
+  span{
+  color:#777472;
+  }
+  &:hover{
+  cursor:text;
+  }
+  &::placeholder {
+    padding-left: 10px;
+  }
+
+`;
+
+const ItemContainer = styled.div`
+  border: 1px solid white;
+  background-color: #013a5f;
+  border-radius: 5px;
+  padding: 5px;
+  &:hover {
+    cursor: pointer;
+    background-color: lightred;
   }
 `;
 
@@ -118,9 +193,7 @@ const ChildContainer = styled.div`
   padding-top
 `;
 
-const MonthCalendarWrapper = styled.div.attrs(() => ({
-  tabIndex: -1,
-}))`
+const MonthCalendarWrapper = styled.div`
   .month-calendar-container {
   }
 
@@ -133,48 +206,140 @@ const MonthCalendarWrapper = styled.div.attrs(() => ({
   }
 `;
 
-const LeftImagesContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 70px;
-  justify-content: space-between;
-  height: 100%;
-`;
-
 const ClockImg = styled.img`
   width: 20px;
   filter: invert(1);
   position: relative;
-  top: 20px;
+  top: 5px;
+  padding-inline: 10px;
 `;
 
 const DescriptionImg = styled.img`
   filter: invert(1);
   width: 25px;
+  padding-inline: 30px;
+  position: relative;
+  bottom: 40px;
 `;
 
-const StyledTextArea = styled.textarea`
+const DescriptionTextArea = styled.textarea`
   border: 0;
+  resize: none;
+  color: #e2e3e2;
+  width: 67%;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  background-color: #292b2c;
+  border-radius: 5px;
+
+  &::placeholder {
+    padding-left: 10px;
+    color: #777472;
+    font-weight: bold;
+  }
+
+  &:focus {
+    outline: 0;
+    border-bottom: 2px solid #093377;
+  }
 `;
 
-const DateInput = styled.input`
-  background-color: #292b2c;
+const DateInput = styled.input.attrs(() => ({
+  tabIndex: -2,
+}))`
+  background-color: #333436;
   height: 40px;
   border: 0;
+  color: #e2e3e2;
   border-radius: 5px;
+
   &::placeholder {
     text-align: center;
     padding-left: 20px;
   }
 `;
-const HourInput = styled.input`
-  background-color: #292b2c;
-  height: 40px;
 
+const HourInput = styled.input.attrs(() => ({
+  tabIndex: -3,
+}))`
+  color: #e2e3e2;
+  background-color: #333436;
+  height: 40px;
   border: 0;
   border-radius: 5px;
+
   &:placeholder {
     padding-left: 20px;
+  }
+`;
+
+const StyledSelect = styled.select`
+  position: relative;
+  left: 18%;
+  bottom: 40px;
+  border: 0;
+  border-radius: 5px;
+  background-color: #333436;
+  color: white;
+`;
+
+const AllDayContainer = styled.div`
+  position: relative;
+  left: 55%;
+  bottom: 60px;
+  border: 0;
+  border-radius: 5px;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  input {
+    border: 1px solid white;
+    accent: #333436;
+    background-color: #333436;
+    color: #333436;
+  }
+`;
+
+const HoursDropDown = styled.div`
+  position: absolute;
+  left: 55%;
+  top: 22%;
+  width: 140px;
+  height: 200px;
+  overflow-y: scroll;
+  background-color: #0f1110;
+  z-index: 55;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+
+  div {
+    padding: 10px;
+    &:hover {
+      background-color: grey;
+    }
+  }
+`;
+
+const Footer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  padding-block: 40px;
+  text-align: right;
+
+  div {
+    padding-inline: 12px;
+    padding-block: 5px;
+    background-color: #8dc3f8;
+    color: blue;
+    border-radius: 20px;
+    margin-right: 50px;
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 `;
 
@@ -188,16 +353,27 @@ const AddTask = () => {
   const hourInputRef = useRef<HTMLInputElement | null>(null);
   const recurringSelectorRef = useRef<HTMLSelectElement | null>(null);
   const monthCalendarModalRef = useRef<HTMLDivElement | null>(null);
-
+  const [isMonthCalendarMouseOn, setIsMonthCalendarMouseOn] =
+    useState<boolean>(false);
   const [formattedDate, setFormattedDate] = useState<string>("");
   const [dateInput, setDateInput] = useState<string>("");
+  const [descriptionInput, setDescriptionInput] = useState<string>("");
   const [formattedHour, setFormattedHour] = useState<string>("");
   const [hourInput, setHourInput] = useState<string>("");
   const [recurringValue, setRecurringValue] = useState<string>("oneTime");
+  const [checkInput, setCheckInput] = useState<string>("");
+  const [labelInput, setLabelInput] = useState<string>("");
+  const [taskTitleInput, setTaskTitleInput] = useState<string>("");
+
+  const [isHourDropDownVisible, setIsHourDropDownVisible] =
+    useState<boolean>(false);
   const [isMonthCalendarVisible, setIsMonthCalendarVisible] =
     useState<boolean>(false);
   const [isDateContainerClicked, setIsDateContainerClicked] =
     useState<boolean>(false);
+  const [nbOfLettersCheck, setNbOfLettersCheck] = useState<number>(0);
+  const [nbOfLettersLabel, setNbOfLettersLabel] = useState<number>(0);
+  const checkInputContainerRef = useRef<HTMLDivElement | null>(null);
   const [task, taskDispatch] = useReducer(taskReducer, {
     id: crypto.randomUUID(),
     title: "",
@@ -218,13 +394,15 @@ const AddTask = () => {
     addTask(task, recurringValue);
     setIsTaskReady(false);
     setIsAddTaskModalVisible(false);
-  }, [task.title]);
+  }, [isTaskReady]);
 
   const handleSubmitTask = (): void => {
     taskDispatch({
       type: "SET_TITLE",
       state: task.title === "" ? "No title" : task.title.trim(),
     });
+
+    setDescriptionTask();
 
     setIsTaskReady(true);
   };
@@ -235,12 +413,12 @@ const AddTask = () => {
     taskDispatch({ type: "SET_TITLE", state: titleInputValue });
   };
 
-  const handleDescriptionChange = (descriptionInputValue: string): void => {
-    if (!descriptionInputValue || !descriptionInputValue.trim()) return;
+  const setDescriptionTask = (): void => {
+    if (!descriptionInput || !descriptionInput.trim()) return;
 
     taskDispatch({
       type: "SET_DESCRIPTION",
-      state: descriptionInputValue.trim(),
+      state: descriptionInput.trim(),
     });
   };
 
@@ -280,6 +458,8 @@ const AddTask = () => {
   };
 
   const handleOnBlurDate = () => {
+    if (!isMonthCalendarMouseOn) setIsMonthCalendarVisible(false);
+
     if (!dateInput || !dateInput.trim()) {
       setDateInput(formattedDate);
       return;
@@ -299,7 +479,7 @@ const AddTask = () => {
     }
 
     const year = dateNoSpace.slice(day.length + month.length);
-    if (!year) {
+    if (!year || year.length === 3 || year.length < 2) {
       setDateInput(formattedDate);
       return;
     }
@@ -318,6 +498,7 @@ const AddTask = () => {
     setDateInput(
       `${calendar.day} ${getMonthByIndex(calendar.month)} ${calendar.year}`
     );
+    setIsMonthCalendarVisible(false);
   }, [calendar.day]);
 
   useEffect(() => {
@@ -331,12 +512,76 @@ const AddTask = () => {
   }, [isAddTaskModalVisible]);
 
   useEffect(() => {
-    if (isMonthCalendarVisible && monthCalendarModalRef.current)
-      monthCalendarModalRef.current.focus();
-  }, [isMonthCalendarVisible]);
+    if (
+      isDateContainerClicked &&
+      dateInputRef.current &&
+      isMonthCalendarVisible
+    )
+      dateInputRef.current?.focus();
+  }, [isDateContainerClicked]);
+
+  useEffect(() => {
+    if (isDateContainerClicked && hourInputRef.current && isHourDropDownVisible)
+      hourInputRef.current?.focus();
+  }, [isHourDropDownVisible]);
+
+  const handleClickModal = () => {
+    if (isMonthCalendarVisible) {
+      isDateContainerClicked &&
+        dateInputRef.current !== document.activeElement &&
+        !isMonthCalendarMouseOn &&
+        setIsMonthCalendarVisible(false);
+    } else if (isHourDropDownVisible) {
+      isDateContainerClicked &&
+        hourInputRef.current !== document.activeElement &&
+        setIsHourDropDownVisible(false);
+    }
+  };
+
+  const handleFormattedHourClick = (formattedHour: string) => {
+    setHourInput(formattedHour);
+    setIsHourDropDownVisible(false);
+  };
+
+  useEffect(() => {
+    if (task.labels.length < 1) return;
+
+    setLabelInput("");
+    setNbOfLettersLabel(
+      (prev) => prev + task.labels[task.labels.length - 1].name.length
+    );
+  }, [task.labels]);
+
+  useEffect(() => {
+    if (task.checks.length < 1) return;
+
+    setCheckInput("");
+    setNbOfLettersCheck(
+      (prev) => prev + task.checks[task.checks.length - 1].name.length
+    );
+  }, [task.checks]);
+
+  const handleCheckSubmit = (e: any) => {
+    e.preventDefault();
+    taskDispatch({ type: "ADD_CHECK", state: checkInput });
+  };
+
+  const handleLabelSubmit = (e: any) => {
+    e.preventDefault();
+    taskDispatch({ type: "ADD_LABEL", state: labelInput });
+  };
+
+  const handleItemInputKeyDown = (e: any) => {
+    setCheckInput(e.target.value);
+
+    if (e.key === "Enter") {
+      e.preventDefault();
+      setCheckInput(" ");
+    }
+  };
 
   return (
-    <MainContainer>
+    <MainContainer onClick={() => handleClickModal()}>
       <HeaderContainer>
         <ExitButton
           alt="exitButton"
@@ -353,86 +598,94 @@ const AddTask = () => {
         >
           <TitleTaskInput
             type="text"
-            value={task.title}
+            value={taskTitleInput}
             onChange={(e) => handleTitleChange(e.target.value)}
             placeholder="Add a title"
             autoFocus
           />
         </Form>
-        <div
-          onClick={() => {
-            !isDateContainerClicked && setIsDateContainerClicked(true);
-          }}
-        >
-          {!isDateContainerClicked ? (
-            <>
-              <TimeSettingsContainerLink>
-                <LeftImagesContainer>
-                  <ClockImg src="https://cdn-icons-png.flaticon.com/512/3114/3114812.png" />
-                  <DescriptionImg src="https://www.svgrepo.com/show/532195/menu.svg" />
-                </LeftImagesContainer>
-                <DateLink onClick={() => setIsMonthCalendarVisible(true)}>
-                  {dateInput}
-                </DateLink>
-                <HourLink onClick={() => hourInputRef.current?.focus()}>
-                  {hourInput}
-                </HourLink>
-                <RecurringLink
-                  onClick={() => recurringSelectorRef.current?.focus()}
-                >
-                  Only one time
-                </RecurringLink>
-              </TimeSettingsContainerLink>
-            </>
-          ) : (
-            <>
-              <TimeSettingsContainerLink>
-                <LeftImagesContainer>
-                  <ClockImg src="https://cdn-icons-png.flaticon.com/512/3114/3114812.png" />
-                  <DescriptionImg src="https://www.svgrepo.com/show/532195/menu.svg" />
-                </LeftImagesContainer>
-                <DateInput
-                  type="text"
-                  ref={dateInputRef}
-                  value={dateInput}
-                  onChange={(e) => setDateInput(e.target.value)}
-                  onBlur={() => handleOnBlurDate()}
-                />
 
-                {!task.isAllDay && (
-                  <HourInput
-                    ref={hourInputRef}
-                    type="text"
-                    value={hourInput}
-                    onChange={(e) => setHourInput(e.target.value)}
-                    onBlur={() => handleOnBlurHour()}
-                  />
-                )}
-
-                {isMonthCalendarVisible && (
-                  <MonthCalendarWrapper
-                    ref={monthCalendarModalRef}
-                    onBlur={() => {
-                      dateInputRef.current === document.activeElement &&
-                        setIsMonthCalendarVisible(false);
-                    }}
-                  >
-                    <MonthCalendar />
-                  </MonthCalendarWrapper>
-                )}
-              </TimeSettingsContainerLink>
-
-              <select
-                ref={recurringSelectorRef}
-                onChange={(e) => setRecurringValue(e.target.value)}
+        {!isDateContainerClicked ? (
+          <>
+            <TimeSettingsContainerLink
+              onClick={() => setIsDateContainerClicked(true)}
+            >
+              <ClockImg src="https://cdn-icons-png.flaticon.com/512/3114/3114812.png" />
+              <DateLink onClick={() => setIsMonthCalendarVisible(true)}>
+                {dateInput}
+              </DateLink>
+              <HourLink onClick={() => setIsHourDropDownVisible(true)}>
+                {hourInput}
+              </HourLink>
+              <RecurringLink
+                onClick={() => recurringSelectorRef.current?.focus()}
               >
-                <option value="oneTime">Only one time</option>
-                <option value="everyDay"> Everyday </option>
-                <option value="everyWeek"> Every week</option>
-                <option value="everyMonth">Every month</option>
-                <option value="everyYear">Every year</option>
-              </select>
+                Only one time
+              </RecurringLink>
+            </TimeSettingsContainerLink>
+          </>
+        ) : (
+          <>
+            <TimeSettingsContainerLink>
+              <ClockImg src="https://cdn-icons-png.flaticon.com/512/3114/3114812.png" />
 
+              <DateInput
+                type="text"
+                ref={dateInputRef}
+                value={dateInput}
+                onClick={() => setIsMonthCalendarVisible(true)}
+                onChange={(e) => setDateInput(e.target.value)}
+                onBlur={() => handleOnBlurDate()}
+              />
+
+              {!task.isAllDay && (
+                <HourInput
+                  ref={hourInputRef}
+                  type="text"
+                  value={hourInput}
+                  onClick={() => setIsHourDropDownVisible(true)}
+                  onChange={(e) => setHourInput(e.target.value)}
+                  onBlur={() => handleOnBlurHour()}
+                />
+              )}
+              {isHourDropDownVisible && (
+                <HoursDropDown>
+                  {formattedHours.map((formattedHour) => (
+                    <div
+                      key={formattedHour}
+                      onClick={() => handleFormattedHourClick(formattedHour)}
+                    >
+                      {formattedHour}
+                    </div>
+                  ))}
+                </HoursDropDown>
+              )}
+
+              {isMonthCalendarVisible && (
+                <MonthCalendarWrapper
+                  ref={monthCalendarModalRef}
+                  onMouseEnter={() => setIsMonthCalendarMouseOn((prev) => true)}
+                  onMouseLeave={() =>
+                    setIsMonthCalendarMouseOn((prev) => false)
+                  }
+                >
+                  <MonthCalendar />
+                </MonthCalendarWrapper>
+              )}
+            </TimeSettingsContainerLink>
+
+            <StyledSelect
+              ref={recurringSelectorRef}
+              onChange={(e) => setRecurringValue(e.target.value)}
+            >
+              <option value="oneTime">Only one time</option>
+              <option value="everyDay"> Everyday </option>
+              <option value="everyWeek"> Every week</option>
+              <option value="everyMonth">Every month</option>
+              <option value="everyYear">Every year</option>
+            </StyledSelect>
+
+            <AllDayContainer>
               <label htmlFor="checkbox"> All day </label>
               <input
                 id="checkbox"
@@ -440,14 +693,15 @@ const AddTask = () => {
                 checked={task.isAllDay}
                 onChange={() => handleIsAllDayChange()}
               />
-            </>
-          )}
-        </div>
-        <StyledTextArea
-          onChange={(e) => handleDescriptionChange(e.target.value)}
-          value={task.description}
+            </AllDayContainer>
+          </>
+        )}
+        <DescriptionImg src="https://www.svgrepo.com/show/532195/menu.svg" />
+        <DescriptionTextArea
+          onChange={(e) => setDescriptionInput(e.target.value)}
+          value={descriptionInput}
           placeholder="Add a description"
-        ></StyledTextArea>
+        ></DescriptionTextArea>
         <Radio
           name={"Priority"}
           setRadio={(priority: string) =>
@@ -463,32 +717,40 @@ const AddTask = () => {
           }
           radioChecked={task.complexity}
         />
+        <AddItemsContainer>
+          <Form onSubmit={(e) => handleCheckSubmit(e)}>
+            <ItemInputContainer
+              onFocus={() => setCheckInput("")}
+              $nbOfLettersItem={0}
+              $nbOfItemPadding={0}
+              contentEditable="true"
+              onKeyDown={(e: any) => handleItemInputKeyDown(e)}
+            >
+              {task.checks.map((check) => (
+                <ItemContainer key={check.id}> {check.name}</ItemContainer>
+              ))}
+            </ItemInputContainer>
+          </Form>
 
-        <Form>
-          <div>
-            <div>{task.checks.map((check) => check.name)}</div>
-            <input
-              type="text"
-              onChange={(e) =>
-                taskDispatch({ type: "ADD_CHECK", state: e.target.value })
-              }
-              placeholder="Add a check"
-            />
-          </div>
-        </Form>
-        <Form>
-          <div>
-            <div>{task.labels.map((label) => label.name)}</div>
-            <input
-              type="text"
-              onChange={(e) =>
-                taskDispatch({ type: "ADD_LABEL", state: e.target.value })
-              }
-              placeholder="Add label"
-            />
-          </div>
-        </Form>
-        <button onClick={() => handleSubmitTask()}> confirm </button>
+          <Form onSubmit={(e) => handleLabelSubmit(e)}>
+            <div>
+              {task.labels.map((label) => (
+                <ItemContainer key={label.id}>{label.name} </ItemContainer>
+              ))}
+            </div>
+            <ItemInputContainer
+              onClick={() => checkInputContainerRef.current?.focus()}
+              onFocus={() => setLabelInput("")}
+              $nbOfLettersItem={0}
+              $nbOfItemPadding={0}
+            >
+              {labelInput || <span>Add a label</span>}
+            </ItemInputContainer>
+          </Form>
+        </AddItemsContainer>
+        <Footer>
+          <div onClick={() => handleSubmitTask()}> Save </div>
+        </Footer>
       </ChildContainer>
     </MainContainer>
   );

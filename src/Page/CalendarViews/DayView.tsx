@@ -8,6 +8,7 @@ import { getFormattedHour } from "../../utils/getFormattedHour";
 import { Task } from "../../context/TasksContext";
 import { useTaskSelectedIdContext } from "../../context/TaskSelectedIdContext";
 import { useCalendarContext } from "../../context/CalendarContext";
+import formattedHours from "../../utils/formattedHours";
 
 const DayViewContainer = styled.div`
   border-inline: solid #7b7364 1px;
@@ -56,7 +57,7 @@ const HoursTitle = styled.div`
   right: 6%;
   bottom: 0.5rem;
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   justify-content: space-between;
   color: white;
   font-size: 12px;
@@ -104,16 +105,6 @@ const TaskContainer = styled.div`
   }
 `;
 
-type HourSlot = {
-  id: number;
-  tasks: Task[];
-};
-
-const hours: HourSlot[] = Array.from({ length: 24 }, (_, i) => ({
-  id: i,
-  tasks: [],
-}));
-
 type DayType = {
   name: string;
   index: string;
@@ -154,15 +145,6 @@ const DayView = () => {
     setIsViewTaskModalVisible(true);
   };
 
-  // START DEBUG
-  useEffect(() => {
-    if (tasks.length < 1) return;
-
-    console.log("Current Date range Tasks: ", dayViewTasks);
-    console.log("list of tasks: ", tasks);
-  }, [dayViewTasks, tasks]);
-  // END DEBUG
-
   useEffect(() => {
     if (tasks.length < 1) return;
 
@@ -194,14 +176,14 @@ const DayView = () => {
               (task) => task.isAllDay && <AllDayTask>task.title </AllDayTask>
             )}
           </AllDayTasksContainer>
-          {hours.map((hour) => (
-            <HourRangeContainer key={hour.id}>
-              <HoursTitle>{getFormattedHour(hour.id)}</HoursTitle>
+          {formattedHours.map((formattedHour, i) => (
+            <HourRangeContainer key={formattedHour}>
+              <HoursTitle>{formattedHour}</HoursTitle>
 
               {dayViewTasks.map(
                 (task) =>
                   !task.isAllDay &&
-                  task.hour === hour.id && (
+                  task.hour === i && (
                     <TaskContainer
                       key={task.id}
                       onClick={() => toggleViewTaskModal(task.id)}
@@ -212,11 +194,11 @@ const DayView = () => {
                   )
               )}
 
-              <Hour onClick={() => toggleAddTaskModal(hour.id)}>
+              <Hour onClick={() => toggleAddTaskModal(i)}>
                 <TasksContainer>
                   {isAddTaskModalVisible &&
                     !isViewTaskModalVisible &&
-                    calendar.hour === hour.id && (
+                    calendar.hour === i && (
                       <TaskContainer>
                         (No title) {getFormattedHour(calendar.hour)}
                       </TaskContainer>
