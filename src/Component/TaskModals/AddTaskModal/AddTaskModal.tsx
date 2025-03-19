@@ -1,345 +1,47 @@
 import { useState, useRef, useReducer, useEffect } from "react";
 import { format } from "date-fns";
-import styled from "styled-components";
-import Radio from "../Radio";
-import { getFilteredMonth, getMonthByIndex } from "../../utils/getMonth";
+import Radio from "../../Radio";
+import { getFilteredMonth, getMonthByIndex } from "../../../utils/getMonth";
 import {
   getFormattedHour,
   getNonFormattedHour,
-} from "../../utils/getFormattedHour";
-import { Task, taskReducer, useTasksContext } from "../../context/TasksContext";
-import { useCalendarContext } from "../../context/CalendarContext";
-import { useAreModalsVisibleContext } from "../../context/ModalsContext";
-import { MonthCalendar } from "../MonthCalendar";
-import formattedHours from "../../utils/formattedHours";
-
-const MainContainer = styled.div`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 450px;
-  height: 450px;
-  background-color: #1e1e21;
-  z-index: 9;
-  text-align: left;
-  border-radius: 20px;
-  overflow-y: scroll;
-  overflow-x: hidden;
-  color: #e2e3e2;
-`;
-
-const HeaderContainer = styled.div`
-  position: sticky;
-  top: 0;
-  width: 100%;
-  padding-bottom: 10px;
-  margin-bottom: 40px;
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 15px;
-  &:hover {
-    cursor: move;
-    background-color: lightgrey;
-  }
-`;
-
-const ExitButton = styled.img`
-  filter: invert(1);
-  width: 15px;
-  margin-top: 20px;
-  position: relative;
-  bottom: 4px;
-  margin-right: 20px;
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
-const TitleTaskInput = styled.input`
-  height: 30px;
-  position: relative;
-  width: 67%;
-  color: #e2e3e2;
-  left: 80px;
-  background-color: #1e1e21;
-  border: 0;
-  font-size: 25px;
-  margin-bottom: 10px;
-  border-bottom: 2px solid grey;
-  &:focus {
-    outline: 0;
-    border-bottom: 2px solid rgb(22, 85, 187);
-  }
-  &::placeholder {
-    color: #777472;
-    padding-left: 10px;
-  }
-`;
-
-const TimeSettingsContainerLink = styled.div`
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-  height: 100px;
-  color: #e2e3e2;
-  img {
-    position: relative;
-    margin-right: 20px;
-    left: 20px;
-  }
-`;
-
-const DateLink = styled.p`
-  &:hover {
-    text-decoration: underline;
-    cursor: pointer;
-  }
-`;
-
-const HourLink = styled.p`
-  &:hover {
-    text-decoration: underline;
-    cursor: pointer;
-  }
-`;
-
-const RecurringLink = styled.p`
-  &:hover {
-    text-decoration: underline;
-    cursor: pointer;
-  }
-`;
-
-const AddItemsContainer = styled.div`
-  margin-left: 80px;
-`;
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  margin-bottom: 10px;
-  div {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-  }
-`;
-
-const RadiosContainer = styled.div`
-  border: 1px solid #333436;
-  margin-left: 85px;
-  margin-bottom: 40px;
-
-  width: 67%;
-  border-radius: 5px;
-`;
-
-const ItemInput = styled.input`
-  overflow-x: scroll;
-  color: white;
-  margin-left: 4px;
-  border: 0;
-  width: 81%;
-  background-color: #333436;
-  border-radius: 5px;
-  height: 25px;
-  span {
-    color: #777472;
-  }
-  &:hover {
-    cursor: text;
-  }
-  &::placeholder {
-    padding-left: 10px;
-    color: #777472;
-  }
-`;
-
-const ItemInputContainer = styled.div`
-  overflow-x: auto;
-  margin-bottom: 10px;
-  overflow-y: hidden;
-  border: 0;
-  width: 82%;
-  margin-left: 5px;
-  background-color: #292b2c;
-  border-radius: 5px;
-  span {
-    color: #777472;
-  }
-
-  &::placeholder {
-    padding-left: 10px;
-  }
-`;
-
-const ItemContainer = styled.div`
-  border: 1px solid white;
-  background-color: #013a5f;
-  border-radius: 5px;
-  &:hover {
-    cursor: pointer;
-    background-color: red;
-  }
-`;
-
-const ChildContainer = styled.div`
-  max-width: 500px;
-  margin: auto;
-`;
-
-const MonthCalendarWrapper = styled.div`
-  .month-calendar-container {
-  }
-
-  .month-calendar-header {
-    justify-content: space-between;
-  }
-
-  .month-calendar-weeks {
-    background-color: #0f1110;
-  }
-`;
-
-const ClockImg = styled.img`
-  width: 20px;
-  height: 20px;
-  filter: invert(1);
-  position: relative;
-  top: 15px;
-  padding-inline: 10px;
-`;
-
-const DescriptionImg = styled.img`
-  filter: invert(1);
-  width: 25px;
-  padding-inline: 30px;
-  position: relative;
-  bottom: 70px;
-  right: 4px;
-`;
-
-const DescriptionTextArea = styled.textarea`
-  border: 0;
-  resize: none;
-  color: #e2e3e2;
-  width: 67%;
-  padding-bottom: 30px;
-  margin-bottom: 40px;
-  background-color: #333436;
-  border-radius: 5px;
-
-  &::placeholder {
-    padding-left: 10px;
-    color: #777472;
-  }
-
-  &:focus {
-    outline: 0;
-    border-bottom: 2px solid #093377;
-  }
-`;
-
-const DateInput = styled.input.attrs(() => ({
-  tabIndex: -2,
-}))`
-  background-color: #333436;
-  height: 40px;
-  border: 0;
-  color: #e2e3e2;
-  border-radius: 5px;
-
-  &::placeholder {
-    text-align: center;
-    padding-left: 20px;
-  }
-`;
-
-const HourInput = styled.input.attrs(() => ({
-  tabIndex: -3,
-}))`
-  color: #e2e3e2;
-  background-color: #333436;
-  height: 40px;
-  border: 0;
-  border-radius: 5px;
-
-  &:placeholder {
-    padding-left: 20px;
-  }
-`;
-
-const StyledSelect = styled.select`
-  position: relative;
-  left: 19%;
-  bottom: 40px;
-  padding:5px
-  border: 0;
-  border-radius: 5px;
-  background-color: #333436;
-  color: white;
-`;
-
-const AllDayContainer = styled.div`
-  position: relative;
-  left: 58%;
-  bottom: 60px;
-  border: 0;
-  border-radius: 5px;
-
-  &:hover {
-    cursor: pointer;
-  }
-
-  input {
-    border: 1px solid white;
-    accent: #333436;
-    background-color: #333436;
-    color: #333436;
-  }
-`;
-
-const HoursDropDown = styled.div`
-  position: absolute;
-  left: 56%;
-  top: 36%;
-  width: 140px;
-  height: 200px;
-  overflow-y: scroll;
-  background-color: #0f1110;
-  z-index: 55;
-  border-radius: 5px;
-  display: flex;
-  flex-direction: column;
-
-  div {
-    padding: 10px;
-    &:hover {
-      background-color: grey;
-    }
-  }
-`;
-
-const Footer = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  padding-block: 10px;
-
-  div {
-    padding-inline: 16px;
-    padding-block: 10px;
-    background-color: #333639;
-    color: #8dc3f8;
-    border-radius: 20px;
-    margin-right: 20px;
-
-    &:hover {
-      cursor: pointer;
-    }
-  }
-`;
+} from "../../../utils/getFormattedHour";
+import {
+  Task,
+  taskReducer,
+  useTasksContext,
+} from "../../../context/TasksContext";
+import { useCalendarContext } from "../../../context/CalendarContext";
+import { useAreModalsVisibleContext } from "../../../context/ModalsContext";
+import { MonthCalendar } from "../../MonthCalendar/MonthCalendar";
+import formattedHours from "../../../utils/formattedHours";
+import {
+  MainContainer,
+  HeaderContainer,
+  ExitButton,
+  TitleTaskInput,
+  TimeSettingsContainerLink,
+  DateLink,
+  HourLink,
+  RecurringLink,
+  AddItemsContainer,
+  Form,
+  ItemInput,
+  ItemInputContainer,
+  RadiosContainer,
+  ItemContainer,
+  ChildContainer,
+  MonthCalendarWrapper,
+  ClockImg,
+  DescriptionImg,
+  DescriptionTextArea,
+  DateInput,
+  HourInput,
+  StyledSelect,
+  AllDayContainer,
+  HoursDropDown,
+  Footer,
+} from "./AddTask.styles";
 
 const AddTask = () => {
   const { calendar } = useCalendarContext();
@@ -370,14 +72,14 @@ const AddTask = () => {
   const [isDateContainerClicked, setIsDateContainerClicked] =
     useState<boolean>(false);
   const [task, taskDispatch] = useReducer(taskReducer, {
-    id: crypto.randomUUID(),
+    id: "",
     title: "",
     description: "",
     isAllDay: false,
-    hour: calendar.hour,
+    hour: 0,
     complexity: 1,
     priority: 1,
-    dueDate: new Date(calendar.year, calendar.month - 1, calendar.day),
+    dueDate: new Date(),
     checks: [],
     labels: [],
     isDone: false,
@@ -487,15 +189,26 @@ const AddTask = () => {
     setDateInput(
       `${calendar.day} ${getMonthByIndex(calendar.month)} ${calendar.year}`
     );
+
+    taskDispatch({
+      type: "SET_DUE_DATE",
+      state: new Date(calendar.year, calendar.month - 1, calendar.day),
+    });
+
     setIsMonthCalendarVisible(false);
   }, [calendar.day]);
 
   useEffect(() => {
-    const newFormattedHour = getFormattedHour(task.hour);
+    const newFormattedHour = getFormattedHour(calendar.hour);
     setFormattedHour(newFormattedHour);
     setHourInput(newFormattedHour);
 
-    const newFormattedDate = format(task.dueDate, "d MMMM yyyy");
+    taskDispatch({ type: "SET_HOUR", state: calendar.hour });
+
+    const newFormattedDate = format(
+      new Date(calendar.year, calendar.month - 1, calendar.day),
+      "d MMMM yyyy"
+    );
     setFormattedDate(newFormattedDate);
     setDateInput(newFormattedDate);
   }, [isAddTaskModalVisible]);
@@ -527,19 +240,23 @@ const AddTask = () => {
     }
   };
 
-  const handleFormattedHourClick = (formattedHour: string) => {
-    setHourInput(formattedHour);
+  const handleFormattedHourClick = (hourIndex: number) => {
+    setHourInput(getFormattedHour(hourIndex));
+    taskDispatch({ type: "SET_HOUR", state: hourIndex });
+
     setIsHourDropDownVisible(false);
   };
 
   const handleCheckSubmit = (e: any) => {
     e.preventDefault();
     taskDispatch({ type: "ADD_CHECK", state: checkInput });
+    setCheckInput("");
   };
 
   const handleLabelSubmit = (e: any) => {
     e.preventDefault();
     taskDispatch({ type: "ADD_LABEL", state: labelInput });
+    setLabelInput("");
   };
 
   return (
@@ -612,10 +329,10 @@ const AddTask = () => {
               )}
               {isHourDropDownVisible && (
                 <HoursDropDown>
-                  {formattedHours.map((formattedHour) => (
+                  {formattedHours.map((formattedHour, index) => (
                     <div
                       key={formattedHour}
-                      onClick={() => handleFormattedHourClick(formattedHour)}
+                      onClick={() => handleFormattedHourClick(index)}
                     >
                       {formattedHour}
                     </div>
@@ -631,7 +348,7 @@ const AddTask = () => {
                     setIsMonthCalendarMouseOn((prev) => false)
                   }
                 >
-                  <MonthCalendar />
+                  <MonthCalendar customCssProps={false} />
                 </MonthCalendarWrapper>
               )}
             </TimeSettingsContainerLink>

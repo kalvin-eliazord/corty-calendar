@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import styled from "styled-components";
-import { CalendarContainer } from "../../component/MonthCalendar";
+import { CalendarContainer } from "../../component/MonthCalendar/MonthCalendar";
 import { useTasksContext } from "../../context/TasksContext";
 import { useAreModalsVisibleContext } from "../../context/ModalsContext";
 import { getFormattedHour } from "../../utils/getFormattedHour";
@@ -11,12 +11,20 @@ import { useCalendarContext } from "../../context/CalendarContext";
 import formattedHours from "../../utils/formattedHours";
 
 const DayViewContainer = styled.div`
-  border-inline: solid #7b7364 1px;
+  border-inline: solid #7a7264 1px;
   margin-left: 8%;
   margin-top: 5%;
 `;
 
 const DayViewNameContainer = styled.div`
+  z-index: 5;
+
+  position: sticky;
+  padding-top: 2px;
+
+  top: 0;
+  background-color: #0d0c0e;
+  border-bottom: solid #7a7264 1px;
   p {
     margin-left: 2%;
     color: #246694;
@@ -32,19 +40,20 @@ const DayViewNameContainer = styled.div`
 
 const AllDayTasksContainer = styled.div`
   width: 100%;
-  border-bottom: solid #7b7364 1px;
+  display: flex;
+  overflow-x: auto;
+  padding-left: 20px;
 `;
 
 const AllDayTask = styled.div`
-  background-color: #246694;
-  width: 100%;
-  margin-right: 50px;
-  border-radius: 5px;
+  background-color: #1a3b86;
+  margin-right: 20px;
   z-index: 1;
   color: white;
   font-weight: bold;
-  padding-left: 2%;
-  padding-top: 2%;
+  padding-inline: 1%;
+  border-radius: 15px;
+
   &:hover {
     cursor: pointer;
   }
@@ -68,38 +77,29 @@ const HoursTitle = styled.div`
 const HourRangeContainer = styled.div`
   display: flex;
   flex-direction: row;
-  border-radius: 5px;
-  border-bottom: solid #7b7364 1px;
+  border-bottom: solid #7a7264 1px;
+  padding: 10px;
   &:hover {
     background-color: lightgrey;
   }
 `;
 
-const Hour = styled.div`
+const TaskPlaceholderContainer = styled.div`
   width: 100%;
   position: relative;
   right: 3rem;
-  height: 50px;
   margin-left: 30px;
 `;
 
-const TasksContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  height: 100%;
-`;
-
 const TaskContainer = styled.div`
-  background-color: #246694;
-  width: 100%;
-  margin-right: 50px;
-  border-radius: 5px;
+  background-color: #1a3b86;
+  margin-right: 40px;
+  border-radius: 15px;
   z-index: 1;
   color: white;
   font-weight: bold;
-  padding-left: 2%;
-  padding-top: 2%;
+  padding-inline: 2%;
+  text-wrap: nowrap;
   &:hover {
     cursor: pointer;
   }
@@ -170,14 +170,19 @@ const DayView = () => {
             <p>
               {day?.name}. <br /> <span>{day?.index} </span>
             </p>
+            <AllDayTasksContainer>
+              {dayViewTasks.map(
+                (task) =>
+                  task.isAllDay && <AllDayTask>{task.title} </AllDayTask>
+              )}
+            </AllDayTasksContainer>
           </DayViewNameContainer>
-          <AllDayTasksContainer>
-            {dayViewTasks.map(
-              (task) => task.isAllDay && <AllDayTask>task.title </AllDayTask>
-            )}
-          </AllDayTasksContainer>
+
           {formattedHours.map((formattedHour, i) => (
-            <HourRangeContainer key={formattedHour}>
+            <HourRangeContainer
+              key={formattedHour}
+              onClick={() => toggleAddTaskModal(i)}
+            >
               <HoursTitle>{formattedHour}</HoursTitle>
 
               {dayViewTasks.map(
@@ -194,17 +199,15 @@ const DayView = () => {
                   )
               )}
 
-              <Hour onClick={() => toggleAddTaskModal(i)}>
-                <TasksContainer>
-                  {isAddTaskModalVisible &&
-                    !isViewTaskModalVisible &&
-                    calendar.hour === i && (
-                      <TaskContainer>
-                        (No title) {getFormattedHour(calendar.hour)}
-                      </TaskContainer>
-                    )}
-                </TasksContainer>
-              </Hour>
+              <TaskPlaceholderContainer>
+                {isAddTaskModalVisible &&
+                  !isViewTaskModalVisible &&
+                  calendar.hour === i && (
+                    <TaskContainer>
+                      (No title), {getFormattedHour(calendar.hour)}
+                    </TaskContainer>
+                  )}
+              </TaskPlaceholderContainer>
             </HourRangeContainer>
           ))}
         </DayViewContainer>

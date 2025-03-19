@@ -141,7 +141,7 @@ const tasksReducer = (state: Task[], action: TasksAction): Task[] => {
     case "SET_TASKS":
       return action.state;
     case "ADD_TASK":
-      return [...state, action.state];
+      return [...state, { ...action.state, id: crypto.randomUUID() }];
     case "ADD_TASKS_RECURRING":
       return [...state, ...handleTaskRecurring(action.task, action.recurring)];
     case "REMOVE_TASK":

@@ -5,15 +5,13 @@ import {
   Navigate,
 } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
-import Navbar from "./component/Navbar";
+import Navbar from "./component/Navbar/Navbar";
 import { useAreModalsVisibleContext } from "./context/ModalsContext";
 import { TasksProvider } from "./context/TasksContext";
-import ViewTaskModal from "./component/TaskModals/ViewTaskModal";
-import AddTaskModal from "./component/TaskModals/AddTaskModal";
+import ViewTaskModal from "./component/TaskModals/ViewTaskModal/ViewTaskModal";
+import AddTaskModal from "./component/TaskModals/AddTaskModal/AddTaskModal";
 import TaskSelectedIdProvider from "./context/TaskSelectedIdContext";
-import {
-  useCalendarContext,
-} from "./context/CalendarContext";
+import { useCalendarContext } from "./context/CalendarContext";
 import Tasks from "./page/Tasks";
 import DayView from "./page/CalendarViews/DayView";
 import WeekView from "./page/CalendarViews/WeekView";
@@ -39,34 +37,39 @@ export default function App() {
       <GlobalStyle />
 
       <TasksProvider>
-          {isAddTaskModalVisible && <AddTaskModal />}
+        {isAddTaskModalVisible && <AddTaskModal />}
 
-          <TaskSelectedIdProvider>
-            {/*isViewTaskModalVisible && (
-        <ViewTaskModal  />
-      )*/}
-            <Navbar />
-            <Routes>
-              <Route path="/" element={<Navigate to={`/calendar/day/${calendar.year}/${calendar.month}/${calendar.day}`} />} />
-              <Route
-                path="/calendar/day/:year/:month/:dayIndex"
-                element={<DayView />}
-              />
-              <Route
-                path="/calendar/week/:year/:month/:dayIndex"
-                element={<WeekView />}
-              />
-              <Route
-                path="/calendar/month/:year/:month/:dayIndex"
-                element={<MonthView />}
-              />
-              <Route
-                path="/calendar/year/:year/:month/:dayIndex"
-                element={<YearView />}
-              />
-              <Route path="/tasks" element={<Tasks />} />
-            </Routes>
-          </TaskSelectedIdProvider>
+        <TaskSelectedIdProvider>
+          {isViewTaskModalVisible && <ViewTaskModal />}
+          <Navbar />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Navigate
+                  to={`/calendar/day/${calendar.year}/${calendar.month}/${calendar.day}`}
+                />
+              }
+            />
+            <Route
+              path="/calendar/day/:year/:month/:dayIndex"
+              element={<DayView />}
+            />
+            <Route
+              path="/calendar/week/:year/:month/:dayIndex"
+              element={<WeekView />}
+            />
+            <Route
+              path="/calendar/month/:year/:month/:dayIndex"
+              element={<MonthView />}
+            />
+            <Route
+              path="/calendar/year/:year/:month/:dayIndex"
+              element={<YearView />}
+            />
+            <Route path="/tasks" element={<Tasks />} />
+          </Routes>
+        </TaskSelectedIdProvider>
       </TasksProvider>
     </Router>
   );
