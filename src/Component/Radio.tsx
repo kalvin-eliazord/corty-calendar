@@ -3,19 +3,21 @@ import styled from "styled-components";
 
 const Form = styled.form`
   display: flex;
-  position:relative;
-  top:20px;
+  position: relative;
+  top: 10px;
   gap: 20px;
   h4 {
-  font-size:15px;
-    padding-left: 90px;
+    font-size: 15px;
+    padding-left: 10px;
     width: 135px;
+    position:relative;
+    bottom:8px;
   }
 
-  label,
-  input {
+  label {
+    font-size: 14px;
     position: relative;
-    top: 20px;
+    left: 6px;
   }
 `;
 

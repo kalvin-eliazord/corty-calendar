@@ -19,20 +19,25 @@ const MainContainer = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   width: 450px;
+  height: 450px;
   background-color: #1e1e21;
   z-index: 9;
   text-align: left;
   border-radius: 20px;
-  overflow-y: auto;
+  overflow-y: scroll;
   overflow-x: hidden;
   color: #e2e3e2;
 `;
 
 const HeaderContainer = styled.div`
-  padding: 10px;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  padding-bottom: 10px;
+  margin-bottom: 40px;
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   &:hover {
     cursor: move;
     background-color: lightgrey;
@@ -41,7 +46,11 @@ const HeaderContainer = styled.div`
 
 const ExitButton = styled.img`
   filter: invert(1);
-  width: 20px;
+  width: 15px;
+  margin-top: 20px;
+  position: relative;
+  bottom: 4px;
+  margin-right: 20px;
   &:hover {
     cursor: pointer;
   }
@@ -60,7 +69,7 @@ const TitleTaskInput = styled.input`
   border-bottom: 2px solid grey;
   &:focus {
     outline: 0;
-    border-bottom: 2px solidrgb(22, 85, 187);
+    border-bottom: 2px solid rgb(22, 85, 187);
   }
   &::placeholder {
     color: #777472;
@@ -78,8 +87,6 @@ const TimeSettingsContainerLink = styled.div`
     position: relative;
     margin-right: 20px;
     left: 20px;
-    width: 20px;
-    height: 20px;
   }
 `;
 
@@ -112,30 +119,32 @@ const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 20px;
-
+  margin-bottom: 10px;
   div {
-    position: relative;
-    top: 27px;
     display: flex;
     flex-direction: row;
     gap: 10px;
-    padding-left: 5px;
   }
 `;
 
-const ItemsContainer = styled.div``;
+const RadiosContainer = styled.div`
+  border: 1px solid #333436;
+  margin-left: 85px;
+  margin-bottom: 40px;
+
+  width: 67%;
+  border-radius: 5px;
+`;
 
 const ItemInput = styled.input`
   overflow-x: scroll;
-  margin-bottom: 10px;
   color: white;
-
+  margin-left: 4px;
   border: 0;
-  width: 85%;
-  height: 40px;
-  background-color: #292b2c;
+  width: 81%;
+  background-color: #333436;
   border-radius: 5px;
-  height: 65px;
+  height: 25px;
   span {
     color: #777472;
   }
@@ -148,49 +157,37 @@ const ItemInput = styled.input`
   }
 `;
 
-const ItemInputContainer = styled.div<{
-  $nbOfLettersItem: number;
-  $nbOfItemPadding: number;
-}>`
-  overflow-x: scroll;
-  margin-bottom:10px;
-  
+const ItemInputContainer = styled.div`
+  overflow-x: auto;
+  margin-bottom: 10px;
+  overflow-y: hidden;
   border: 0;
-  width: 85%;
-  height: 40px;
-  text-indent: ${({ $nbOfLettersItem, $nbOfItemPadding }) =>
-    `${$nbOfLettersItem * 10 + $nbOfItemPadding}px;`}
-
+  width: 82%;
+  margin-left: 5px;
   background-color: #292b2c;
   border-radius: 5px;
-  height:65px;
-  span{
-  color:#777472;
+  span {
+    color: #777472;
   }
-  &:hover{
-  cursor:text;
-  }
+
   &::placeholder {
     padding-left: 10px;
   }
-
 `;
 
 const ItemContainer = styled.div`
   border: 1px solid white;
   background-color: #013a5f;
   border-radius: 5px;
-  padding: 5px;
   &:hover {
     cursor: pointer;
-    background-color: lightred;
+    background-color: red;
   }
 `;
 
 const ChildContainer = styled.div`
   max-width: 500px;
   margin: auto;
-  padding-top
 `;
 
 const MonthCalendarWrapper = styled.div`
@@ -208,9 +205,10 @@ const MonthCalendarWrapper = styled.div`
 
 const ClockImg = styled.img`
   width: 20px;
+  height: 20px;
   filter: invert(1);
   position: relative;
-  top: 5px;
+  top: 15px;
   padding-inline: 10px;
 `;
 
@@ -219,7 +217,8 @@ const DescriptionImg = styled.img`
   width: 25px;
   padding-inline: 30px;
   position: relative;
-  bottom: 40px;
+  bottom: 70px;
+  right: 4px;
 `;
 
 const DescriptionTextArea = styled.textarea`
@@ -227,15 +226,14 @@ const DescriptionTextArea = styled.textarea`
   resize: none;
   color: #e2e3e2;
   width: 67%;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  background-color: #292b2c;
+  padding-bottom: 30px;
+  margin-bottom: 40px;
+  background-color: #333436;
   border-radius: 5px;
 
   &::placeholder {
     padding-left: 10px;
     color: #777472;
-    font-weight: bold;
   }
 
   &:focus {
@@ -275,8 +273,9 @@ const HourInput = styled.input.attrs(() => ({
 
 const StyledSelect = styled.select`
   position: relative;
-  left: 18%;
+  left: 19%;
   bottom: 40px;
+  padding:5px
   border: 0;
   border-radius: 5px;
   background-color: #333436;
@@ -285,7 +284,7 @@ const StyledSelect = styled.select`
 
 const AllDayContainer = styled.div`
   position: relative;
-  left: 55%;
+  left: 58%;
   bottom: 60px;
   border: 0;
   border-radius: 5px;
@@ -304,8 +303,8 @@ const AllDayContainer = styled.div`
 
 const HoursDropDown = styled.div`
   position: absolute;
-  left: 55%;
-  top: 22%;
+  left: 56%;
+  top: 36%;
   width: 140px;
   height: 200px;
   overflow-y: scroll;
@@ -326,16 +325,15 @@ const HoursDropDown = styled.div`
 const Footer = styled.div`
   display: flex;
   justify-content: flex-end;
-  padding-block: 40px;
-  text-align: right;
+  padding-block: 10px;
 
   div {
-    padding-inline: 12px;
-    padding-block: 5px;
-    background-color: #8dc3f8;
-    color: blue;
+    padding-inline: 16px;
+    padding-block: 10px;
+    background-color: #333639;
+    color: #8dc3f8;
     border-radius: 20px;
-    margin-right: 50px;
+    margin-right: 20px;
 
     &:hover {
       cursor: pointer;
@@ -371,9 +369,6 @@ const AddTask = () => {
     useState<boolean>(false);
   const [isDateContainerClicked, setIsDateContainerClicked] =
     useState<boolean>(false);
-  const [nbOfLettersCheck, setNbOfLettersCheck] = useState<number>(0);
-  const [nbOfLettersLabel, setNbOfLettersLabel] = useState<number>(0);
-  const checkInputContainerRef = useRef<HTMLDivElement | null>(null);
   const [task, taskDispatch] = useReducer(taskReducer, {
     id: crypto.randomUUID(),
     title: "",
@@ -399,18 +394,12 @@ const AddTask = () => {
   const handleSubmitTask = (): void => {
     taskDispatch({
       type: "SET_TITLE",
-      state: task.title === "" ? "No title" : task.title.trim(),
+      state: taskTitleInput === "" ? "No title" : taskTitleInput.trim(),
     });
 
     setDescriptionTask();
 
     setIsTaskReady(true);
-  };
-
-  const handleTitleChange = (titleInputValue: string): void => {
-    if (!titleInputValue || !titleInputValue.trim()) return;
-
-    taskDispatch({ type: "SET_TITLE", state: titleInputValue });
   };
 
   const setDescriptionTask = (): void => {
@@ -543,24 +532,6 @@ const AddTask = () => {
     setIsHourDropDownVisible(false);
   };
 
-  useEffect(() => {
-    if (task.labels.length < 1) return;
-
-    setLabelInput("");
-    setNbOfLettersLabel(
-      (prev) => prev + task.labels[task.labels.length - 1].name.length
-    );
-  }, [task.labels]);
-
-  useEffect(() => {
-    if (task.checks.length < 1) return;
-
-    setCheckInput("");
-    setNbOfLettersCheck(
-      (prev) => prev + task.checks[task.checks.length - 1].name.length
-    );
-  }, [task.checks]);
-
   const handleCheckSubmit = (e: any) => {
     e.preventDefault();
     taskDispatch({ type: "ADD_CHECK", state: checkInput });
@@ -569,15 +540,6 @@ const AddTask = () => {
   const handleLabelSubmit = (e: any) => {
     e.preventDefault();
     taskDispatch({ type: "ADD_LABEL", state: labelInput });
-  };
-
-  const handleItemInputKeyDown = (e: any) => {
-    setCheckInput(e.target.value);
-
-    if (e.key === "Enter") {
-      e.preventDefault();
-      setCheckInput(" ");
-    }
   };
 
   return (
@@ -599,7 +561,7 @@ const AddTask = () => {
           <TitleTaskInput
             type="text"
             value={taskTitleInput}
-            onChange={(e) => handleTitleChange(e.target.value)}
+            onChange={(e) => setTaskTitleInput(e.target.value)}
             placeholder="Add a title"
             autoFocus
           />
@@ -702,49 +664,62 @@ const AddTask = () => {
           value={descriptionInput}
           placeholder="Add a description"
         ></DescriptionTextArea>
-        <Radio
-          name={"Priority"}
-          setRadio={(priority: string) =>
-            taskDispatch({ type: "SET_PRIORITY", state: priority })
-          }
-          radioChecked={task.priority}
-        />
+        <RadiosContainer>
+          <Radio
+            name={"Priority"}
+            setRadio={(priority: string) =>
+              taskDispatch({ type: "SET_PRIORITY", state: priority })
+            }
+            radioChecked={task.priority}
+          />
 
-        <Radio
-          name={"Complexity"}
-          setRadio={(complexity: string) =>
-            taskDispatch({ type: "SET_COMPLEXITY", state: complexity })
-          }
-          radioChecked={task.complexity}
-        />
+          <Radio
+            name={"Complexity"}
+            setRadio={(complexity: string) =>
+              taskDispatch({ type: "SET_COMPLEXITY", state: complexity })
+            }
+            radioChecked={task.complexity}
+          />
+        </RadiosContainer>
         <AddItemsContainer>
           <Form onSubmit={(e) => handleCheckSubmit(e)}>
-            <ItemInputContainer
-              onFocus={() => setCheckInput("")}
-              $nbOfLettersItem={0}
-              $nbOfItemPadding={0}
-              contentEditable="true"
-              onKeyDown={(e: any) => handleItemInputKeyDown(e)}
-            >
+            <ItemInput
+              placeholder="Add a check"
+              value={checkInput}
+              onChange={(e) => setCheckInput(e.target.value)}
+            />
+
+            <ItemInputContainer>
               {task.checks.map((check) => (
-                <ItemContainer key={check.id}> {check.name}</ItemContainer>
+                <ItemContainer
+                  key={check.id}
+                  onClick={() =>
+                    taskDispatch({ type: "REMOVE_CHECK", state: check.id })
+                  }
+                >
+                  {check.name}
+                </ItemContainer>
               ))}
             </ItemInputContainer>
           </Form>
 
           <Form onSubmit={(e) => handleLabelSubmit(e)}>
-            <div>
+            <ItemInput
+              placeholder="Add a label"
+              value={labelInput}
+              onChange={(e) => setLabelInput(e.target.value)}
+            />
+            <ItemInputContainer>
               {task.labels.map((label) => (
-                <ItemContainer key={label.id}>{label.name} </ItemContainer>
+                <ItemContainer
+                  key={label.id}
+                  onClick={() =>
+                    taskDispatch({ type: "REMOVE_LABEL", state: label.id })
+                  }
+                >
+                  {label.name}
+                </ItemContainer>
               ))}
-            </div>
-            <ItemInputContainer
-              onClick={() => checkInputContainerRef.current?.focus()}
-              onFocus={() => setLabelInput("")}
-              $nbOfLettersItem={0}
-              $nbOfItemPadding={0}
-            >
-              {labelInput || <span>Add a label</span>}
             </ItemInputContainer>
           </Form>
         </AddItemsContainer>

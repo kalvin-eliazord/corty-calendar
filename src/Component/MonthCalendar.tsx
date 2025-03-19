@@ -25,65 +25,66 @@ const CalendarContainer = styled.div`
 
 const MonthCalendarContainer = styled.div`
   position: fixed;
-  top: 37%;
-  left: 54%;
+  top: 58%;
+  left: 45%;
   transform: translate(-50%, -50%);
+  background-color: #0f1110;
+
   z-index: 10;
   display: flex;
+  border-radius: 10px;
   height: 200px;
   flex-direction: column;
 `;
 const MonthCalendarHeader = styled.div`
+  border-radius: 10px;
+
   display: flex;
   background-color: #0f1110;
   font-size: 14px;
-  padding-top: 10px;
+  padding-top: 5px;
   padding-left: 30px;
   justify-content: space-between;
-  
+
   p {
     margin-right: 10px;
     font-weight: bold;
   }
-
-  img {
-    width: 10px;
-    height: 10px;
-  }
 `;
 
 const ArrowsContainer = styled.div`
-  display: flex;
       padding-top: 15px;
   position: relative;
-  right: 55px;
-  
-  gap: 20px;
+  right: 25px;
       &:hover {
       cursor: pointer;
 `;
 
 const LeftArrowButton = styled.img`
+  width: 10px;
+  height: 10px;
   filter: invert(1);
   transform: scaleX(-100%);
 `;
 
 const RightArrowButton = styled.img`
   width: 10px;
+  height: 10px;
   filter: invert(1);
 `;
 
 const DaysLetterContainer = styled.div`
   background-color: #0f1110;
+  height: 35px;
 
   display: flex;
   font-size: 10px;
-  padding-inline: 35px;
+  padding-inline: 30px;
 `;
 
 const WeekContainer = styled.div`
   display: flex;
-  gap: 20px;
+  gap: 16px;
   padding-inline: 30px;
 
   &:hover {
@@ -92,8 +93,10 @@ const WeekContainer = styled.div`
 `;
 
 const DayContainer = styled.div`
-  padding-inline: 5px;
+  height: 35px;
   font-size: 10px;
+  background-color: #0f1110;
+
   &:hover {
     cursor: pointer;
     /background-color: lightgrey;

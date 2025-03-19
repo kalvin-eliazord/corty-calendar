@@ -220,7 +220,7 @@ const Navbar = () => {
         />
         <Link to="/tasks"> My Tasks</Link>
 
-        <Link to={todayNavigation} onClick={handleClickToday}>
+        <Link to="" onClick={handleClickToday}>
           Today
         </Link>
         <ArrowsContainer>

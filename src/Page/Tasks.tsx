@@ -3,29 +3,46 @@ import styled from "styled-components";
 import { Task } from "../context/TasksContext";
 import { CalendarContainer } from "../component/MonthCalendar";
 import { useTasksContext } from "../context/TasksContext";
-import { format } from "date-fns";
 import { getFormattedHour } from "../utils/getFormattedHour";
+import { useAreModalsVisibleContext } from "../context/ModalsContext";
 
 const MainContainer = styled.div`
   padding: 20px;
-  background-color: pink;
+  background-color: #0f1011;
 `;
 
 const HeaderContainer = styled.div`
-  position: fixed;
-  top: 20;
-  background-color: orange;
-  width: 71.8%;
+  position: sticky;
+  top: 0;
+  background-color: #2a2e31;
+  padding: 20px;
+  margin-bottom: 10px;
 `;
 
 const TaskContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
   background-color: #246694;
-  width: 90%;
-  margin-right: 50px;
   border-radius: 5px;
+  padding: 5px;
   color: white;
   font-weight: bold;
+  margin-bottom: 20px;
   padding-left: 2%;
+  &:hover {
+    cursor: pointer;
+    background-color: grey;
+  }
+`;
+
+const DeleteButton = styled.img`
+  filter: invert(1);
+  width: 15px;
+  height: 15px;
+  margin-top: 20px;
+  position: relative;
+  bottom: 4px;
+  margin-right: 20px;
   &:hover {
     cursor: pointer;
   }
@@ -36,6 +53,8 @@ const Text = styled.p`
 `;
 
 const Tasks = () => {
+  const { isViewTaskModalVisible, setIsViewTaskModalVisible } =
+    useAreModalsVisibleContext();
   const { tasks, tasksDispatch } = useTasksContext();
   const [originalTasks, setOriginalTasks] = useState<Task[]>([] as Task[]);
   const [sortType, setSortType] = useState<string>("");
@@ -79,8 +98,6 @@ const Tasks = () => {
 
     if (Math.floor(scrollTop + clientHeight) === scrollHeight - 1)
       setRenderedTasks((prev) => prev + 10);
-
-    console.log("scrollTop: ", scrollTop); // to fix
   };
 
   return (
@@ -91,21 +108,20 @@ const Tasks = () => {
       <MainContainer>
         {tasks.length < 1 && <Text>No tasks!</Text>}
         {sortedTask.slice(0, renderedTasks).map((task: Task, index) => (
-          <TaskContainer key={task.id}>
+          <TaskContainer
+            key={task.id}
+            onClick={() => setIsViewTaskModalVisible(!isViewTaskModalVisible)}
+          >
             <Text>
-              id: {index} title: {task.title}
+              {task.title}, {getFormattedHour(task.hour)}
             </Text>
-            <Text>description: {task.description}</Text>
-            <Text>isAllDay: {`${task.isAllDay}`}</Text>
-
-            <Text>hour: {getFormattedHour(task.hour)}</Text>
-
-            <Text>complexity: {task.complexity}</Text>
-            <Text>priority: {task.priority}</Text>
-            <Text>dueDate: {format(task.dueDate, "d MMMM yyyy")}</Text>
-            <Text>Checks: {task.checks.map((check) => check.name)}</Text>
-            <Text>Labels: {task.labels.map((label) => label.name)}</Text>
-            <Text>isDone: {`${task.isDone}`}</Text>
+            <DeleteButton
+              alt="DeleteButton"
+              src="https://cdn2.iconfinder.com/data/icons/e-commerce-line-10-1/1024/close10-64.png"
+              onClick={() =>
+                tasksDispatch({ type: "REMOVE_TASK", state: task.id })
+              }
+            />
           </TaskContainer>
         ))}
       </MainContainer>
