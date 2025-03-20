@@ -19,7 +19,7 @@ import { useCalendarContext } from "../../context/CalendarContext";
 import { getMonthByIndex } from "../../utils/getMonth";
 import { useAreModalsVisibleContext } from "../../context/ModalsContext";
 
-const calendarViews = ["day", "week", "month", "year"];
+const calendarViews = ["", "day", "week", "month", "year"];
 
 const getFirstDay = (year: number, month: number) =>
   new Date(year, month - 1, 1).getDate();
@@ -106,6 +106,8 @@ const Navbar = () => {
   };
 
   const handleClickDayView = (view: string) => {
+    if (!view) return;
+
     setCalendarView(view);
     navigate(
       `/calendar/${view}/${calendar.year}/${calendar.month}/${calendar.day}`
@@ -115,6 +117,12 @@ const Navbar = () => {
   const handleNavbarClick = () => {
     if (isAddTaskModalVisible) setIsAddTaskModalVisible(false);
     if (isViewTaskModalVisible) setIsViewTaskModalVisible(false);
+  };
+
+  const handleAddTaskClick = () => {
+    if (isViewTaskModalVisible) return;
+
+    setIsAddTaskModalVisible(!isAddTaskModalVisible);
   };
 
   return (
@@ -144,14 +152,14 @@ const Navbar = () => {
         >
           {calendarViews.map((view) => (
             <option key={view} value={view}>
-              {view.charAt(0).toUpperCase() + view.slice(1)}
+              {view === ""
+                ? "Pick a view"
+                : view.charAt(0).toUpperCase() + view.slice(1)}
             </option>
           ))}
         </CalendarViewSelector>
       </Header>
-      <AddTaskButton
-        onClick={() => setIsAddTaskModalVisible(!isAddTaskModalVisible)}
-      >
+      <AddTaskButton onClick={() => handleAddTaskClick()}>
         + Add Task
       </AddTaskButton>
       <div>

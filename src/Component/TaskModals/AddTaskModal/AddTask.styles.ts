@@ -14,8 +14,6 @@ export const MainContainer = styled.div`
   overflow-y: scroll;
   overflow-x: hidden;
   color: #e2e3e2;
-
-
 `;
 
 export const TaskTitle = styled.h2`
@@ -120,7 +118,7 @@ export const Form = styled.form`
   }
 `;
 
-export const RadiosContainer = styled.div`
+export const SlidersContainer = styled.div`
   border: 1px solid #333436;
   margin-left: 85px;
   margin-bottom: 40px;
@@ -249,6 +247,7 @@ export const HourInput = styled.input.attrs(() => ({
   color: #e2e3e2;
   background-color: #333436;
   height: 40px;
+  width: 24%;
   border: 0;
   border-radius: 5px;
   &:placeholder {
@@ -269,7 +268,7 @@ export const StyledSelect = styled.select`
 
 export const AllDayContainer = styled.div`
   position: relative;
-  left: 58%;
+  left: 64%;
   bottom: 65px;
   border: 0;
   border-radius: 5px;
@@ -286,9 +285,9 @@ export const AllDayContainer = styled.div`
 
 export const HoursDropDown = styled.div`
   position: absolute;
-  left: 57%;
+  left: 61.5%;
   top: 36%;
-  width: 145px;
+  width: 110px;
   height: 200px;
   overflow-y: scroll;
   background-color: #0f1110;

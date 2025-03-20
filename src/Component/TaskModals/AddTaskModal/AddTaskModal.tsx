@@ -1,6 +1,6 @@
 import { useState, useRef, useReducer, useEffect } from "react";
 import { format } from "date-fns";
-import Radio from "../../Radio";
+import Slider from "../../Slider";
 import { getFilteredMonth, getMonthByIndex } from "../../../utils/getMonth";
 import {
   getFormattedHour,
@@ -28,7 +28,7 @@ import {
   Form,
   ItemInput,
   ItemInputContainer,
-  RadiosContainer,
+  SlidersContainer,
   ItemContainer,
   ChildContainer,
   MonthCalendarWrapper,
@@ -64,7 +64,9 @@ const AddTask = () => {
   const [checkInput, setCheckInput] = useState<string>("");
   const [labelInput, setLabelInput] = useState<string>("");
   const [taskTitleInput, setTaskTitleInput] = useState<string>("");
-
+  const [prioritySliderValue, setPrioritySliderValue] = useState<string>("1");
+  const [complexitySliderValue, setComplexitySliderValue] =
+    useState<string>("1");
   const [isHourDropDownVisible, setIsHourDropDownVisible] =
     useState<boolean>(false);
   const [isMonthCalendarVisible, setIsMonthCalendarVisible] =
@@ -93,6 +95,15 @@ const AddTask = () => {
     setIsAddTaskModalVisible(false);
   }, [isTaskReady]);
 
+  const setDescriptionTask = (): void => {
+    if (!descriptionInput || !descriptionInput.trim()) return;
+
+    taskDispatch({
+      type: "SET_DESCRIPTION",
+      state: descriptionInput.trim(),
+    });
+  };
+
   const handleSubmitTask = (): void => {
     taskDispatch({
       type: "SET_TITLE",
@@ -101,16 +112,12 @@ const AddTask = () => {
 
     setDescriptionTask();
 
+    if (task.isAllDay) taskDispatch({ type: "SET_HOUR", state: 0 });
+
+    taskDispatch({ type: "SET_COMPLEXITY", state: complexitySliderValue });
+    taskDispatch({ type: "SET_PRIORITY", state: prioritySliderValue });
+
     setIsTaskReady(true);
-  };
-
-  const setDescriptionTask = (): void => {
-    if (!descriptionInput || !descriptionInput.trim()) return;
-
-    taskDispatch({
-      type: "SET_DESCRIPTION",
-      state: descriptionInput.trim(),
-    });
   };
 
   const handleIsAllDayChange = () => {
@@ -249,13 +256,20 @@ const AddTask = () => {
 
   const handleCheckSubmit = (e: any) => {
     e.preventDefault();
-    taskDispatch({ type: "ADD_CHECK", state: checkInput });
+    if (!checkInput || !checkInput.trim()) return;
+
+    taskDispatch({ type: "ADD_CHECK", state: checkInput.trim() });
     setCheckInput("");
   };
 
   const handleLabelSubmit = (e: any) => {
     e.preventDefault();
-    taskDispatch({ type: "ADD_LABEL", state: labelInput });
+    if (!labelInput || !labelInput.trim()) return;
+
+    const labelTrimmed = labelInput.trim();
+    if (task.labels.find((label) => label.name === labelTrimmed)) return;
+
+    taskDispatch({ type: "ADD_LABEL", state: labelTrimmed });
     setLabelInput("");
   };
 
@@ -381,23 +395,22 @@ const AddTask = () => {
           value={descriptionInput}
           placeholder="Add a description"
         ></DescriptionTextArea>
-        <RadiosContainer>
-          <Radio
+        <SlidersContainer>
+          <Slider
             name={"Priority"}
-            setRadio={(priority: string) =>
-              taskDispatch({ type: "SET_PRIORITY", state: priority })
-            }
-            radioChecked={task.priority}
+            min="1"
+            max="10"
+            sliderValue={prioritySliderValue}
+            setSliderValue={setPrioritySliderValue}
           />
-
-          <Radio
+          <Slider
             name={"Complexity"}
-            setRadio={(complexity: string) =>
-              taskDispatch({ type: "SET_COMPLEXITY", state: complexity })
-            }
-            radioChecked={task.complexity}
+            min="1"
+            max="5"
+            sliderValue={complexitySliderValue}
+            setSliderValue={setComplexitySliderValue}
           />
-        </RadiosContainer>
+        </SlidersContainer>
         <AddItemsContainer>
           <Form onSubmit={(e) => handleCheckSubmit(e)}>
             <ItemInput

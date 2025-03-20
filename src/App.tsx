@@ -40,7 +40,7 @@ export default function App() {
         {isAddTaskModalVisible && <AddTaskModal />}
 
         <TaskSelectedIdProvider>
-          {isViewTaskModalVisible && <ViewTaskModal />}
+          {isViewTaskModalVisible && <ViewTaskModal  />}
           <Navbar />
           <Routes>
             <Route

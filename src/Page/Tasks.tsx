@@ -6,7 +6,6 @@ import { useTasksContext } from "../context/TasksContext";
 import { getFormattedHour } from "../utils/getFormattedHour";
 import { useAreModalsVisibleContext } from "../context/ModalsContext";
 import { useTaskSelectedIdContext } from "../context/TaskSelectedIdContext";
-import { format } from "date-fns";
 import { CalendarViewSelector } from "../component/Navbar/Navbar.styles";
 
 const MainContainer = styled.div`
@@ -63,19 +62,59 @@ const Text = styled.p`
   color: white;
 `;
 
+const LabelsSelectedContainer = styled.div`
+  display: flex;
+  gap: 20px;
+  padding-left: 15px;
+  border-bottom: 1px solid grey;
+  font-weight: bold;
+`;
+
+const LabelSelected = styled.div`
+  background-color: #6eaedd;
+  padding: 10px;
+  border-radius: 10px;
+  height: 20px;
+  &:hover {
+    cursor: pointer;
+    background-color: red;
+  }
+`;
+
+const SearchTaskInput = styled.input`
+  color: #e2e3e2;
+  left: 80px;
+  background-color: #1e1e21;
+  border: 0;
+  font-size: 25px;
+  margin-bottom: 10px;
+  border-bottom: 2px solid grey;
+  &:focus {
+    outline: 0;
+    border-bottom: 2px solid rgb(22, 85, 187);
+  }
+  &::placeholder {
+    color: #777472;
+    padding-left: 10px;
+  }
+`;
+
 const Tasks = () => {
-  const { isViewTaskModalVisible, setIsViewTaskModalVisible } =
-    useAreModalsVisibleContext();
+  const {
+    isAddTaskModalVisible,
+    setIsAddTaskModalVisible,
+    isViewTaskModalVisible,
+    setIsViewTaskModalVisible,
+  } = useAreModalsVisibleContext();
   const { setTaskSelectedId } = useTaskSelectedIdContext();
   const { tasks, tasksDispatch } = useTasksContext();
   const [originalTasks, setOriginalTasks] = useState<Task[]>([] as Task[]);
   const [sortType, setSortType] = useState<string>("");
   const [sortValue, setSortValue] = useState<string>("");
   const [renderedTasks, setRenderedTasks] = useState<number>(10);
-
-  const handleUndoSort = () => {
-    tasksDispatch({ type: "SET_TASKS", state: originalTasks });
-  };
+  const [labelsAvailable, setLabelsAvailable] = useState<string[]>([]);
+  const [labelsSelected, setLabelSelected] = useState<string[]>([]);
+  const [taskSearched, setTaskSearched] = useState<string>("");
 
   const getDueDateSortedTasks = (sortValue: string) => {
     switch (sortValue) {
@@ -90,7 +129,7 @@ const Tasks = () => {
             new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime()
         );
       default:
-        return tasks;
+        return originalTasks;
     }
   };
 
@@ -101,7 +140,7 @@ const Tasks = () => {
       case "descending":
         return [...tasks].sort((a, b) => b.priority - a.priority);
       default:
-        return tasks;
+        return originalTasks;
     }
   };
 
@@ -112,28 +151,42 @@ const Tasks = () => {
       case "descending":
         return [...tasks].sort((a, b) => b.complexity - a.complexity);
       default:
-        return tasks;
+        return originalTasks;
     }
   };
 
-  const sortedTask = useMemo(() => {
-    if (sortValue === "default") return originalTasks;
+  const sortedTasks = useMemo(() => {
+    let newSortedTasks: Task[] = [];
 
     switch (sortType) {
       case "complexity":
-        return getComplexitySortedTasks(sortValue);
+        newSortedTasks = getComplexitySortedTasks(sortValue);
+        break;
       case "priority":
-        return getPrioritySortedTasks(sortValue);
+        newSortedTasks = getPrioritySortedTasks(sortValue);
+        break;
       case "dueDate":
-        return getDueDateSortedTasks(sortValue);
+        newSortedTasks = getDueDateSortedTasks(sortValue);
+        break;
       default:
-        return tasks;
+        newSortedTasks = tasks;
     }
-  }, [tasks, sortValue]);
 
-  useEffect(() => {
-    setOriginalTasks(tasks);
-  }, [tasks]);
+    if (labelsSelected.length > 0) {
+      newSortedTasks = newSortedTasks.filter((task) =>
+        task.labels.some((label) => labelsSelected.includes(label.name))
+      );
+    }
+
+    if (taskSearched !== "" && taskSearched.trim() !== "") {
+      const taskSearchedTrimmed = taskSearched.trim();
+      newSortedTasks = newSortedTasks.filter((task) =>
+        task.title.toLowerCase().includes(taskSearchedTrimmed.toLowerCase())
+      );
+    }
+
+    return newSortedTasks;
+  }, [tasks, sortValue, labelsSelected, taskSearched]);
 
   const handleOnScroll = (e: any) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
@@ -143,13 +196,55 @@ const Tasks = () => {
   };
 
   const handleTaskClick = (taskId: string) => {
+    if (isAddTaskModalVisible) {
+      setIsAddTaskModalVisible(false);
+      return;
+    }
+
     setIsViewTaskModalVisible(!isViewTaskModalVisible);
     setTaskSelectedId(taskId);
   };
 
+  const handleTasksContainerClick = () => {
+    if (isViewTaskModalVisible) setIsViewTaskModalVisible(false);
+    if (isAddTaskModalVisible) setIsAddTaskModalVisible(false);
+  };
+
+  const updateLabelsAvailable = () => {
+    let labelsName: string[] = [];
+
+    for (let i = 0; i < tasks.length; i++)
+      labelsName = labelsName.concat(
+        tasks[i].labels.map((label) => label.name)
+      );
+
+    setLabelsAvailable((prev) =>
+      labelsName.filter((labelName) => !labelsSelected.includes(labelName))
+    );
+  };
+
+  useEffect(() => {
+    updateLabelsAvailable();
+  }, [labelsSelected]);
+
+  useEffect(() => {
+    setOriginalTasks(tasks);
+    updateLabelsAvailable();
+  }, [tasks]);
+
   return (
-    <CalendarContainer onScroll={(e) => handleOnScroll(e)}>
+    <CalendarContainer
+      onScroll={(e) => handleOnScroll(e)}
+      onClick={() => handleTasksContainerClick()}
+    >
       <HeaderContainer>
+        <SearchTaskInput
+          value={taskSearched}
+          placeholder="Search a task"
+          onChange={(e: any) => {
+            tasks.length > 0 && setTaskSearched(e.target.value);
+          }}
+        />
         <CalendarViewSelector
           onChange={(e: any) => setSortType(e.target.value)}
         >
@@ -166,10 +261,41 @@ const Tasks = () => {
           <option value="ascending"> Ascending </option>
           <option value="descending"> Descending </option>
         </CalendarViewSelector>
+        <CalendarViewSelector
+          onChange={(e: any) =>
+            setLabelSelected([...labelsSelected, e.target.value])
+          }
+        >
+          <option value="default"> Select a label </option>
+          {labelsAvailable.map((labelAvailable) => (
+            <option key={labelAvailable} value={labelAvailable}>
+              {labelAvailable}
+            </option>
+          ))}
+        </CalendarViewSelector>
       </HeaderContainer>
+
+      {labelsSelected.length > 0 && (
+        <LabelsSelectedContainer>
+          <p>Labels selected:</p>
+          {labelsSelected.map((labelName) => (
+            <LabelSelected
+              key={labelName}
+              onClick={() =>
+                setLabelSelected(
+                  labelsSelected.filter((label) => label !== labelName)
+                )
+              }
+            >
+              {labelName}
+            </LabelSelected>
+          ))}
+        </LabelsSelectedContainer>
+      )}
+
       <MainContainer>
         {tasks.length < 1 && <Text>No tasks!</Text>}
-        {sortedTask.slice(0, renderedTasks).map((task: Task) => (
+        {sortedTasks.slice(0, renderedTasks).map((task: Task) => (
           <div key={task.id}>
             <TaskContainer onClick={() => handleTaskClick(task.id)}>
               <Text>

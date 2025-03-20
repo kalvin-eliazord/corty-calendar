@@ -127,6 +127,7 @@ const DayView = () => {
   const toggleAddTaskModal = (clickedHour: number) => {
     if (isViewTaskModalVisible) {
       setIsViewTaskModalVisible(false);
+      setIsAddTaskModalVisible(false);
       return;
     }
 
@@ -135,6 +136,8 @@ const DayView = () => {
   };
 
   const toggleViewTaskModal = (taskId: string) => {
+    if (isAddTaskModalVisible) setIsAddTaskModalVisible(false);
+
     const isTaskFound = dayViewTasks.find((task) => task.id === taskId);
     if (!isTaskFound) {
       console.warn("Task not found for ID:", taskId);

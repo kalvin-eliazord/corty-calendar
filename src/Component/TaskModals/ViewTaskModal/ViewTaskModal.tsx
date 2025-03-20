@@ -17,9 +17,7 @@ import {
   TaskTitle,
   Form,
 } from "../AddTaskModal/AddTask.styles";
-import {
-ViewRadiosContainer
-} from "./ViewTask.styles";
+import { ViewRadiosContainer } from "./ViewTask.styles";
 import { useTaskSelectedIdContext } from "../../../context/TaskSelectedIdContext";
 import { useAreModalsVisibleContext } from "../../../context/ModalsContext";
 
@@ -41,7 +39,7 @@ const ViewTask = () => {
   }, [taskSelectedId]);
 
   return (
-    <MainContainer>
+    <MainContainer >
       <HeaderContainer>
         <ExitButton
           alt="exitButton"
