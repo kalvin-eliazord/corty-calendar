@@ -7,6 +7,26 @@ export const HeaderContainer = styled.div`
   display: flex;
   justify-content: flex-end;
   margin-bottom: 15px;
+  background-color: #212324;
+  z-index: 4;
+  padding: 10px;
+`;
+
+export const ProgressBarContainer = styled.div`
+  width: 50%;
+  height: 40px;
+  margin-right: 30px;
+  border: 1px solid white;
+  border-radius: 10px;
+  overflow-x: hidden;
+  padding: 5px;
+`;
+
+export const ProgressBar = styled.div<{ $progress: number }>`
+  background-color: green;
+  width: ${({ $progress }) => $progress}%;
+  height: 100%;
+  border-radius: 10px;
 `;
 
 export const SlidersViewContainer = styled.div`

@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const MainContainer = styled.div`
+export const MainAddTaskContainer = styled.div`
   position: fixed;
   top: 50%;
   left: 50%;
@@ -171,7 +171,6 @@ export const ItemInput = styled.input`
   border-radius: 5px;
   height: 25px;
 
-
   &::placeholder {
     padding-left: 10px;
     color: #777472;
@@ -191,7 +190,7 @@ export const ItemInputContainer = styled.div`
     color: #777472;
   }
 
-    &::-webkit-scrollbar {
+  &::-webkit-scrollbar {
     width: 15px;
     height: 20px;
   }
@@ -223,7 +222,6 @@ export const ItemInputContainer = styled.div`
     background: #1e1e1e;
   }
 
-
   &::placeholder {
     padding-left: 10px;
   }
@@ -232,7 +230,7 @@ export const ItemInputContainer = styled.div`
 export const ItemContainer = styled.div`
   border: 1px solid white;
   background-color: #013a5f;
-  padding:5px;
+  padding: 5px;
   border-radius: 5px;
 
   &:hover {
@@ -246,8 +244,7 @@ export const ChildContainer = styled.div`
   margin: auto;
 `;
 
-export const MonthCalendarWrapper = styled.div`
-`;
+export const MonthCalendarWrapper = styled.div``;
 
 export const ClockImg = styled.img`
   width: 20px;
@@ -261,7 +258,8 @@ export const ClockImg = styled.img`
 export const DescriptionImg = styled.img`
   filter: invert(1);
   width: 25px;
-  padding-inline: 30px;
+  padding-left: 32px;
+  padding-right: 20px;
   position: relative;
   bottom: 70px;
   right: 4px;

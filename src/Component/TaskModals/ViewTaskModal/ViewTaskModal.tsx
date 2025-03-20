@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { getFormattedHour } from "../../../utils/getFormattedHour";
 import { Task, useTasksContext } from "../../../context/TasksContext";
 import {
-  MainContainer,
+  MainAddTaskContainer,
   HeaderButton,
   TimeSettingsContainerLink,
   AddItemsContainer,
@@ -22,6 +22,8 @@ import {
   IsDoneTaskButton,
   LabelContainer,
   CheckContainer,
+  ProgressBarContainer,
+  ProgressBar,
   Footer,
 } from "./ViewTask.styles";
 import { useTaskSelectedIdContext } from "../../../context/TaskSelectedIdContext";
@@ -36,8 +38,24 @@ const ViewTask = () => {
     setIsAddTaskModalVisible,
   } = useAreModalsVisibleContext();
   const [taskSelected, setTaskSelected] = useState<Task>({} as Task);
+  const [taskProgress, setTaskProgress] = useState<number>(0);
   const { removeTask, setTask, toggleIsDoneTask, toggleIsDoneCheck } =
     useTasksContext();
+
+  useEffect(() => {
+    if (!taskSelected || !taskSelected.checks || taskSelected.checks.length < 1)
+      return;
+
+    const checksDoneLength = taskSelected.checks.filter(
+      (check) => check.isDone
+    ).length;
+
+    setTaskProgress((prev) =>
+      checksDoneLength > 0
+        ? (checksDoneLength / taskSelected.checks.length) * 100
+        : 0
+    );
+  }, [taskSelected]);
 
   useEffect(() => {
     const taskRetrieved = tasks.find((task) => task.id === taskSelectedId);
@@ -60,8 +78,12 @@ const ViewTask = () => {
   };
 
   return (
-    <MainContainer>
+    <MainAddTaskContainer>
       <HeaderContainer>
+        <ProgressBarContainer>
+          <ProgressBar $progress={taskProgress} />
+        </ProgressBarContainer>
+
         <HeaderButton
           alt="editButton"
           src="https://cdn-icons-png.flaticon.com/512/1250/1250615.png"
@@ -95,9 +117,10 @@ const ViewTask = () => {
         {taskSelected.description && (
           <>
             <DescriptionImg src="https://www.svgrepo.com/show/532195/menu.svg" />
-            <DescriptionTextArea>
-              {taskSelected.description}
-            </DescriptionTextArea>
+            <DescriptionTextArea
+              value={taskSelected.description}
+              disabled
+            ></DescriptionTextArea>
           </>
         )}
         <SlidersViewContainer>
@@ -141,7 +164,7 @@ const ViewTask = () => {
             : "Mark task as finished"}
         </IsDoneTaskButton>
       </Footer>
-    </MainContainer>
+    </MainAddTaskContainer>
   );
 };
 

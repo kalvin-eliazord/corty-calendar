@@ -8,6 +8,7 @@ import { getFormattedHour } from "../utils/getFormattedHour";
 import { useAreModalsVisibleContext } from "../context/ModalsContext";
 import { useTaskSelectedIdContext } from "../context/TaskSelectedIdContext";
 import { CalendarViewSelector } from "../component/Navbar/Navbar.styles";
+import { HeaderButton } from "../component/TaskModals/AddTaskModal/AddTask.styles";
 
 const MainContainer = styled.div`
   padding: 20px;
@@ -19,7 +20,7 @@ const MainContainer = styled.div`
   }
 `;
 
-const HeaderContainer = styled.div`
+const HeaderTasksContainer = styled.div`
   position: sticky;
   top: 0;
   z-index: 4;
@@ -112,6 +113,14 @@ const SearchTaskInput = styled.input`
   }
 `;
 
+const PowerModeBackground = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(11, 16, 24, 0.73);
+  z-index: 5;
+`;
+
 const Tasks = () => {
   const {
     isAddTaskModalVisible,
@@ -128,6 +137,8 @@ const Tasks = () => {
   const [labelsAvailable, setLabelsAvailable] = useState<string[]>([]);
   const [labelsSelected, setLabelSelected] = useState<string[]>([]);
   const [taskSearched, setTaskSearched] = useState<string>("");
+  const [isPowerModeModalVisible, setIsPowerModeModalVisible] =
+    useState<boolean>(false);
 
   const getDueDateSortedTasks = (sortValue: string) => {
     switch (sortValue) {
@@ -245,12 +256,34 @@ const Tasks = () => {
     updateLabelsAvailable();
   }, [tasks]);
 
+  useEffect(() => {
+    if (isPowerModeModalVisible && !isViewTaskModalVisible)
+      setIsPowerModeModalVisible(false);
+  }, [isViewTaskModalVisible]);
+
+  const handlePowerModeButtonClick = () => {
+    if (!sortedTasks.find((task) => !task.isDone)) return;
+
+    const tasksPowerMode = [...sortedTasks].sort(
+      (a, b) => b.complexity + b.priority - (a.complexity + a.priority)
+    );
+
+    const taskPowerMode = tasksPowerMode.find((task) => !task.isDone);
+    if (!taskPowerMode) return;
+
+    setTaskSelectedId(taskPowerMode.id);
+    setIsPowerModeModalVisible(true);
+    setIsViewTaskModalVisible(true);
+  };
+
   return (
     <CalendarContainer
       onScroll={(e) => handleOnScroll(e)}
       onClick={() => handleTasksContainerClick()}
     >
-      <HeaderContainer>
+      {isPowerModeModalVisible && <PowerModeBackground></PowerModeBackground>}
+
+      <HeaderTasksContainer>
         <SearchTaskInput
           value={taskSearched}
           placeholder="Search a task"
@@ -286,7 +319,12 @@ const Tasks = () => {
             </option>
           ))}
         </CalendarViewSelector>
-      </HeaderContainer>
+        <HeaderButton
+          alt="powerMode"
+          src="https://cdn-icons-png.flaticon.com/512/159/159607.png"
+          onClick={() => handlePowerModeButtonClick()}
+        />
+      </HeaderTasksContainer>
 
       {labelsSelected.length > 0 && (
         <LabelsSelectedContainer>

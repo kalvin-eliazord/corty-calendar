@@ -16,7 +16,7 @@ import { useAreModalsVisibleContext } from "../../../context/ModalsContext";
 import { MonthCalendar } from "../../MonthCalendar/MonthCalendar";
 import formattedHours from "../../../utils/formattedHours";
 import {
-  MainContainer,
+  MainAddTaskContainer,
   HeaderContainer,
   HeaderButton,
   TitleTaskInput,
@@ -274,7 +274,7 @@ const AddTask = () => {
   };
 
   return (
-    <MainContainer onClick={() => handleClickModal()}>
+    <MainAddTaskContainer onClick={() => handleClickModal()}>
       <HeaderContainer>
         <HeaderButton
           alt="exitButton"
@@ -457,7 +457,7 @@ const AddTask = () => {
           <div onClick={() => handleSubmitTask()}> Save </div>
         </Footer>
       </ChildContainer>
-    </MainContainer>
+    </MainAddTaskContainer>
   );
 };
 
