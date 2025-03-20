@@ -80,7 +80,7 @@ const HourRangeContainer = styled.div`
   border-bottom: solid #7a7264 1px;
   padding: 10px;
   &:hover {
-    background-color:rgba(190, 182, 168, 0.17);
+    background-color: rgba(190, 182, 168, 0.17);
   }
 `;
 
@@ -125,6 +125,11 @@ const DayView = () => {
     setIsViewTaskModalVisible,
   } = useAreModalsVisibleContext();
 
+  useEffect(() => {
+    if (isAddTaskModalVisible && isViewTaskModalVisible)
+      setIsAddTaskModalVisible(false);
+  }, [isAddTaskModalVisible]);
+  
   const toggleAddTaskModal = (clickedHour: number) => {
     if (isViewTaskModalVisible) {
       setIsViewTaskModalVisible(false);

@@ -18,7 +18,7 @@ import formattedHours from "../../../utils/formattedHours";
 import {
   MainContainer,
   HeaderContainer,
-  ExitButton,
+  HeaderButton,
   TitleTaskInput,
   TimeSettingsContainerLink,
   DateLink,
@@ -276,7 +276,7 @@ const AddTask = () => {
   return (
     <MainContainer onClick={() => handleClickModal()}>
       <HeaderContainer>
-        <ExitButton
+        <HeaderButton
           alt="exitButton"
           src="https://cdn2.iconfinder.com/data/icons/e-commerce-line-10-1/1024/close10-64.png"
           onClick={() => setIsAddTaskModalVisible(false)}

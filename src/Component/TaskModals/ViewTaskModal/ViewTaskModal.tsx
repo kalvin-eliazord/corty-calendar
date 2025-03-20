@@ -4,12 +4,10 @@ import { getFormattedHour } from "../../../utils/getFormattedHour";
 import { Task, useTasksContext } from "../../../context/TasksContext";
 import {
   MainContainer,
-  HeaderContainer,
-  ExitButton,
+  HeaderButton,
   TimeSettingsContainerLink,
   AddItemsContainer,
   ItemInputContainer,
-  ItemContainer,
   ChildContainer,
   ClockImg,
   DescriptionImg,
@@ -19,8 +17,11 @@ import {
 } from "../AddTaskModal/AddTask.styles";
 
 import {
-  ViewRadiosContainer,
+  HeaderContainer,
+  SlidersViewContainer,
   IsDoneTaskButton,
+  LabelContainer,
+  CheckContainer,
   Footer,
 } from "./ViewTask.styles";
 import { useTaskSelectedIdContext } from "../../../context/TaskSelectedIdContext";
@@ -30,13 +31,13 @@ const ViewTask = () => {
   const { taskSelectedId } = useTaskSelectedIdContext();
   const { tasks } = useTasksContext();
   const {
-    isViewTaskModalVisible,
     setIsViewTaskModalVisible,
     isAddTaskModalVisible,
     setIsAddTaskModalVisible,
   } = useAreModalsVisibleContext();
-  const [taskSelected, setViewedTask] = useState<Task>({} as Task);
-  const { removeTask, setTask, toggleIsDoneTask } = useTasksContext();
+  const [taskSelected, setTaskSelected] = useState<Task>({} as Task);
+  const { removeTask, setTask, toggleIsDoneTask, toggleIsDoneCheck } =
+    useTasksContext();
 
   useEffect(() => {
     const taskRetrieved = tasks.find((task) => task.id === taskSelectedId);
@@ -44,8 +45,8 @@ const ViewTask = () => {
       setIsViewTaskModalVisible(false);
       return;
     }
-    setViewedTask(taskRetrieved);
-  }, [taskSelectedId]);
+    setTaskSelected(taskRetrieved);
+  }, [taskSelectedId, tasks]);
 
   const handleIsDoneTaskButtonClick = () => {
     toggleIsDoneTask(taskSelected.id);
@@ -53,17 +54,34 @@ const ViewTask = () => {
     if (isAddTaskModalVisible) setIsAddTaskModalVisible(false);
   };
 
+  const handleDeleteButtonClick = () => {
+    removeTask(taskSelected.id);
+    setIsViewTaskModalVisible(false);
+  };
+
   return (
     <MainContainer>
       <HeaderContainer>
-        <ExitButton
-          alt="exitButton"
+        <HeaderButton
+          alt="editButton"
+          src="https://cdn-icons-png.flaticon.com/512/1250/1250615.png"
+          onClick={() => setIsViewTaskModalVisible(false)}
+        />
+        <HeaderButton
+          alt="deleteButton"
+          src="https://cdn-icons-png.flaticon.com/512/3405/3405244.png"
+          onClick={() => handleDeleteButtonClick()}
+        />
+        <HeaderButton
+          alt="HeaderButton"
           src="https://cdn2.iconfinder.com/data/icons/e-commerce-line-10-1/1024/close10-64.png"
           onClick={() => setIsViewTaskModalVisible(false)}
         />
       </HeaderContainer>
       <ChildContainer>
-        <TaskTitle> {taskSelected.title && taskSelected.title} </TaskTitle>
+        <TaskTitle $isDone={taskSelected.isDone}>
+          {taskSelected.title && taskSelected.title}
+        </TaskTitle>
 
         <TimeSettingsContainerLink>
           <ClockImg src="https://cdn-icons-png.flaticon.com/512/3114/3114812.png" />
@@ -82,10 +100,10 @@ const ViewTask = () => {
             </DescriptionTextArea>
           </>
         )}
-        <ViewRadiosContainer>
-          Priority: {taskSelected.priority} <br /> Complexity:
-          {taskSelected.complexity}
-        </ViewRadiosContainer>
+        <SlidersViewContainer>
+          <div>Priority:</div> <p>{taskSelected.priority}</p>
+          <div>Complexity:</div> <p>{taskSelected.complexity} </p>
+        </SlidersViewContainer>
 
         <AddItemsContainer>
           {taskSelected.checks && taskSelected.checks.length > 0 && (
@@ -93,7 +111,13 @@ const ViewTask = () => {
               Checks
               <ItemInputContainer>
                 {taskSelected.checks.map((check) => (
-                  <ItemContainer key={check.id}>{check.name}</ItemContainer>
+                  <CheckContainer
+                    key={check.id}
+                    onClick={() => toggleIsDoneCheck(taskSelected.id, check.id)}
+                    $isDone={check.isDone}
+                  >
+                    {check.name}
+                  </CheckContainer>
                 ))}
               </ItemInputContainer>
             </Form>
@@ -103,7 +127,7 @@ const ViewTask = () => {
               Labels
               <ItemInputContainer>
                 {taskSelected.labels.map((label) => (
-                  <ItemContainer key={label.id}>{label.name}</ItemContainer>
+                  <LabelContainer key={label.id}>{label.name}</LabelContainer>
                 ))}
               </ItemInputContainer>
             </Form>

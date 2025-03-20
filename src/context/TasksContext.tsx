@@ -170,6 +170,7 @@ type TasksContextType = {
   removeTask(taskId: string): void;
   setTask(task: Task): void;
   toggleIsDoneTask(taskId: string): void;
+  toggleIsDoneCheck(taskId: string, checkId: string): void;
 };
 
 const TasksContext = createContext<TasksContextType | undefined>(undefined);
@@ -212,6 +213,25 @@ const TasksProvider = ({ children }: { children: ReactNode }) => {
       });
   };
 
+  const toggleIsDoneCheck = (taskId: string, checkId: string) => {
+    tasksDispatch({
+      type: "SET_TASKS",
+      state: tasks.map((currentTask: Task) =>
+        currentTask.id === taskId
+          ? {
+              ...currentTask,
+              checks: currentTask.checks.map((check) =>
+                check.id === checkId
+                  ? { ...check, isDone: !check.isDone }
+                  : check
+              ),
+            }
+          : currentTask
+      ),
+    });
+
+  };
+
   return (
     <TasksContext.Provider
       value={{
@@ -221,6 +241,7 @@ const TasksProvider = ({ children }: { children: ReactNode }) => {
         removeTask,
         setTask,
         toggleIsDoneTask,
+        toggleIsDoneCheck,
       }}
     >
       {children}

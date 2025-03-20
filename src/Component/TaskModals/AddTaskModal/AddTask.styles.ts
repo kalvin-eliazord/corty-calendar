@@ -6,7 +6,7 @@ export const MainContainer = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   width: 450px;
-  height: 450px;
+  max-height: 450px;
   background-color: #1e1e21;
   z-index: 9;
   text-align: left;
@@ -49,34 +49,36 @@ export const MainContainer = styled.div`
   }
 `;
 
-export const TaskTitle = styled.h2`
+export const TaskTitle = styled.h2<{ $isDone: boolean }>`
   padding-left: 80px;
+  text-decoration: ${({ $isDone }) => $isDone && "line-through"};
 `;
 
 export const HeaderContainer = styled.div`
   position: sticky;
   top: 0;
   width: 100%;
-  padding-bottom: 10px;
-  margin-bottom: 40px;
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 15px;
   &:hover {
     cursor: move;
-    background-color: rgb(64, 64, 70);
+    background-color: rgba(64, 64, 70, 0.42);
   }
 `;
 
-export const ExitButton = styled.img`
+export const HeaderButton = styled.img`
   filter: invert(1);
   width: 15px;
   margin-top: 20px;
   position: relative;
-  bottom: 4px;
+  bottom: 10px;
   margin-right: 20px;
+
+  padding: 10px;
+  border-radius: 5px;
   &:hover {
     cursor: pointer;
+    background-color: rgba(105, 105, 114, 0.42);
   }
 `;
 
@@ -168,12 +170,8 @@ export const ItemInput = styled.input`
   background-color: #333436;
   border-radius: 5px;
   height: 25px;
-  span {
-    color: #777472;
-  }
-  &:hover {
-    cursor: text;
-  }
+
+
   &::placeholder {
     padding-left: 10px;
     color: #777472;
@@ -192,6 +190,40 @@ export const ItemInputContainer = styled.div`
   span {
     color: #777472;
   }
+
+    &::-webkit-scrollbar {
+    width: 15px;
+    height: 20px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #3a3a3a;
+    border-radius: 10px;
+    border: 3px solid #1e1e1e;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  &::-webkit-scrollbar-thumb:active {
+    background: #777;
+  }
+
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: #1e1e1e;
+  }
+
+
   &::placeholder {
     padding-left: 10px;
   }
@@ -200,7 +232,9 @@ export const ItemInputContainer = styled.div`
 export const ItemContainer = styled.div`
   border: 1px solid white;
   background-color: #013a5f;
+  padding:5px;
   border-radius: 5px;
+
   &:hover {
     cursor: pointer;
     background-color: red;
@@ -213,14 +247,6 @@ export const ChildContainer = styled.div`
 `;
 
 export const MonthCalendarWrapper = styled.div`
-  .month-calendar-container {
-  }
-  .month-calendar-header {
-    justify-content: space-between;
-  }
-  .month-calendar-weeks {
-    background-color: #0f1110;
-  }
 `;
 
 export const ClockImg = styled.img`
