@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { differenceInDays, isSameDay } from "date-fns";
 import styled from "styled-components";
 import { Task } from "../context/TasksContext";
 import { CalendarContainer } from "../component/MonthCalendar/MonthCalendar";
@@ -11,6 +12,7 @@ import { CalendarViewSelector } from "../component/Navbar/Navbar.styles";
 const MainContainer = styled.div`
   padding: 20px;
   background-color: #0f1011;
+  overflow-x: hidden;
 
   div {
     display: flex;
@@ -20,27 +22,45 @@ const MainContainer = styled.div`
 const HeaderContainer = styled.div`
   position: sticky;
   top: 0;
+  z-index: 4;
   background-color: #2a2e31;
   padding: 20px;
-  margin-bottom: 10px;
   display: flex;
   gap: 40px;
 `;
 
-const TaskContainer = styled.div`
+const TaskContainer = styled.div<{ $isDone: boolean; $dueDateLeft: number }>`
   display: flex;
   justify-content: space-between;
-  background-color: #246694;
+  text-decoration: ${({ $isDone }) => $isDone && "line-through"};
+  background-color: ${({ $isDone, $dueDateLeft }) =>
+    $isDone
+      ? "#425682"
+      : $dueDateLeft < 1
+      ? "red"
+      : $dueDateLeft < 4
+      ? "orange"
+      : "#1a3b86"};
   border-radius: 5px;
   width: 100%;
-  padding: 5px;
   color: white;
   font-weight: bold;
   margin-bottom: 20px;
   padding-left: 2%;
+  margin-right: 1%;
   &:hover {
     cursor: pointer;
-    background-color: grey;
+  }
+`;
+
+const DeleteButtonContainer = styled.div`
+  width: 50px;
+  padding-left: 20px;
+  &:hover {
+    background-color: red;
+    border-radius: 5px;
+    height: 50px;
+    cursor: pointer;
   }
 `;
 
@@ -48,14 +68,7 @@ const DeleteButton = styled.img`
   filter: invert(1);
   width: 25px;
   height: 25px;
-  margin-top: 20px;
-  position: relative;
-  bottom: 4px;
-  right: 40px;
-  margin-right: 20px;
-  &:hover {
-    cursor: pointer;
-  }
+  margin-top: 15px;
 `;
 
 const Text = styled.p`
@@ -297,18 +310,28 @@ const Tasks = () => {
         {tasks.length < 1 && <Text>No tasks!</Text>}
         {sortedTasks.slice(0, renderedTasks).map((task: Task) => (
           <div key={task.id}>
-            <TaskContainer onClick={() => handleTaskClick(task.id)}>
+            <TaskContainer
+              onClick={() => handleTaskClick(task.id)}
+              $isDone={task.isDone}
+              $dueDateLeft={
+                isSameDay(task.dueDate, new Date())
+                  ? 0
+                  : differenceInDays(task.dueDate, new Date()) + 1
+              }
+            >
               <Text>
                 {task.title}, {getFormattedHour(task.hour)}
               </Text>
             </TaskContainer>
-            <DeleteButton
-              alt="DeleteButton"
-              src="https://cdn2.iconfinder.com/data/icons/e-commerce-line-10-1/1024/close10-64.png"
-              onClick={() =>
-                tasksDispatch({ type: "REMOVE_TASK", state: task.id })
-              }
-            />
+            <DeleteButtonContainer>
+              <DeleteButton
+                alt="DeleteButton"
+                src="https://cdn-icons-png.flaticon.com/512/3405/3405244.png"
+                onClick={() =>
+                  tasksDispatch({ type: "REMOVE_TASK", state: task.id })
+                }
+              />
+            </DeleteButtonContainer>
           </div>
         ))}
       </MainContainer>

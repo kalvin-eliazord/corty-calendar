@@ -169,6 +169,7 @@ type TasksContextType = {
   addTask(task: Task, recurringValue: string): void;
   removeTask(taskId: string): void;
   setTask(task: Task): void;
+  toggleIsDoneTask(taskId: string): void;
 };
 
 const TasksContext = createContext<TasksContextType | undefined>(undefined);
@@ -181,6 +182,17 @@ const TasksProvider = ({ children }: { children: ReactNode }) => {
       type: "SET_TASKS",
       state: tasks.map((currentTask: Task) =>
         currentTask.id === task.id ? task : currentTask
+      ),
+    });
+  };
+
+  const toggleIsDoneTask = (taskId: string) => {
+    tasksDispatch({
+      type: "SET_TASKS",
+      state: tasks.map((currentTask: Task) =>
+        currentTask.id === taskId
+          ? { ...currentTask, isDone: !currentTask.isDone }
+          : currentTask
       ),
     });
   };
@@ -202,7 +214,14 @@ const TasksProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <TasksContext.Provider
-      value={{ tasks, tasksDispatch, addTask, removeTask, setTask }}
+      value={{
+        tasks,
+        tasksDispatch,
+        addTask,
+        removeTask,
+        setTask,
+        toggleIsDoneTask,
+      }}
     >
       {children}
     </TasksContext.Provider>

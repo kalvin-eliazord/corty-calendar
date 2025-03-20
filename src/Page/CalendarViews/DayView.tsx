@@ -80,7 +80,7 @@ const HourRangeContainer = styled.div`
   border-bottom: solid #7a7264 1px;
   padding: 10px;
   &:hover {
-    background-color: lightgrey;
+    background-color:rgba(190, 182, 168, 0.17);
   }
 `;
 
@@ -91,8 +91,8 @@ const TaskPlaceholderContainer = styled.div`
   margin-left: 30px;
 `;
 
-const TaskContainer = styled.div`
-  background-color: #1a3b86;
+const TaskContainer = styled.div<{ $isDone: boolean }>`
+  background-color: ${({ $isDone }) => ($isDone ? "#425682" : "#1a3b86")};
   margin-right: 40px;
   border-radius: 15px;
   z-index: 1;
@@ -100,6 +100,7 @@ const TaskContainer = styled.div`
   font-weight: bold;
   padding-inline: 2%;
   text-wrap: nowrap;
+  text-decoration: ${({ $isDone }) => $isDone && "line-through"};
   &:hover {
     cursor: pointer;
   }
@@ -195,6 +196,7 @@ const DayView = () => {
                     <TaskContainer
                       key={task.id}
                       onClick={() => toggleViewTaskModal(task.id)}
+                      $isDone={task.isDone}
                     >
                       {task.title}
                       {`, ${getFormattedHour(task.hour)}`}
@@ -206,7 +208,7 @@ const DayView = () => {
                 {isAddTaskModalVisible &&
                   !isViewTaskModalVisible &&
                   calendar.hour === i && (
-                    <TaskContainer>
+                    <TaskContainer $isDone={false}>
                       (No title), {getFormattedHour(calendar.hour)}
                     </TaskContainer>
                   )}

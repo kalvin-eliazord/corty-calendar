@@ -11,9 +11,42 @@ export const MainContainer = styled.div`
   z-index: 9;
   text-align: left;
   border-radius: 20px;
-  overflow-y: scroll;
+
+  overflow-y: auto;
   overflow-x: hidden;
   color: #e2e3e2;
+
+  &::-webkit-scrollbar {
+    width: 15px;
+    height: 12px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #3a3a3a;
+    border-radius: 10px;
+    border: 3px solid #1e1e1e;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  &::-webkit-scrollbar-thumb:active {
+    background: #777;
+  }
+
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: #1e1e1e;
+  }
 `;
 
 export const TaskTitle = styled.h2`
@@ -31,7 +64,7 @@ export const HeaderContainer = styled.div`
   margin-bottom: 15px;
   &:hover {
     cursor: move;
-    background-color: lightgrey;
+    background-color: rgb(64, 64, 70);
   }
 `;
 

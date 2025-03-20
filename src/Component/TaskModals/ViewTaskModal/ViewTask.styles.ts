@@ -7,3 +7,18 @@ export const ViewRadiosContainer = styled.div`
   width: 67%;
   border-radius: 5px;
 `;
+
+export const Footer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  background-color: #212324;
+`;
+
+export const IsDoneTaskButton = styled.p`
+  font-weight: bold;
+  margin-right:20px;
+  color: #92c7f8;
+  &:hover {
+    cursor: pointer;
+  }
+`;

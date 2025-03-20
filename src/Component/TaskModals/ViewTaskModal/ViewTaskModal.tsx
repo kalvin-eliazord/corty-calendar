@@ -17,17 +17,26 @@ import {
   TaskTitle,
   Form,
 } from "../AddTaskModal/AddTask.styles";
-import { ViewRadiosContainer } from "./ViewTask.styles";
+
+import {
+  ViewRadiosContainer,
+  IsDoneTaskButton,
+  Footer,
+} from "./ViewTask.styles";
 import { useTaskSelectedIdContext } from "../../../context/TaskSelectedIdContext";
 import { useAreModalsVisibleContext } from "../../../context/ModalsContext";
 
 const ViewTask = () => {
   const { taskSelectedId } = useTaskSelectedIdContext();
   const { tasks } = useTasksContext();
-  const { isViewTaskModalVisible, setIsViewTaskModalVisible } =
-    useAreModalsVisibleContext();
-  const [viewedTask, setViewedTask] = useState<Task>({} as Task);
-  const { removeTask, setTask } = useTasksContext();
+  const {
+    isViewTaskModalVisible,
+    setIsViewTaskModalVisible,
+    isAddTaskModalVisible,
+    setIsAddTaskModalVisible,
+  } = useAreModalsVisibleContext();
+  const [taskSelected, setViewedTask] = useState<Task>({} as Task);
+  const { removeTask, setTask, toggleIsDoneTask } = useTasksContext();
 
   useEffect(() => {
     const taskRetrieved = tasks.find((task) => task.id === taskSelectedId);
@@ -38,8 +47,14 @@ const ViewTask = () => {
     setViewedTask(taskRetrieved);
   }, [taskSelectedId]);
 
+  const handleIsDoneTaskButtonClick = () => {
+    toggleIsDoneTask(taskSelected.id);
+    setIsViewTaskModalVisible(false);
+    if (isAddTaskModalVisible) setIsAddTaskModalVisible(false);
+  };
+
   return (
-    <MainContainer >
+    <MainContainer>
       <HeaderContainer>
         <ExitButton
           alt="exitButton"
@@ -48,43 +63,46 @@ const ViewTask = () => {
         />
       </HeaderContainer>
       <ChildContainer>
-        <TaskTitle> {viewedTask.title && viewedTask.title} </TaskTitle>
+        <TaskTitle> {taskSelected.title && taskSelected.title} </TaskTitle>
 
         <TimeSettingsContainerLink>
           <ClockImg src="https://cdn-icons-png.flaticon.com/512/3114/3114812.png" />
           <p>
-            {viewedTask.dueDate && format(viewedTask.dueDate, "d MMMM yyyy")}
+            {taskSelected.dueDate &&
+              format(taskSelected.dueDate, "d MMMM yyyy")}
           </p>
-          <p>{viewedTask.hour && getFormattedHour(viewedTask.hour)}</p>
+          <p>{taskSelected.hour && getFormattedHour(taskSelected.hour)}</p>
         </TimeSettingsContainerLink>
 
-        {viewedTask.description && (
+        {taskSelected.description && (
           <>
             <DescriptionImg src="https://www.svgrepo.com/show/532195/menu.svg" />
-            <DescriptionTextArea>{viewedTask.description}</DescriptionTextArea>
+            <DescriptionTextArea>
+              {taskSelected.description}
+            </DescriptionTextArea>
           </>
         )}
         <ViewRadiosContainer>
-          Priority: {viewedTask.priority} <br /> Complexity:
-          {viewedTask.complexity}
+          Priority: {taskSelected.priority} <br /> Complexity:
+          {taskSelected.complexity}
         </ViewRadiosContainer>
 
         <AddItemsContainer>
-          {viewedTask.checks && viewedTask.checks.length > 0 && (
+          {taskSelected.checks && taskSelected.checks.length > 0 && (
             <Form>
               Checks
               <ItemInputContainer>
-                {viewedTask.checks.map((check) => (
+                {taskSelected.checks.map((check) => (
                   <ItemContainer key={check.id}>{check.name}</ItemContainer>
                 ))}
               </ItemInputContainer>
             </Form>
           )}
-          {viewedTask.labels && viewedTask.labels.length > 0 && (
+          {taskSelected.labels && taskSelected.labels.length > 0 && (
             <Form>
               Labels
               <ItemInputContainer>
-                {viewedTask.labels.map((label) => (
+                {taskSelected.labels.map((label) => (
                   <ItemContainer key={label.id}>{label.name}</ItemContainer>
                 ))}
               </ItemInputContainer>
@@ -92,6 +110,13 @@ const ViewTask = () => {
           )}
         </AddItemsContainer>
       </ChildContainer>
+      <Footer>
+        <IsDoneTaskButton onClick={() => handleIsDoneTaskButtonClick()}>
+          {taskSelected.isDone
+            ? "Mark task as unfinished"
+            : "Mark task as finished"}
+        </IsDoneTaskButton>
+      </Footer>
     </MainContainer>
   );
 };

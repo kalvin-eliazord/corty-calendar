@@ -10,6 +10,38 @@ export const CalendarContainer = styled.div`
   left: 18%;
   top: 12%;
   overflow-y: auto;
+  
+  &::-webkit-scrollbar {
+    width: 15px; 
+    height: 12px; 
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #3a3a3a; 
+    border-radius: 10px;
+    border: 3px solid #1e1e1e; 
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+  }
+
+  &::-webkit-scrollbar-thumb:active {
+    background: #777; 
+  }
+
+  &::-webkit-scrollbar-button {
+    display: none; 
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: #1e1e1e; 
+  }
 `;
 
 export const MonthCalendarContainer = styled.div<{
