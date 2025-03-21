@@ -13,9 +13,7 @@ const DateSelectedProvider = ({ children }: { children: ReactNode }) => {
   const [dateSelected, setDateSelected] = useState<Date>(new Date());
 
   return (
-    <DateSelectedContext.Provider
-      value={{ dateSelected, setDateSelected }}
-    >
+    <DateSelectedContext.Provider value={{ dateSelected, setDateSelected }}>
       {children}
     </DateSelectedContext.Provider>
   );

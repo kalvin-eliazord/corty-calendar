@@ -7,7 +7,6 @@ import { useAreModalsVisibleContext } from "../../context/ModalsContext";
 import { useTaskSelectedIdContext } from "../../context/TaskSelectedIdContext";
 import { CalendarViewSelector } from "../../component/Navbar/Navbar.styles";
 import { HeaderButton } from "../../component/TaskModals/AddTaskModal/AddTask.styles";
-
 import {
   MainContainer,
   HeaderTasksContainer,
@@ -22,6 +21,7 @@ import {
 } from "././Tasks.styles";
 
 const Tasks = () => {
+  // Context
   const {
     isAddTaskModalVisible,
     setIsAddTaskModalVisible,
@@ -30,6 +30,8 @@ const Tasks = () => {
   } = useAreModalsVisibleContext();
   const { setTaskSelectedId } = useTaskSelectedIdContext();
   const { tasks, tasksDispatch } = useTasksContext();
+
+  // State
   const [originalTasks, setOriginalTasks] = useState<Task[]>([] as Task[]);
   const [sortType, setSortType] = useState<string>("");
   const [sortValue, setSortValue] = useState<string>("");

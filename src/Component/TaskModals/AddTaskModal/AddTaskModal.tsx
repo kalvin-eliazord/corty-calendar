@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { format, parse } from "date-fns";
-import Slider from "../../Slider";
+import Slider from "../../Slider/Slider";
 import { getFilteredMonth } from "../../../utils/getMonth";
 import {
   getFormattedHour,
@@ -49,7 +49,7 @@ import { useTaskSelectedIdContext } from "../../../context/TaskSelectedIdContext
 import { useDateSelectedContext } from "../../../context/DateSelectedContext";
 
 const AddTask = () => {
-  // context
+  // Context
   const { calendar } = useCalendarContext();
   const { dateSelected } = useDateSelectedContext();
   const { taskSelectedId, setTaskSelectedId } = useTaskSelectedIdContext();

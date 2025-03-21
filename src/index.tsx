@@ -11,13 +11,11 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <React.StrictMode>
-        <CalendarProvider>
-
-    <AreModalsVisibleProvider>
-      <App />
-    </AreModalsVisibleProvider>
+    <CalendarProvider>
+      <AreModalsVisibleProvider>
+        <App />
+      </AreModalsVisibleProvider>
     </CalendarProvider>
-
   </React.StrictMode>
 );
 

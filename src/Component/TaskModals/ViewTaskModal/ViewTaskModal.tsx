@@ -34,10 +34,8 @@ const ViewTask = () => {
   const { tasks, removeTask, getTask, toggleIsDoneTask, toggleIsDoneCheck } =
     useTasksContext();
   const { taskSelectedId } = useTaskSelectedIdContext();
-  const {
-    setIsViewTaskModalVisible,
-    setIsAddTaskModalVisible,
-  } = useAreModalsVisibleContext();
+  const { setIsViewTaskModalVisible, setIsAddTaskModalVisible } =
+    useAreModalsVisibleContext();
 
   // State
   const [taskSelected, setTaskSelected] = useState<Task>({} as Task);

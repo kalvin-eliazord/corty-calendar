@@ -20,7 +20,10 @@ export const HeaderTasksContainer = styled.div`
   gap: 40px;
 `;
 
-export const TaskContainer = styled.div<{ $isDone: boolean; $dueDateLeft: number }>`
+export const TaskContainer = styled.div<{
+  $isDone: boolean;
+  $dueDateLeft: number;
+}>`
   display: flex;
   justify-content: space-between;
   text-decoration: ${({ $isDone }) => $isDone && "line-through"};

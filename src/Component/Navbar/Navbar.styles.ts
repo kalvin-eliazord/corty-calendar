@@ -24,7 +24,7 @@ export const Header = styled.div`
 export const LeftSide = styled.div`
   display: flex;
   flex-direction: column;
-  padding:10px;
+  padding: 10px;
   height: 100vh;
   div {
     bottom: 20vh;
@@ -61,8 +61,7 @@ export const CalendarDateText = styled.p`
   position: relative;
   bottom: 15px;
   margin-right: 40px;
-  text-wrap:nowrap;
-
+  text-wrap: nowrap;
 `;
 
 export const ArrowsContainer = styled.div`
@@ -113,15 +112,15 @@ export const CalendarViewSelector = styled.select`
 export const StyledLink = styled(Link)`
   text-decoration: none;
   color: inherit;
-  position:relative;
-  bottom:8px;
+  position: relative;
+  bottom: 8px;
   border: 1px solid #818380;
   height: 20px;
   padding-block: 8px;
   padding-inline: 15px;
   border-radius: 30px;
   margin-right: 120px;
-  text-wrap:nowrap;
+  text-wrap: nowrap;
   &:hover {
     background-color: rgb(85, 90, 92);
   }

@@ -1,19 +1,4 @@
-import styled from "styled-components";
-
-const SliderContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 9px;
-
-  div {
-    display: flex;
-    gap: 20px;
-
-    label {
-      width: 90px;
-    }
-  }
-`;
+import SliderContainer from "./Slider.styles";
 
 type SliderProps = {
   name: string;

@@ -56,8 +56,8 @@ export const MainAddTaskContainer = styled.div`
     background: #1e1e1e;
   }
 
-  &:focus{
-  border:0;
+  &:focus {
+    border: 0;
   }
 `;
 

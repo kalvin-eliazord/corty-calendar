@@ -7,6 +7,7 @@ import {
   endOfWeek,
   format,
 } from "date-fns";
+import daysLetterWeek from "../../utils/daysLetterWeek";
 import { getMonthByIndex } from "../../utils/getMonth";
 import { useCalendarContext } from "../../context/CalendarContext";
 import {
@@ -41,8 +42,6 @@ const getWeeksOfMonth = (year: number, month: number): string[][] => {
     );
   });
 };
-
-const daysLetterWeek = ["M", "T", "W", "T", "F", "Sa", "Su"];
 
 const MonthCalendar: React.FC<MonthCalendarProps> = ({ customCssProps }) => {
   const [customCss, setCustomCss] = useState<boolean>(customCssProps);
