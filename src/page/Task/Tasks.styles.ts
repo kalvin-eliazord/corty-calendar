@@ -14,10 +14,20 @@ export const HeaderTasksContainer = styled.div`
   position: sticky;
   top: 0;
   z-index: 4;
+  width: 100%;
   background-color: #2a2e31;
   padding: 20px;
   display: flex;
-  gap: 40px;
+  gap: 70px;
+  select {
+    postion: relative;
+    top: 0.5px;
+  }
+
+  img {
+    width: 30px;
+    height: 30px;
+  }
 `;
 
 export const TaskContainer = styled.div<{
@@ -91,10 +101,9 @@ export const LabelSelected = styled.div`
 export const SearchTaskInput = styled.input`
   color: #e2e3e2;
   left: 80px;
-  background-color: #1e1e21;
+  background-color: #2a2f30;
   border: 0;
   font-size: 25px;
-  margin-bottom: 10px;
   border-bottom: 2px solid grey;
   &:focus {
     outline: 0;

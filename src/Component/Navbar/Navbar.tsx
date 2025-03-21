@@ -1,4 +1,3 @@
-// Navbar.tsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -13,6 +12,8 @@ import {
   RightArrowButton,
   CalendarViewSelector,
   StyledLink,
+  Logo,
+  LogoContainer,
 } from "./Navbar.styles";
 import { MonthCalendar } from "../MonthCalendar/MonthCalendar";
 import { useCalendarContext } from "../../context/CalendarContext";
@@ -130,10 +131,13 @@ const Navbar = () => {
   return (
     <MainContainer>
       <Header>
-        <CalendarToggleButton
-          alt="calendarToggleButton"
-          src="https://www.svgrepo.com/show/532195/menu.svg"
-        />
+        <LogoContainer>
+          <CalendarToggleButton
+            alt="calendarToggleButton"
+            src="https://www.svgrepo.com/show/532195/menu.svg"
+          />
+          <Logo src="https://ssl.gstatic.com/calendar/images/dynamiclogo_2020q4/calendar_21_2x.png" />
+        </LogoContainer>
         <StyledLink to="/tasks"> My Tasks</StyledLink>
         <StyledLink to="" onClick={handleClickToday}>
           Today

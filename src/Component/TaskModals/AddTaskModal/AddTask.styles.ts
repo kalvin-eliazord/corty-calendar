@@ -333,7 +333,7 @@ export const HourInput = styled.input.attrs(() => ({
   color: #e2e3e2;
   background-color: #333436;
   height: 40px;
-  width: 24%;
+  width: 32%;
   border: 0;
   border-radius: 5px;
   &:placeholder {
@@ -417,7 +417,7 @@ export const HoursDropDown = styled.div`
   }
   left: 56%;
   top: 32%;
-  width: 110px;
+  width: 140px;
   height: 200px;
   overflow-y: scroll;
   background-color: #0f1110;

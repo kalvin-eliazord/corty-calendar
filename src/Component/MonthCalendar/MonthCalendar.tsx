@@ -48,10 +48,12 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ customCssProps }) => {
   const { calendar, calendarDispatch } = useCalendarContext();
   const [monthName, setMonthName] = useState<string>("");
   const [weeks, setWeeks] = useState<string[][]>([]);
+  const [isCurrentDay, setIsCurrentDay] = useState<boolean>(false);
 
   useEffect(() => {
     setMonthName(getMonthByIndex(calendar.month));
     setWeeks(getWeeksOfMonth(calendar.year, calendar.month));
+    setIsCurrentDay(false);
   }, [calendar]);
 
   useEffect(() => {
@@ -89,6 +91,9 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ customCssProps }) => {
               onClick={() => {
                 calendarDispatch({ type: "SET_DAY", state: Number(day) });
               }}
+              $isCurrentDay={
+                calendar.day === Number(day) && !isCurrentDay ? true : false
+              }
             >
               <h4>{day}</h4>
             </DayContainer>

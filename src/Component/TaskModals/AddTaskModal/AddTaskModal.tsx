@@ -78,14 +78,15 @@ const AddTask = () => {
   const [isAllDayInput, setIsAllDay] = useState<boolean>(false);
   const [taskId, setTaskId] = useState<string>("");
   const [isCalendarClicked, setIsCalendarClicked] = useState<boolean>(false);
-
+  const [formattedDate, setFormattedDate] = useState<string>("");
+  const [formattedHour, setFormattedHour] = useState<string>("");
+  
   // Refs for inputs
   const dateInputRef = useRef<HTMLInputElement | null>(null);
   const hourInputRef = useRef<HTMLInputElement | null>(null);
   const recurringSelectorRef = useRef<HTMLSelectElement | null>(null);
   const monthCalendarModalRef = useRef<HTMLDivElement | null>(null);
-  const [formattedDate, setFormattedDate] = useState<string>("");
-  const [formattedHour, setFormattedHour] = useState<string>("");
+
 
   const handleOnBlurHour = () => {
     if (!hourInput || !hourInput.trim()) {

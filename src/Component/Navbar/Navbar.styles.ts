@@ -45,22 +45,35 @@ export const AddTaskButton = styled.div`
   }
 `;
 
+export const LogoContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-right: 250px;
+  gap: 35px;
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
 export const CalendarToggleButton = styled.img`
   width: 25px;
   filter: invert(1);
   position: relative;
   bottom: 15px;
   left: 20px;
-  margin-right: 200px;
-  &:hover {
-    cursor: pointer;
-  }
+`;
+
+export const Logo = styled.img`
+  width: 40px;
+  height: 40px;
+  position: relative;
+  bottom: 10px;
 `;
 
 export const CalendarDateText = styled.p`
   position: relative;
   bottom: 15px;
-  margin-right: 40px;
+  margin-right: 90px;
   text-wrap: nowrap;
 `;
 
@@ -69,6 +82,12 @@ export const ArrowsContainer = styled.div`
   gap: 70px;
   margin-right: 120px;
 
+  img {
+    padding: 10px;
+    border-radius: 30px;
+    position: relative;
+    bottom: 10px;
+  }
   &:hover {
     cursor: pointer;
   }
@@ -79,8 +98,10 @@ export const LeftArrowButton = styled.img`
   height: 20px;
   filter: invert(1);
   transform: scaleX(-100%);
+
   &:hover {
     cursor: pointer;
+    background-color: rgba(85, 90, 92, 0.18);
   }
 `;
 
@@ -90,22 +111,29 @@ export const RightArrowButton = styled.img`
   filter: invert(1);
   &:hover {
     cursor: pointer;
+    background-color: rgba(85, 90, 92, 0.18);
   }
 `;
 
 export const CalendarViewSelector = styled.select`
-  position: relative;
-  height: 20px;
-  right: 10px;
-  border: 0;
+  border: 1px solid grey;
   font-weight: bold;
   font-size: 15px;
   color: white;
   background-color: #1b1b1b;
-  border-radius: 5px;
+  border-radius: 30px;
+  position: relative;
+  bottom: 10px;
+  padding-inline: 10px;
+  text-align: center;
+
   &:hover {
     cursor: pointer;
-    background-color: rgb(85, 90, 92);
+    background-color: rgba(85, 90, 92, 0.18);
+
+    &:focus {
+  background-color: #1b1b1b;
+    }
   }
 `;
 

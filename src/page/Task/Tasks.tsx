@@ -244,7 +244,7 @@ const Tasks = () => {
       )}
 
       <MainContainer>
-        {tasks.length < 1 && <Text>No tasks!</Text>}
+        {tasks.length < 1 && <Text>No tasks! 🍕</Text>}
         {sortedTasks.slice(0, renderedTasks).map((task: Task) => (
           <div key={task.id}>
             <TaskContainer
