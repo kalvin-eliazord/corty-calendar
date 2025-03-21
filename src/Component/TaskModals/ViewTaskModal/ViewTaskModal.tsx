@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { getFormattedHour } from "../../../utils/getFormattedHour";
 import { Task, useTasksContext } from "../../../context/TasksContext";
@@ -33,11 +33,9 @@ const ViewTask = () => {
   // Context
   const { tasks, removeTask, getTask, toggleIsDoneTask, toggleIsDoneCheck } =
     useTasksContext();
-  const { taskSelectedId, setTaskSelectedId } = useTaskSelectedIdContext();
+  const { taskSelectedId } = useTaskSelectedIdContext();
   const {
-    isViewTaskModalVisible,
     setIsViewTaskModalVisible,
-    isAddTaskModalVisible,
     setIsAddTaskModalVisible,
   } = useAreModalsVisibleContext();
 

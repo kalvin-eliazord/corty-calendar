@@ -13,9 +13,9 @@ import AddTaskModal from "./component/TaskModals/AddTaskModal/AddTaskModal";
 import TaskSelectedIdProvider from "./context/TaskSelectedIdContext";
 import DateSelectedProvider from "./context/DateSelectedContext";
 import { useCalendarContext } from "./context/CalendarContext";
-import Tasks from "./page/Tasks";
-import DayView from "./page/CalendarViews/DayView";
-import MonthView from "./page/CalendarViews/MonthView";
+import Tasks from "./page/Task/Tasks";
+import DayView from "./page/CalendarViews/DayView/DayView";
+import MonthView from "./page/CalendarViews/MonthView/MonthView";
 const GlobalStyle = createGlobalStyle`
 body{
   margin:0;

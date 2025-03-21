@@ -1,7 +1,6 @@
 import styled from "styled-components";
 
-export const CalendarContainer = styled.div<{ $displayType: string }>`
-  display: ${({ $displayType }) => $displayType};
+export const CalendarContainer = styled.div`
   color: white;
   width: 73%;
   height: 90%;

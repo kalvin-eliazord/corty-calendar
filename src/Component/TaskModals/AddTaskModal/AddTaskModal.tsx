@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { format, parse } from "date-fns";
 import Slider from "../../Slider";
-import { getFilteredMonth, getMonthByIndex } from "../../../utils/getMonth";
+import { getFilteredMonth } from "../../../utils/getMonth";
 import {
   getFormattedHour,
   getNonFormattedHour,
