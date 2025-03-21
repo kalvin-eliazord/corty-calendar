@@ -1,5 +1,13 @@
 import styled from "styled-components";
 
+export const ModalBackground = styled.div`
+  position: absolute;
+  z-index: 12;
+  background-color: rgba(0, 0, 0, 0.66);
+  width: 100%;
+  height: 100vh;
+`;
+
 export const MainAddTaskContainer = styled.div`
   position: fixed;
   top: 50%;

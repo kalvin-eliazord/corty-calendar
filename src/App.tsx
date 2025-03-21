@@ -4,34 +4,19 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import { createGlobalStyle, styled } from "styled-components";
+import GlobalStyle from "./utils/GlobalStyle";
 import Navbar from "./component/Navbar/Navbar";
 import { useAreModalsVisibleContext } from "./context/ModalsContext";
 import { TasksProvider } from "./context/TasksContext";
 import ViewTaskModal from "./component/TaskModals/ViewTaskModal/ViewTaskModal";
 import AddTaskModal from "./component/TaskModals/AddTaskModal/AddTaskModal";
+import { ModalBackground } from "./component/TaskModals/AddTaskModal/AddTask.styles";
 import TaskSelectedIdProvider from "./context/TaskSelectedIdContext";
 import DateSelectedProvider from "./context/DateSelectedContext";
 import { useCalendarContext } from "./context/CalendarContext";
 import Tasks from "./page/Task/Tasks";
 import DayView from "./page/CalendarViews/DayView/DayView";
 import MonthView from "./page/CalendarViews/MonthView/MonthView";
-const GlobalStyle = createGlobalStyle`
-body{
-  margin:0;
-  padding:0;
-  font-family: Noto Sans, sans-serif;
-    overflow-y: hidden;
-}
-`;
-
-const ModalBackground = styled.div`
-  position: absolute;
-  z-index: 12;
-  background-color: rgba(0, 0, 0, 0.66);
-  width: 100%;
-  height: 100vh;
-`;
 
 export default function App() {
   const {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { CalendarContainer } from "../../../component/MonthCalendar/MonthCalendar";
 import { useTasksContext } from "../../../context/TasksContext";
@@ -7,9 +7,9 @@ import { getFormattedHour } from "../../../utils/getFormattedHour";
 import { useTaskSelectedIdContext } from "../../../context/TaskSelectedIdContext";
 import { useCalendarContext } from "../../../context/CalendarContext";
 import formattedHours from "../../../utils/formattedHours";
+import React from "react";
 import { useDateSelectedContext } from "../../../context/DateSelectedContext";
 
-// Import styles
 import {
   DayViewContainer,
   DayViewNameContainer,
@@ -54,6 +54,7 @@ const DayView: React.FC<DayViewProps> = ({ dayRangeProps, displayType }) => {
 
   const handleHourRangeClick = (clickedHour: number, clickedDate: Date) => {
     setIsAddTaskModalVisible(true);
+
     calendarDispatch({ type: "SET_HOUR", state: clickedHour });
     setDateSelected(clickedDate);
   };
@@ -98,7 +99,7 @@ const DayView: React.FC<DayViewProps> = ({ dayRangeProps, displayType }) => {
                   (task) =>
                     task.isAllDay &&
                     task.dueDate.getTime() === day.date.getTime() && (
-                      <AllDayTask key={task.id}>{task.title} </AllDayTask>
+                      <AllDayTask>{task.title} </AllDayTask>
                     )
                 )}
               </AllDayTasksContainer>
@@ -119,6 +120,26 @@ const DayView: React.FC<DayViewProps> = ({ dayRangeProps, displayType }) => {
                       </TaskContainer>
                     )}
                 </TaskPlaceholderContainer>
+
+                {tasks.map(
+                  (task) =>
+                    !task.isAllDay &&
+                    task.dueDate.getTime() === day.date.getTime() &&
+                    task.hour === i && (
+                      <TaskContainer
+                        key={task.id}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleTaskContainerClick(task.id);
+                        }}
+                        $isDone={task.isDone}
+                      >
+                        {task.title}
+
+                        {`, ${getFormattedHour(task.hour)}`}
+                      </TaskContainer>
+                    )
+                )}
               </HourRangeContainer>
             ))}
           </DayViewContainer>

@@ -7,13 +7,13 @@ export const DayViewContainer = styled.div`
 `;
 
 export const DayViewNameContainer = styled.div`
-  z-index: 1;
+  z-index: 2;
   position: sticky;
   padding-top: 2px;
   background-color: #0f1110;
   top: 0;
   border-bottom: solid #7a7264 1px;
-  
+
   p {
     margin-left: 2%;
     color: #246694;
@@ -129,8 +129,8 @@ export const TaskContainer = styled.div<{ $isDone: boolean }>`
   font-weight: bold;
   padding-inline: 2%;
   text-wrap: nowrap;
-  text-decoration: ${({ $isDone }) => ($isDone && "line-through")};
-  
+  text-decoration: ${({ $isDone }) => $isDone && "line-through"};
+
   &:hover {
     cursor: pointer;
   }

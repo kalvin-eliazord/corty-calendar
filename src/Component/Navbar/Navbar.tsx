@@ -22,15 +22,19 @@ import { useTaskSelectedIdContext } from "../../context/TaskSelectedIdContext";
 
 const calendarViews = ["", "day", "week", "month", "year"];
 
-const getFirstDay = (year: number, month: number) =>
-  new Date(year, month - 1, 1).getDate();
-const getLastDay = (year: number, month: number) =>
-  new Date(year, month, 0).getDate();
-
 const Navbar = () => {
   // Context
-  const {  setTaskSelectedId } = useTaskSelectedIdContext();
-  const { calendar, calendarDispatch } = useCalendarContext();
+  const { setTaskSelectedId } = useTaskSelectedIdContext();
+  const {
+    calendar,
+    calendarDispatch,
+    nextDay,
+    previousDay,
+    nextMonth,
+    previousMonth,
+    previousWeek,
+    nextWeek,
+  } = useCalendarContext();
   const {
     isAddTaskModalVisible,
     setIsAddTaskModalVisible,
@@ -41,8 +45,6 @@ const Navbar = () => {
   const [currentDate, setCurrentDate] = useState({ year: 0, month: 0, day: 0 });
   const [calendarView, setCalendarView] = useState<string>("day");
   const [formattedDate, setFormattedDate] = useState<string>("");
-  const [isPreviousMonthReady, setIsPreviousMonthReady] =
-    useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -56,7 +58,7 @@ const Navbar = () => {
       `${calendar.day} ${getMonthByIndex(calendar.month)} ${calendar.year}`
     );
 
-    if (calendarView === "day") {
+    if (calendarView === "day" && !isAddTaskModalVisible) {
       navigate(
         `/calendar/${calendarView}/${calendar.year}/${calendar.month}/${calendar.day}`
       );
@@ -82,36 +84,37 @@ const Navbar = () => {
     });
   };
 
-  useEffect(() => {
-    if (!isPreviousMonthReady) return;
-
-    calendarDispatch({
-      type: "SET_DAY",
-      state: getLastDay(calendar.year, calendar.month),
-    });
-
-    setIsPreviousMonthReady(false);
-  }, [calendar.month]);
-
-  const handlePreviousDay = () => {
-    if (calendar.day < 2) {
-      calendarDispatch({ type: "PREVIOUS_MONTH" });
-      setIsPreviousMonthReady(true);
-    } else {
-      calendarDispatch({ type: "PREVIOUS_DAY" });
+  const handlePreviousView = () => {
+    switch (calendarView) {
+      case "day":
+        previousDay();
+        break;
+      case "week":
+        previousWeek();
+        break;
+      case "month":
+        previousMonth();
+        break;
+      case "year":
+        calendarDispatch({ type: "PREVIOUS_YEAR" });
+        break;
     }
   };
 
-  const handleNextDay = () => {
-    const lastDay = getLastDay(calendar.year, calendar.month);
-    if (calendar.day >= lastDay) {
-      calendarDispatch({ type: "NEXT_MONTH" });
-      calendarDispatch({
-        type: "SET_DAY",
-        state: getFirstDay(calendar.year, calendar.month),
-      });
-    } else {
-      calendarDispatch({ type: "NEXT_DAY" });
+  const handleNextView = () => {
+    switch (calendarView) {
+      case "day":
+        nextDay();
+        break;
+      case "week":
+        nextWeek();
+        break;
+      case "month":
+        nextMonth();
+        break;
+      case "year":
+        calendarDispatch({ type: "NEXT_YEAR" });
+        break;
     }
   };
 
@@ -137,11 +140,11 @@ const Navbar = () => {
         </StyledLink>
         <ArrowsContainer>
           <LeftArrowButton
-            onClick={handlePreviousDay}
+            onClick={handlePreviousView}
             src="https://cdn-icons-png.flaticon.com/512/271/271228.png"
           />
           <RightArrowButton
-            onClick={handleNextDay}
+            onClick={handleNextView}
             src="https://cdn-icons-png.flaticon.com/512/271/271228.png"
           />
         </ArrowsContainer>

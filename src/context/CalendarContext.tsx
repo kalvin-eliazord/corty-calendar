@@ -1,4 +1,12 @@
 import { createContext, useContext, ReactNode, useReducer } from "react";
+import {
+  addDays,
+  subDays,
+  addMonths,
+  subMonths,
+  subWeeks,
+  addWeeks,
+} from "date-fns";
 
 type CalendarType = {
   year: number;
@@ -64,6 +72,12 @@ export const calendarReducer = (
 type CalendarContextType = {
   calendar: CalendarType;
   calendarDispatch: React.Dispatch<CalendarAction>;
+  nextDay: () => void;
+  previousDay: () => void;
+  nextMonth: () => void;
+  previousMonth: () => void;
+  nextWeek: () => void;
+  previousWeek: () => void;
 };
 
 const CalendarContext = createContext<CalendarContextType | undefined>(
@@ -79,8 +93,95 @@ const CalendarProvider = ({ children }: { children: ReactNode }) => {
     hour: today.getHours(),
   });
 
+  const getCurrentDate = () => {
+    return new Date(calendar.year, calendar.month - 1, calendar.day);
+  };
+
+  const nextDay = () => {
+    const currentDate = getCurrentDate();
+
+    const newDate = addDays(currentDate, 1);
+    calendarDispatch({
+      type: "SET_DATE",
+      year: newDate.getFullYear(),
+      month: newDate.getMonth() + 1,
+      day: newDate.getDate(),
+    });
+  };
+
+  const previousDay = () => {
+    const currentDate = getCurrentDate();
+
+    const newDate = subDays(currentDate, 1);
+    calendarDispatch({
+      type: "SET_DATE",
+      year: newDate.getFullYear(),
+      month: newDate.getMonth() + 1,
+      day: newDate.getDate(),
+    });
+  };
+
+  const nextMonth = () => {
+    const currentDate = getCurrentDate();
+
+    const newDate = addMonths(currentDate, 1);
+    calendarDispatch({
+      type: "SET_DATE",
+      year: newDate.getFullYear(),
+      month: newDate.getMonth() + 1,
+      day: newDate.getDate(),
+    });
+  };
+
+  const previousMonth = () => {
+    const currentDate = getCurrentDate();
+
+    const newDate = subMonths(currentDate, 1);
+    calendarDispatch({
+      type: "SET_DATE",
+      year: newDate.getFullYear(),
+      month: newDate.getMonth() + 1,
+      day: newDate.getDate(),
+    });
+  };
+
+  const previousWeek = () => {
+    const currentDate = getCurrentDate();
+
+    const newDate = subWeeks(currentDate, 1);
+    calendarDispatch({
+      type: "SET_DATE",
+      year: newDate.getFullYear(),
+      month: newDate.getMonth() + 1,
+      day: newDate.getDate(),
+    });
+  };
+
+  const nextWeek = () => {
+    const currentDate = getCurrentDate();
+
+    const newDate = addWeeks(currentDate, 1);
+    calendarDispatch({
+      type: "SET_DATE",
+      year: newDate.getFullYear(),
+      month: newDate.getMonth() + 1,
+      day: newDate.getDate(),
+    });
+  };
+
   return (
-    <CalendarContext.Provider value={{ calendar, calendarDispatch }}>
+    <CalendarContext.Provider
+      value={{
+        calendar,
+        calendarDispatch,
+        nextDay,
+        previousDay,
+        nextMonth,
+        previousMonth,
+        nextWeek,
+        previousWeek,
+      }}
+    >
       {children}
     </CalendarContext.Provider>
   );
