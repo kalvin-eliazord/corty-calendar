@@ -8,7 +8,7 @@ export const MainAddTaskContainer = styled.div`
   width: 450px;
   max-height: 450px;
   background-color: #1e1e21;
-  z-index: 9;
+  z-index: 15;
   text-align: left;
   border-radius: 20px;
 
@@ -47,6 +47,10 @@ export const MainAddTaskContainer = styled.div`
   &::-webkit-scrollbar-corner {
     background: #1e1e1e;
   }
+
+  &:focus{
+  border:0;
+  }
 `;
 
 export const TaskTitle = styled.h2<{ $isDone: boolean }>`
@@ -58,8 +62,12 @@ export const HeaderContainer = styled.div`
   position: sticky;
   top: 0;
   width: 100%;
+  height: 40px;
+  margin-bottom: 10px;
   display: flex;
   justify-content: flex-end;
+  z-index: 10;
+
   &:hover {
     cursor: move;
     background-color: rgba(64, 64, 70, 0.42);
@@ -69,12 +77,12 @@ export const HeaderContainer = styled.div`
 export const HeaderButton = styled.img`
   filter: invert(1);
   width: 15px;
+  height: 15px;
   margin-top: 20px;
   position: relative;
-  bottom: 10px;
-  margin-right: 20px;
-
-  padding: 10px;
+  bottom: 12px;
+  margin-right: 30px;
+  padding: 5px;
   border-radius: 5px;
   &:hover {
     cursor: pointer;
@@ -91,7 +99,6 @@ export const TitleTaskInput = styled.input`
   background-color: #1e1e21;
   border: 0;
   font-size: 25px;
-  margin-bottom: 10px;
   border-bottom: 2px solid grey;
   &:focus {
     outline: 0;
@@ -107,8 +114,9 @@ export const TimeSettingsContainerLink = styled.div`
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
-  height: 100px;
   color: #e2e3e2;
+  border-radius: 5px;
+  margin-bottom: 10px;
   img {
     position: relative;
     margin-right: 20px;
@@ -155,16 +163,15 @@ export const Form = styled.form`
 
 export const SlidersContainer = styled.div`
   border: 1px solid #333436;
-  margin-left: 85px;
-  margin-bottom: 40px;
-  width: 67%;
+  margin-left: 76px;
+  margin-bottom: 20px;
+  width: 68%;
   border-radius: 5px;
 `;
 
 export const ItemInput = styled.input`
   overflow-x: scroll;
   color: white;
-  margin-left: 4px;
   border: 0;
   width: 81%;
   background-color: #333436;
@@ -175,15 +182,18 @@ export const ItemInput = styled.input`
     padding-left: 10px;
     color: #777472;
   }
+
+  &:hover {
+    background-color: rgba(123, 123, 134, 0.49);
+  }
 `;
 
 export const ItemInputContainer = styled.div`
   overflow-x: auto;
-  margin-bottom: 10px;
   overflow-y: hidden;
   border: 0;
   width: 82%;
-  margin-left: 5px;
+  margin-left: 4px;
   background-color: #292b2c;
   border-radius: 5px;
   span {
@@ -239,7 +249,7 @@ export const ItemContainer = styled.div`
   }
 `;
 
-export const ChildContainer = styled.div`
+export const BodyContainer = styled.div`
   max-width: 500px;
   margin: auto;
 `;
@@ -255,13 +265,16 @@ export const ClockImg = styled.img`
   padding-inline: 10px;
 `;
 
+export const DescriptionContainer = styled.div`
+  display: flex;
+`;
+
 export const DescriptionImg = styled.img`
   filter: invert(1);
   width: 25px;
   padding-left: 32px;
   padding-right: 20px;
-  position: relative;
-  bottom: 70px;
+  bottom: 150px;
   right: 4px;
 `;
 
@@ -271,7 +284,7 @@ export const DescriptionTextArea = styled.textarea`
   color: #e2e3e2;
   width: 67%;
   padding-bottom: 30px;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
   background-color: #333436;
   border-radius: 5px;
   &::placeholder {
@@ -281,6 +294,10 @@ export const DescriptionTextArea = styled.textarea`
   &:focus {
     outline: 0;
     border-bottom: 2px solid #093377;
+  }
+
+  &:hover {
+    background-color: rgba(123, 123, 134, 0.49);
   }
 `;
 
@@ -296,6 +313,10 @@ export const DateInput = styled.input.attrs(() => ({
     text-align: center;
     padding-left: 20px;
   }
+
+  &:hover {
+    background-color: rgba(123, 123, 134, 0.49);
+  }
 `;
 
 export const HourInput = styled.input.attrs(() => ({
@@ -310,21 +331,35 @@ export const HourInput = styled.input.attrs(() => ({
   &:placeholder {
     padding-left: 20px;
   }
+
+  &:hover {
+    background-color: rgba(123, 123, 134, 0.49);
+  }
+`;
+
+export const TimeContainer = styled.div`
+  display: flex;
+  gap: 20px;
+  margin-bottom: 10px;
 `;
 
 export const StyledSelect = styled.select`
-  position: relative;
-  left: 19%;
-  bottom: 40px;
-  padding: 5px;
   border: 0;
   border-radius: 5px;
+  margin-left: 80px;
+  margin-right: 40px;
+  padding: 5px;
   background-color: #333436;
   color: white;
+
+  &:hover {
+    background-color: rgba(123, 123, 134, 0.49);
+  }
 `;
 
 export const AllDayContainer = styled.div`
-  position: relative;
+  margin-right: 50px;
+
   left: 64%;
   bottom: 65px;
   border: 0;
@@ -363,7 +398,7 @@ export const HoursDropDown = styled.div`
 export const Footer = styled.div`
   display: flex;
   justify-content: flex-end;
-  padding-block: 10px;
+  margin-bottom: 10px;
   div {
     padding-inline: 16px;
     padding-block: 10px;

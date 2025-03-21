@@ -1,6 +1,8 @@
 import styled from "styled-components";
 
-export const CalendarContainer = styled.div`
+export const CalendarContainer = styled.div<{ $displayType: string }>`
+  display: ${({ $displayType }) => $displayType};
+  color: white;
   width: 73%;
   height: 90%;
   border-radius: 20px;
@@ -10,10 +12,10 @@ export const CalendarContainer = styled.div`
   left: 18%;
   top: 12%;
   overflow-y: auto;
-  
+
   &::-webkit-scrollbar {
-    width: 15px; 
-    height: 12px; 
+    width: 15px;
+    height: 12px;
   }
 
   &::-webkit-scrollbar-track {
@@ -22,45 +24,45 @@ export const CalendarContainer = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #3a3a3a; 
+    background: #3a3a3a;
     border-radius: 10px;
-    border: 3px solid #1e1e1e; 
+    border: 3px solid #1e1e1e;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: #555; 
+    background: #555;
   }
 
   &::-webkit-scrollbar-thumb:active {
-    background: #777; 
+    background: #777;
   }
 
   &::-webkit-scrollbar-button {
-    display: none; 
+    display: none;
   }
 
   &::-webkit-scrollbar-corner {
-    background: #1e1e1e; 
+    background: #1e1e1e;
   }
 `;
 
 export const MonthCalendarContainer = styled.div<{
   $customCss: boolean;
 }>`
-  position: fixed;
-  padding:10px;
-  top: ${({$customCss}) => ($customCss ? 240 : 5)}px;
-  left: ${({$customCss}) => ($customCss ? 30 : 100)}px;
+  position: ${({ $customCss }) => ($customCss ? "none" : "fixed")};
+  padding: 10px;
+  top: ${({ $customCss }) => ($customCss ? 240 : 5)}px;
+  left: ${({ $customCss }) => ($customCss ? 30 : 100)}px;
   transform: translate(
-    ${({$customCss}) => ($customCss ? `${0}%, ${0}% ` : `${-10}%, ${50}% `)}
+    ${({ $customCss }) => ($customCss ? `${0}%, ${0}% ` : `${-10}%, ${50}% `)}
   );
   background-color: #0f1110;
   z-index: 10;
   display: flex;
   border-radius: 10px;
   flex-direction: column;
-  height:300px;
-  width:260px;
+  height: 300px;
+  width: 260px;
 `;
 
 export const MonthCalendarHeader = styled.div`

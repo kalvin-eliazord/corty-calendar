@@ -1,9 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { differenceInDays, isSameDay } from "date-fns";
 import styled from "styled-components";
-import { Task } from "../context/TasksContext";
 import { CalendarContainer } from "../component/MonthCalendar/MonthCalendar";
-import { useTasksContext } from "../context/TasksContext";
+import { useTasksContext , Task} from "../context/TasksContext";
 import { getFormattedHour } from "../utils/getFormattedHour";
 import { useAreModalsVisibleContext } from "../context/ModalsContext";
 import { useTaskSelectedIdContext } from "../context/TaskSelectedIdContext";
@@ -220,10 +219,6 @@ const Tasks = () => {
   };
 
   const handleTaskClick = (taskId: string) => {
-    if (isAddTaskModalVisible) {
-      setIsAddTaskModalVisible(false);
-      return;
-    }
 
     setIsViewTaskModalVisible(!isViewTaskModalVisible);
     setTaskSelectedId(taskId);
@@ -280,6 +275,7 @@ const Tasks = () => {
     <CalendarContainer
       onScroll={(e) => handleOnScroll(e)}
       onClick={() => handleTasksContainerClick()}
+      $displayType="block"
     >
       {isPowerModeModalVisible && <PowerModeBackground></PowerModeBackground>}
 

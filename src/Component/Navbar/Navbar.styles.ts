@@ -24,7 +24,8 @@ export const Header = styled.div`
 export const LeftSide = styled.div`
   display: flex;
   flex-direction: column;
-  height: 80vh;
+  padding:10px;
+  height: 100vh;
   div {
     bottom: 20vh;
   }
@@ -32,7 +33,9 @@ export const LeftSide = styled.div`
 
 export const AddTaskButton = styled.div`
   padding: 20px;
-  margin-left: 20px;
+  margin-left: 15px;
+  margin-bottom: 20px;
+
   border-radius: 15px;
   background-color: #36393a;
   width: 6%;

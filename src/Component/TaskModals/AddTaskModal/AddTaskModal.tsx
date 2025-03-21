@@ -1,5 +1,5 @@
-import { useState, useRef, useReducer, useEffect } from "react";
-import { format } from "date-fns";
+import { useState, useRef, useEffect } from "react";
+import { format, parse } from "date-fns";
 import Slider from "../../Slider";
 import { getFilteredMonth, getMonthByIndex } from "../../../utils/getMonth";
 import {
@@ -8,8 +8,9 @@ import {
 } from "../../../utils/getFormattedHour";
 import {
   Task,
-  taskReducer,
   useTasksContext,
+  Check,
+  Label,
 } from "../../../context/TasksContext";
 import { useCalendarContext } from "../../../context/CalendarContext";
 import { useAreModalsVisibleContext } from "../../../context/ModalsContext";
@@ -30,7 +31,7 @@ import {
   ItemInputContainer,
   SlidersContainer,
   ItemContainer,
-  ChildContainer,
+  BodyContainer,
   MonthCalendarWrapper,
   ClockImg,
   DescriptionImg,
@@ -41,24 +42,23 @@ import {
   AllDayContainer,
   HoursDropDown,
   Footer,
+  DescriptionContainer,
+  TimeContainer,
 } from "./AddTask.styles";
+import { useTaskSelectedIdContext } from "../../../context/TaskSelectedIdContext";
+import { useDateSelectedContext } from "../../../context/DateSelectedContext";
 
 const AddTask = () => {
+  // context
   const { calendar } = useCalendarContext();
-  const { addTask } = useTasksContext();
-  const { isAddTaskModalVisible, setIsAddTaskModalVisible } =
-    useAreModalsVisibleContext();
-  const [isTaskReady, setIsTaskReady] = useState<boolean>(false);
-  const dateInputRef = useRef<HTMLInputElement | null>(null);
-  const hourInputRef = useRef<HTMLInputElement | null>(null);
-  const recurringSelectorRef = useRef<HTMLSelectElement | null>(null);
-  const monthCalendarModalRef = useRef<HTMLDivElement | null>(null);
-  const [isMonthCalendarMouseOn, setIsMonthCalendarMouseOn] =
-    useState<boolean>(false);
-  const [formattedDate, setFormattedDate] = useState<string>("");
+  const { dateSelected } = useDateSelectedContext();
+  const { taskSelectedId, setTaskSelectedId } = useTaskSelectedIdContext();
+  const { addTask, getTask, setTask } = useTasksContext();
+  const { setIsAddTaskModalVisible } = useAreModalsVisibleContext();
+
+  // Form input states
   const [dateInput, setDateInput] = useState<string>("");
   const [descriptionInput, setDescriptionInput] = useState<string>("");
-  const [formattedHour, setFormattedHour] = useState<string>("");
   const [hourInput, setHourInput] = useState<string>("");
   const [recurringValue, setRecurringValue] = useState<string>("oneTime");
   const [checkInput, setCheckInput] = useState<string>("");
@@ -67,62 +67,25 @@ const AddTask = () => {
   const [prioritySliderValue, setPrioritySliderValue] = useState<string>("1");
   const [complexitySliderValue, setComplexitySliderValue] =
     useState<string>("1");
+  const [checks, setChecks] = useState<Check[]>([]);
+  const [labels, setLabels] = useState<Label[]>([]);
   const [isHourDropDownVisible, setIsHourDropDownVisible] =
     useState<boolean>(false);
   const [isMonthCalendarVisible, setIsMonthCalendarVisible] =
     useState<boolean>(false);
   const [isDateContainerClicked, setIsDateContainerClicked] =
     useState<boolean>(false);
-  const [task, taskDispatch] = useReducer(taskReducer, {
-    id: "",
-    title: "",
-    description: "",
-    isAllDay: false,
-    hour: 0,
-    complexity: 1,
-    priority: 1,
-    dueDate: new Date(),
-    checks: [],
-    labels: [],
-    isDone: false,
-  } as Task);
+  const [isAllDayInput, setIsAllDay] = useState<boolean>(false);
+  const [taskId, setTaskId] = useState<string>("");
+  const [isCalendarClicked, setIsCalendarClicked] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (!isTaskReady) return;
-
-    addTask(task, recurringValue);
-    setIsTaskReady(false);
-    setIsAddTaskModalVisible(false);
-  }, [isTaskReady]);
-
-  const setDescriptionTask = (): void => {
-    if (!descriptionInput || !descriptionInput.trim()) return;
-
-    taskDispatch({
-      type: "SET_DESCRIPTION",
-      state: descriptionInput.trim(),
-    });
-  };
-
-  const handleSubmitTask = (): void => {
-    taskDispatch({
-      type: "SET_TITLE",
-      state: taskTitleInput === "" ? "No title" : taskTitleInput.trim(),
-    });
-
-    setDescriptionTask();
-
-    if (task.isAllDay) taskDispatch({ type: "SET_HOUR", state: 0 });
-
-    taskDispatch({ type: "SET_COMPLEXITY", state: complexitySliderValue });
-    taskDispatch({ type: "SET_PRIORITY", state: prioritySliderValue });
-
-    setIsTaskReady(true);
-  };
-
-  const handleIsAllDayChange = () => {
-    taskDispatch({ type: "SET_IS_ALL_DAY", state: !task.isAllDay });
-  };
+  // Refs for inputs
+  const dateInputRef = useRef<HTMLInputElement | null>(null);
+  const hourInputRef = useRef<HTMLInputElement | null>(null);
+  const recurringSelectorRef = useRef<HTMLSelectElement | null>(null);
+  const monthCalendarModalRef = useRef<HTMLDivElement | null>(null);
+  const [formattedDate, setFormattedDate] = useState<string>("");
+  const [formattedHour, setFormattedHour] = useState<string>("");
 
   const handleOnBlurHour = () => {
     if (!hourInput || !hourInput.trim()) {
@@ -149,15 +112,9 @@ const AddTask = () => {
     }
 
     setHourInput(`${hourValue} ${hourFormat}`);
-    taskDispatch({
-      type: "SET_HOUR",
-      state: getNonFormattedHour(hourValueCasted, hourFormat),
-    });
   };
 
   const handleOnBlurDate = () => {
-    if (!isMonthCalendarMouseOn) setIsMonthCalendarVisible(false);
-
     if (!dateInput || !dateInput.trim()) {
       setDateInput(formattedDate);
       return;
@@ -177,7 +134,7 @@ const AddTask = () => {
     }
 
     const year = dateNoSpace.slice(day.length + month.length);
-    if (!year || year.length === 3 || year.length < 2) {
+    if (!year) {
       setDateInput(formattedDate);
       return;
     }
@@ -189,92 +146,120 @@ const AddTask = () => {
     }
 
     setDateInput(`${day} ${month} ${year}`);
-    taskDispatch({ type: "SET_DUE_DATE", state: date });
   };
 
+  // Add Task inputs setting
   useEffect(() => {
-    setDateInput(
-      `${calendar.day} ${getMonthByIndex(calendar.month)} ${calendar.year}`
-    );
+    if (!dateSelected) return;
 
-    taskDispatch({
-      type: "SET_DUE_DATE",
-      state: new Date(calendar.year, calendar.month - 1, calendar.day),
-    });
+    setDateInput(format(dateSelected, "d MMMM yyyy"));
 
-    setIsMonthCalendarVisible(false);
-  }, [calendar.day]);
-
-  useEffect(() => {
     const newFormattedHour = getFormattedHour(calendar.hour);
     setFormattedHour(newFormattedHour);
     setHourInput(newFormattedHour);
+  }, [dateSelected]);
 
-    taskDispatch({ type: "SET_HOUR", state: calendar.hour });
+  // Edit Task inputs setting
+  useEffect(() => {
+    if (!taskSelectedId) return;
+    const taskRetrieved = getTask(taskSelectedId);
+    if (!taskRetrieved) return;
+
+    setTaskId(taskRetrieved.id);
+    setTaskTitleInput(taskRetrieved.title);
+    setDescriptionInput(taskRetrieved.description);
+    setPrioritySliderValue(taskRetrieved.priority.toString());
+    setComplexitySliderValue(taskRetrieved.complexity.toString());
+    setIsAllDay(taskRetrieved.isAllDay);
+
+    const formattedHr = getFormattedHour(taskRetrieved.hour);
+    setHourInput(formattedHr);
+
+    const newFormattedDate = format(taskRetrieved.dueDate, "d MMMM yyyy");
+    setDateInput(newFormattedDate);
+  }, [taskSelectedId]);
+
+  useEffect(() => {
+    if (!isCalendarClicked) return;
 
     const newFormattedDate = format(
       new Date(calendar.year, calendar.month - 1, calendar.day),
       "d MMMM yyyy"
     );
+
     setFormattedDate(newFormattedDate);
     setDateInput(newFormattedDate);
-  }, [isAddTaskModalVisible]);
+    setIsCalendarClicked(false);
+    setIsMonthCalendarVisible(false);
+  }, [calendar.day]);
 
-  useEffect(() => {
-    if (
-      isDateContainerClicked &&
-      dateInputRef.current &&
-      isMonthCalendarVisible
-    )
-      dateInputRef.current?.focus();
-  }, [isDateContainerClicked]);
+  const createTaskFromInputs = (): Task => {
+    const parsedDueDate =
+      parse(dateInput, "d MMMM yyyy", new Date()) || new Date();
 
-  useEffect(() => {
-    if (isDateContainerClicked && hourInputRef.current && isHourDropDownVisible)
-      hourInputRef.current?.focus();
-  }, [isHourDropDownVisible]);
+    const newHour = isAllDayInput
+      ? 0
+      : getNonFormattedHour(Number(hourInput.slice(0, 2)), hourInput.slice(2));
 
-  const handleClickModal = () => {
-    if (isMonthCalendarVisible) {
-      isDateContainerClicked &&
-        dateInputRef.current !== document.activeElement &&
-        !isMonthCalendarMouseOn &&
-        setIsMonthCalendarVisible(false);
-    } else if (isHourDropDownVisible) {
-      isDateContainerClicked &&
-        hourInputRef.current !== document.activeElement &&
-        setIsHourDropDownVisible(false);
-    }
+    return {
+      id: taskId ? taskId : crypto.randomUUID(),
+      title: taskTitleInput.trim() || "No title",
+      description: descriptionInput ? descriptionInput.trim() : "",
+      isAllDay: isAllDayInput,
+      hour: newHour,
+      complexity: Number(complexitySliderValue),
+      priority: Number(prioritySliderValue),
+      dueDate: parsedDueDate,
+      checks: checks,
+      labels: labels,
+      isDone: false,
+    };
   };
 
-  const handleFormattedHourClick = (hourIndex: number) => {
-    setHourInput(getFormattedHour(hourIndex));
-    taskDispatch({ type: "SET_HOUR", state: hourIndex });
+  const handleCreateTask = () => {
+    const newTask = createTaskFromInputs();
 
-    setIsHourDropDownVisible(false);
+    taskSelectedId ? setTask(newTask) : addTask(newTask, recurringValue);
+
+    setTaskSelectedId("");
+    setIsAddTaskModalVisible(false);
   };
 
   const handleCheckSubmit = (e: any) => {
     e.preventDefault();
-    if (!checkInput || !checkInput.trim()) return;
-
-    taskDispatch({ type: "ADD_CHECK", state: checkInput.trim() });
+    if (!checkInput.trim()) return;
+    setChecks([
+      ...checks,
+      { id: crypto.randomUUID(), name: checkInput.trim(), isDone: false },
+    ]);
     setCheckInput("");
   };
 
   const handleLabelSubmit = (e: any) => {
     e.preventDefault();
-    if (!labelInput || !labelInput.trim()) return;
+    const labelTrimmed = labelInput ? labelInput.trim() : null;
+    if (!labelTrimmed || labels.find((label) => label.name === labelTrimmed))
+      return;
 
-    const labelTrimmed = labelInput.trim();
-    if (task.labels.find((label) => label.name === labelTrimmed)) return;
-
-    taskDispatch({ type: "ADD_LABEL", state: labelTrimmed });
+    setLabels([...labels, { id: crypto.randomUUID(), name: labelTrimmed }]);
     setLabelInput("");
   };
 
+  const handleIsAllDayChange = () => {
+    setIsAllDay((prev) => !prev);
+  };
+
+  const handleClickModal = () => {
+    if (isMonthCalendarVisible) {
+      setIsMonthCalendarVisible(false);
+    }
+    if (isHourDropDownVisible) {
+      setIsHourDropDownVisible(false);
+    }
+  };
+
   return (
-    <MainAddTaskContainer onClick={() => handleClickModal()}>
+    <MainAddTaskContainer onClick={handleClickModal}>
       <HeaderContainer>
         <HeaderButton
           alt="exitButton"
@@ -282,11 +267,11 @@ const AddTask = () => {
           onClick={() => setIsAddTaskModalVisible(false)}
         />
       </HeaderContainer>
-      <ChildContainer>
+      <BodyContainer>
         <Form
           onSubmit={(e: any) => {
             e.preventDefault();
-            handleSubmitTask();
+            handleCreateTask();
           }}
         >
           <TitleTaskInput
@@ -299,102 +284,112 @@ const AddTask = () => {
         </Form>
 
         {!isDateContainerClicked ? (
-          <>
-            <TimeSettingsContainerLink
-              onClick={() => setIsDateContainerClicked(true)}
+          <TimeSettingsContainerLink
+            onClick={() => setIsDateContainerClicked(true)}
+          >
+            <ClockImg
+              src="https://cdn-icons-png.flaticon.com/512/3114/3114812.png"
+              alt="clock"
+            />
+            <DateLink onClick={() => setIsMonthCalendarVisible(true)}>
+              {dateInput}
+            </DateLink>
+            <HourLink onClick={() => setIsHourDropDownVisible(true)}>
+              {hourInput}
+            </HourLink>
+            <RecurringLink
+              onClick={() => recurringSelectorRef.current?.focus()}
             >
-              <ClockImg src="https://cdn-icons-png.flaticon.com/512/3114/3114812.png" />
-              <DateLink onClick={() => setIsMonthCalendarVisible(true)}>
-                {dateInput}
-              </DateLink>
-              <HourLink onClick={() => setIsHourDropDownVisible(true)}>
-                {hourInput}
-              </HourLink>
-              <RecurringLink
-                onClick={() => recurringSelectorRef.current?.focus()}
-              >
-                Only one time
-              </RecurringLink>
-            </TimeSettingsContainerLink>
-          </>
+              Only one time
+            </RecurringLink>
+          </TimeSettingsContainerLink>
         ) : (
           <>
             <TimeSettingsContainerLink>
-              <ClockImg src="https://cdn-icons-png.flaticon.com/512/3114/3114812.png" />
-
-              <DateInput
-                type="text"
-                ref={dateInputRef}
-                value={dateInput}
-                onClick={() => setIsMonthCalendarVisible(true)}
-                onChange={(e) => setDateInput(e.target.value)}
-                onBlur={() => handleOnBlurDate()}
-              />
-
-              {!task.isAllDay && (
-                <HourInput
-                  ref={hourInputRef}
-                  type="text"
-                  value={hourInput}
-                  onClick={() => setIsHourDropDownVisible(true)}
-                  onChange={(e) => setHourInput(e.target.value)}
-                  onBlur={() => handleOnBlurHour()}
+              <TimeContainer>
+                <ClockImg
+                  src="https://cdn-icons-png.flaticon.com/512/3114/3114812.png"
+                  alt="clock"
                 />
-              )}
+                <DateInput
+                  type="text"
+                  ref={dateInputRef}
+                  value={dateInput}
+                  onClick={() => setIsMonthCalendarVisible(true)}
+                  onChange={(e) => setDateInput(e.target.value)}
+                  onBlur={handleOnBlurDate}
+                />
+                {!isAllDayInput && (
+                  <HourInput
+                    ref={hourInputRef}
+                    type="text"
+                    value={hourInput}
+                    onClick={() => setIsHourDropDownVisible(true)}
+                    onChange={(e) => setHourInput(e.target.value)}
+                    onBlur={handleOnBlurHour}
+                  />
+                )}
+              </TimeContainer>
               {isHourDropDownVisible && (
                 <HoursDropDown>
                   {formattedHours.map((formattedHour, index) => (
                     <div
                       key={formattedHour}
-                      onClick={() => handleFormattedHourClick(index)}
+                      onClick={() => {
+                        setHourInput(formattedHour);
+                        setIsHourDropDownVisible(false);
+                      }}
                     >
                       {formattedHour}
                     </div>
                   ))}
                 </HoursDropDown>
               )}
-
               {isMonthCalendarVisible && (
                 <MonthCalendarWrapper
                   ref={monthCalendarModalRef}
-                  onMouseEnter={() => setIsMonthCalendarMouseOn((prev) => true)}
-                  onMouseLeave={() =>
-                    setIsMonthCalendarMouseOn((prev) => false)
-                  }
+                  onClick={() => setIsCalendarClicked(true)}
                 >
                   <MonthCalendar customCssProps={false} />
                 </MonthCalendarWrapper>
               )}
             </TimeSettingsContainerLink>
-
-            <StyledSelect
-              ref={recurringSelectorRef}
-              onChange={(e) => setRecurringValue(e.target.value)}
-            >
-              <option value="oneTime">Only one time</option>
-              <option value="everyDay"> Everyday </option>
-              <option value="everyWeek"> Every week</option>
-              <option value="everyMonth">Every month</option>
-              <option value="everyYear">Every year</option>
-            </StyledSelect>
-
-            <AllDayContainer>
-              <label htmlFor="checkbox"> All day </label>
-              <input
-                id="checkbox"
-                type="checkbox"
-                checked={task.isAllDay}
-                onChange={() => handleIsAllDayChange()}
-              />
-            </AllDayContainer>
+            <TimeContainer>
+              <StyledSelect
+                ref={recurringSelectorRef}
+                onChange={(e) => setRecurringValue(e.target.value)}
+              >
+                <option value="oneTime">Only one time</option>
+                <option value="everyDay">Every day</option>
+                <option value="everyWeek">Every week</option>
+                <option value="everyMonth">Every month</option>
+                <option value="everyYear">Every year</option>
+              </StyledSelect>
+              <AllDayContainer>
+                <label htmlFor="checkbox"> All day </label>
+                <input
+                  id="checkbox"
+                  type="checkbox"
+                  checked={isAllDayInput}
+                  onChange={handleIsAllDayChange}
+                />
+              </AllDayContainer>
+            </TimeContainer>
           </>
         )}
-        <DescriptionImg src="https://www.svgrepo.com/show/532195/menu.svg" />
-        <DescriptionTextArea
-          onChange={(e) => setDescriptionInput(e.target.value)}
-          value={descriptionInput}
-          placeholder="Add a description"
-        ></DescriptionTextArea>
+
+        <DescriptionContainer>
+          <DescriptionImg
+            src="https://www.svgrepo.com/show/532195/menu.svg"
+            alt="description icon"
+          />
+          <DescriptionTextArea
+            onChange={(e) => setDescriptionInput(e.target.value)}
+            value={descriptionInput}
+            placeholder="Add a description"
+          />
+        </DescriptionContainer>
+
         <SlidersContainer>
           <Slider
             name={"Priority"}
@@ -411,20 +406,20 @@ const AddTask = () => {
             setSliderValue={setComplexitySliderValue}
           />
         </SlidersContainer>
+
         <AddItemsContainer>
-          <Form onSubmit={(e) => handleCheckSubmit(e)}>
+          <Form onSubmit={handleCheckSubmit}>
             <ItemInput
               placeholder="Add a check"
               value={checkInput}
               onChange={(e) => setCheckInput(e.target.value)}
             />
-
             <ItemInputContainer>
-              {task.checks.map((check) => (
+              {checks.map((check) => (
                 <ItemContainer
                   key={check.id}
                   onClick={() =>
-                    taskDispatch({ type: "REMOVE_CHECK", state: check.id })
+                    setChecks(checks.filter((c) => c.id !== check.id))
                   }
                 >
                   {check.name}
@@ -432,19 +427,18 @@ const AddTask = () => {
               ))}
             </ItemInputContainer>
           </Form>
-
-          <Form onSubmit={(e) => handleLabelSubmit(e)}>
+          <Form onSubmit={handleLabelSubmit}>
             <ItemInput
               placeholder="Add a label"
               value={labelInput}
               onChange={(e) => setLabelInput(e.target.value)}
             />
             <ItemInputContainer>
-              {task.labels.map((label) => (
+              {labels.map((label) => (
                 <ItemContainer
                   key={label.id}
                   onClick={() =>
-                    taskDispatch({ type: "REMOVE_LABEL", state: label.id })
+                    setLabels(labels.filter((l) => l.id !== label.id))
                   }
                 >
                   {label.name}
@@ -453,10 +447,11 @@ const AddTask = () => {
             </ItemInputContainer>
           </Form>
         </AddItemsContainer>
+
         <Footer>
-          <div onClick={() => handleSubmitTask()}> Save </div>
+          <div onClick={handleCreateTask}> Save </div>
         </Footer>
-      </ChildContainer>
+      </BodyContainer>
     </MainAddTaskContainer>
   );
 };

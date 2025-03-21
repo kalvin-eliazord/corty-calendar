@@ -18,6 +18,7 @@ import { MonthCalendar } from "../MonthCalendar/MonthCalendar";
 import { useCalendarContext } from "../../context/CalendarContext";
 import { getMonthByIndex } from "../../utils/getMonth";
 import { useAreModalsVisibleContext } from "../../context/ModalsContext";
+import { useTaskSelectedIdContext } from "../../context/TaskSelectedIdContext";
 
 const calendarViews = ["", "day", "week", "month", "year"];
 
@@ -27,30 +28,37 @@ const getLastDay = (year: number, month: number) =>
   new Date(year, month, 0).getDate();
 
 const Navbar = () => {
+  // Context
+  const {  setTaskSelectedId } = useTaskSelectedIdContext();
   const { calendar, calendarDispatch } = useCalendarContext();
   const {
     isAddTaskModalVisible,
     setIsAddTaskModalVisible,
     isViewTaskModalVisible,
-    setIsViewTaskModalVisible,
   } = useAreModalsVisibleContext();
+
+  // State
   const [currentDate, setCurrentDate] = useState({ year: 0, month: 0, day: 0 });
   const [calendarView, setCalendarView] = useState<string>("day");
   const [formattedDate, setFormattedDate] = useState<string>("");
-  const navigate = useNavigate();
   const [isPreviousMonthReady, setIsPreviousMonthReady] =
     useState<boolean>(false);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isViewTaskModalVisible && !isAddTaskModalVisible)
+      setTaskSelectedId("");
+  }, [isViewTaskModalVisible]);
 
   useEffect(() => {
     setFormattedDate(
       `${calendar.day} ${getMonthByIndex(calendar.month)} ${calendar.year}`
     );
 
-    if (!isAddTaskModalVisible) {
+    if (calendarView === "day") {
       navigate(
-        `/calendar/${calendarView ? calendarView : "day"}/${calendar.year}/${
-          calendar.month
-        }/${calendar.day}`
+        `/calendar/${calendarView}/${calendar.year}/${calendar.month}/${calendar.day}`
       );
     }
   }, [calendar.day]);
@@ -64,6 +72,8 @@ const Navbar = () => {
   }, []);
 
   const handleClickToday = () => {
+    setCalendarView("day");
+
     calendarDispatch({
       type: "SET_DATE",
       year: currentDate.year,
@@ -114,19 +124,8 @@ const Navbar = () => {
     );
   };
 
-  const handleNavbarClick = () => {
-    if (isAddTaskModalVisible) setIsAddTaskModalVisible(false);
-    if (isViewTaskModalVisible) setIsViewTaskModalVisible(false);
-  };
-
-  const handleAddTaskClick = () => {
-    if (isViewTaskModalVisible) return;
-
-    setIsAddTaskModalVisible(!isAddTaskModalVisible);
-  };
-
   return (
-    <MainContainer onClick={() => handleNavbarClick()}>
+    <MainContainer>
       <Header>
         <CalendarToggleButton
           alt="calendarToggleButton"
@@ -149,6 +148,7 @@ const Navbar = () => {
         <CalendarDateText>{formattedDate}</CalendarDateText>
         <CalendarViewSelector
           onChange={(e) => handleClickDayView(e.target.value)}
+          value={calendarView}
         >
           {calendarViews.map((view) => (
             <option key={view} value={view}>
@@ -159,14 +159,12 @@ const Navbar = () => {
           ))}
         </CalendarViewSelector>
       </Header>
-      <AddTaskButton onClick={() => handleAddTaskClick()}>
+      <AddTaskButton onClick={() => setIsAddTaskModalVisible(true)}>
         + Add Task
       </AddTaskButton>
-      <div>
-        <LeftSide>
-          <MonthCalendar customCssProps />
-        </LeftSide>
-      </div>
+      <LeftSide>
+        <MonthCalendar customCssProps />
+      </LeftSide>
     </MainContainer>
   );
 };

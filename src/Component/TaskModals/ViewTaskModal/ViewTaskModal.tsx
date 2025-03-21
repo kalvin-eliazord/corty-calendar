@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
 import { getFormattedHour } from "../../../utils/getFormattedHour";
 import { Task, useTasksContext } from "../../../context/TasksContext";
@@ -8,7 +8,7 @@ import {
   TimeSettingsContainerLink,
   AddItemsContainer,
   ItemInputContainer,
-  ChildContainer,
+  BodyContainer,
   ClockImg,
   DescriptionImg,
   DescriptionTextArea,
@@ -30,17 +30,20 @@ import { useTaskSelectedIdContext } from "../../../context/TaskSelectedIdContext
 import { useAreModalsVisibleContext } from "../../../context/ModalsContext";
 
 const ViewTask = () => {
-  const { taskSelectedId } = useTaskSelectedIdContext();
-  const { tasks } = useTasksContext();
+  // Context
+  const { tasks, removeTask, getTask, toggleIsDoneTask, toggleIsDoneCheck } =
+    useTasksContext();
+  const { taskSelectedId, setTaskSelectedId } = useTaskSelectedIdContext();
   const {
+    isViewTaskModalVisible,
     setIsViewTaskModalVisible,
     isAddTaskModalVisible,
     setIsAddTaskModalVisible,
   } = useAreModalsVisibleContext();
+
+  // State
   const [taskSelected, setTaskSelected] = useState<Task>({} as Task);
   const [taskProgress, setTaskProgress] = useState<number>(0);
-  const { removeTask, setTask, toggleIsDoneTask, toggleIsDoneCheck } =
-    useTasksContext();
 
   useEffect(() => {
     if (!taskSelected || !taskSelected.checks || taskSelected.checks.length < 1)
@@ -58,7 +61,7 @@ const ViewTask = () => {
   }, [taskSelected]);
 
   useEffect(() => {
-    const taskRetrieved = tasks.find((task) => task.id === taskSelectedId);
+    const taskRetrieved = getTask(taskSelectedId);
     if (!taskRetrieved) {
       setIsViewTaskModalVisible(false);
       return;
@@ -69,7 +72,6 @@ const ViewTask = () => {
   const handleIsDoneTaskButtonClick = () => {
     toggleIsDoneTask(taskSelected.id);
     setIsViewTaskModalVisible(false);
-    if (isAddTaskModalVisible) setIsAddTaskModalVisible(false);
   };
 
   const handleDeleteButtonClick = () => {
@@ -77,17 +79,23 @@ const ViewTask = () => {
     setIsViewTaskModalVisible(false);
   };
 
+  const handleEditTaskButton = () => {
+    setIsViewTaskModalVisible(false);
+    setIsAddTaskModalVisible(true);
+  };
+
   return (
     <MainAddTaskContainer>
       <HeaderContainer>
-        <ProgressBarContainer>
-          <ProgressBar $progress={taskProgress} />
-        </ProgressBarContainer>
-
+        {taskSelected.checks && taskSelected.checks.length > 0 && (
+          <ProgressBarContainer>
+            <ProgressBar $progress={taskProgress} />
+          </ProgressBarContainer>
+        )}
         <HeaderButton
           alt="editButton"
           src="https://cdn-icons-png.flaticon.com/512/1250/1250615.png"
-          onClick={() => setIsViewTaskModalVisible(false)}
+          onClick={() => handleEditTaskButton()}
         />
         <HeaderButton
           alt="deleteButton"
@@ -100,7 +108,7 @@ const ViewTask = () => {
           onClick={() => setIsViewTaskModalVisible(false)}
         />
       </HeaderContainer>
-      <ChildContainer>
+      <BodyContainer>
         <TaskTitle $isDone={taskSelected.isDone}>
           {taskSelected.title && taskSelected.title}
         </TaskTitle>
@@ -156,7 +164,7 @@ const ViewTask = () => {
             </Form>
           )}
         </AddItemsContainer>
-      </ChildContainer>
+      </BodyContainer>
       <Footer>
         <IsDoneTaskButton onClick={() => handleIsDoneTaskButtonClick()}>
           {taskSelected.isDone

@@ -1,13 +1,13 @@
 import { useReducer, createContext, ReactNode, useContext } from "react";
 import { addDays, addWeeks, addMonths, addYears } from "date-fns";
 
-type Check = {
+export type Check = {
   id: string;
   name: string;
   isDone: boolean;
 };
 
-type Label = {
+export type Label = {
   id: string;
   name: string;
 };
@@ -24,72 +24,6 @@ export type Task = {
   checks: Check[];
   labels: Label[];
   isDone: boolean;
-};
-
-type TaskAction =
-  | { type: "SET_TITLE"; state: string }
-  | { type: "SET_DESCRIPTION"; state: string }
-  | { type: "SET_ALL_DAY"; state: boolean }
-  | { type: "SET_HOUR"; state: number }
-  | { type: "SET_COMPLEXITY"; state: string }
-  | { type: "SET_PRIORITY"; state: string }
-  | { type: "SET_DUE_DATE"; state: Date }
-  | { type: "SET_IS_ALL_DAY"; state: boolean }
-  | { type: "ADD_CHECK"; state: string }
-  | { type: "REMOVE_CHECK"; state: string }
-  | { type: "ADD_LABEL"; state: string }
-  | { type: "REMOVE_LABEL"; state: string }
-  | { type: "SET_IS_DONE"; state: boolean };
-
-export const taskReducer = (state: Task, action: TaskAction): Task => {
-  switch (action.type) {
-    case "SET_TITLE":
-      return { ...state, title: action.state };
-    case "SET_DESCRIPTION":
-      return { ...state, description: action.state };
-    case "SET_ALL_DAY":
-      return { ...state, isAllDay: action.state };
-    case "SET_HOUR":
-      return { ...state, hour: action.state };
-    case "SET_COMPLEXITY":
-      return { ...state, complexity: Number(action.state) };
-    case "SET_PRIORITY":
-      return { ...state, priority: Number(action.state) };
-    case "SET_DUE_DATE":
-      return { ...state, dueDate: action.state };
-    case "SET_IS_ALL_DAY":
-      return { ...state, isAllDay: action.state };
-    case "ADD_CHECK":
-      return {
-        ...state,
-        checks: [
-          ...state.checks,
-          { id: crypto.randomUUID(), name: action.state, isDone: false },
-        ],
-      };
-    case "REMOVE_CHECK":
-      return {
-        ...state,
-        checks: state.checks.filter((check) => check.id !== action.state),
-      };
-    case "ADD_LABEL":
-      return {
-        ...state,
-        labels: [
-          ...state.labels,
-          { id: crypto.randomUUID(), name: action.state },
-        ],
-      };
-    case "REMOVE_LABEL":
-      return {
-        ...state,
-        labels: state.labels.filter((label) => label.id !== action.state),
-      };
-    case "SET_IS_DONE":
-      return { ...state, isDone: action.state };
-    default:
-      return state;
-  }
 };
 
 const handleTaskRecurring = (task: Task, recurringValue: string): Task[] => {
@@ -171,6 +105,7 @@ type TasksContextType = {
   setTask(task: Task): void;
   toggleIsDoneTask(taskId: string): void;
   toggleIsDoneCheck(taskId: string, checkId: string): void;
+  getTask(taskId: string): Task | undefined;
 };
 
 const TasksContext = createContext<TasksContextType | undefined>(undefined);
@@ -229,7 +164,10 @@ const TasksProvider = ({ children }: { children: ReactNode }) => {
           : currentTask
       ),
     });
+  };
 
+  const getTask = (taskId: string): Task | undefined => {
+    return tasks.find((task) => task.id === taskId);
   };
 
   return (
@@ -242,6 +180,7 @@ const TasksProvider = ({ children }: { children: ReactNode }) => {
         setTask,
         toggleIsDoneTask,
         toggleIsDoneCheck,
+        getTask,
       }}
     >
       {children}

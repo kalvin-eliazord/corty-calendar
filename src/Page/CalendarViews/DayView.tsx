@@ -5,25 +5,25 @@ import { CalendarContainer } from "../../component/MonthCalendar/MonthCalendar";
 import { useTasksContext } from "../../context/TasksContext";
 import { useAreModalsVisibleContext } from "../../context/ModalsContext";
 import { getFormattedHour } from "../../utils/getFormattedHour";
-import { Task } from "../../context/TasksContext";
 import { useTaskSelectedIdContext } from "../../context/TaskSelectedIdContext";
 import { useCalendarContext } from "../../context/CalendarContext";
 import formattedHours from "../../utils/formattedHours";
+import React from "react";
+import { useDateSelectedContext } from "../../context/DateSelectedContext";
 
 const DayViewContainer = styled.div`
   border-inline: solid #7a7264 1px;
-  margin-left: 8%;
-  margin-top: 5%;
+  margin-top: 2%;
+  width: 100%;
 `;
 
 const DayViewNameContainer = styled.div`
-  z-index: 5;
+  z-index: 1;
 
   position: sticky;
   padding-top: 2px;
-
+  background-color: #0f1110;
   top: 0;
-  background-color: #0d0c0e;
   border-bottom: solid #7a7264 1px;
   p {
     margin-left: 2%;
@@ -59,26 +59,62 @@ const AllDayTask = styled.div`
   }
 `;
 
-const HoursTitle = styled.div`
-  text-align: center;
-  position: relative;
-  width: 20px;
-  right: 6%;
-  bottom: 0.5rem;
+const HoursTitleContainer = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  margin-top: 90px;
+  gap: 40px;
+  margin-right: 10px;
+`;
+
+const HoursTitle = styled.div`
+  text-align: right;
   color: white;
-  font-size: 12px;
+  font-size: 14px;
   text-wrap: nowrap;
-  font-weight: bold;
+  margin-bottom: 1.5px;
 `;
 
 const HourRangeContainer = styled.div`
   display: flex;
-  flex-direction: row;
   border-bottom: solid #7a7264 1px;
-  padding: 10px;
+  max-height: 0px;
+  padding: 18px;
+  padding-bottom: 40px;
+  overflow-y: hidden;
+  overflow-x: auto;
+
+  &::-webkit-scrollbar {
+    width: 15px;
+    height: 12px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #3a3a3a;
+    border-radius: 10px;
+    border: 3px solid #1e1e1e;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  &::-webkit-scrollbar-thumb:active {
+    background: #777;
+  }
+
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: #1e1e1e;
+  }
   &:hover {
     background-color: rgba(190, 182, 168, 0.17);
   }
@@ -86,6 +122,7 @@ const HourRangeContainer = styled.div`
 
 const TaskPlaceholderContainer = styled.div`
   width: 100%;
+  height: 100%;
   position: relative;
   right: 3rem;
   margin-left: 30px;
@@ -95,6 +132,8 @@ const TaskContainer = styled.div<{ $isDone: boolean }>`
   background-color: ${({ $isDone }) => ($isDone ? "#425682" : "#1a3b86")};
   margin-right: 40px;
   border-radius: 15px;
+  width: 100%;
+  height: 100%;
   z-index: 1;
   color: white;
   font-weight: bold;
@@ -106,18 +145,29 @@ const TaskContainer = styled.div<{ $isDone: boolean }>`
   }
 `;
 
+const Calendar = styled.div`
+  display: flex;
+`;
+
 type DayType = {
   name: string;
   index: string;
+  date: Date;
 };
 
-const DayView = () => {
+type DayViewProps = {
+  dayRangeProps: number;
+  displayType: string;
+};
+
+const DayView: React.FC<DayViewProps> = ({ dayRangeProps, displayType }) => {
   const { tasks } = useTasksContext();
-  const { setTaskSelectedId } = useTaskSelectedIdContext();
+  const { taskSelectedId, setTaskSelectedId } = useTaskSelectedIdContext();
+  const { dateSelected, setDateSelected } = useDateSelectedContext();
   const { calendar, calendarDispatch } = useCalendarContext();
-  const [day, setDay] = useState<DayType>();
-  const [date, setDate] = useState<Date>(new Date());
-  const [dayViewTasks, setDayViewTasks] = useState<Task[]>([]);
+  const [days, setDays] = useState<DayType[]>([]);
+  const [dayRange, setDayRange] = useState<number>(0);
+
   const {
     isAddTaskModalVisible,
     setIsAddTaskModalVisible,
@@ -126,103 +176,103 @@ const DayView = () => {
   } = useAreModalsVisibleContext();
 
   useEffect(() => {
-    if (isAddTaskModalVisible && isViewTaskModalVisible)
-      setIsAddTaskModalVisible(false);
-  }, [isAddTaskModalVisible]);
-  
-  const toggleAddTaskModal = (clickedHour: number) => {
-    if (isViewTaskModalVisible) {
-      setIsViewTaskModalVisible(false);
-      setIsAddTaskModalVisible(false);
-      return;
-    }
+    setDayRange(dayRangeProps);
+  }, [dayRangeProps]);
 
-    setIsAddTaskModalVisible(!isAddTaskModalVisible);
+  const handleHourRangeClick = (clickedHour: number, clickedDate: Date) => {
+    setIsAddTaskModalVisible(true);
+
     calendarDispatch({ type: "SET_HOUR", state: clickedHour });
+    setDateSelected(clickedDate);
   };
 
-  const toggleViewTaskModal = (taskId: string) => {
-    if (isAddTaskModalVisible) setIsAddTaskModalVisible(false);
-
-    const isTaskFound = dayViewTasks.find((task) => task.id === taskId);
-    if (!isTaskFound) {
-      console.warn("Task not found for ID:", taskId);
-      return;
-    }
-
+  const handleTaskContainerClick = (taskId: string) => {
     setTaskSelectedId(taskId);
     setIsViewTaskModalVisible(true);
   };
 
   useEffect(() => {
-    if (tasks.length < 1) return;
+    const today = new Date(calendar.year, calendar.month - 1, calendar.day);
 
-    setDayViewTasks(
-      tasks.filter((task: Task) => task.dueDate.getTime() === date?.getTime())
+    setDays(
+      Array.from({ length: dayRange }, (_, i) => {
+        const nextDay = new Date(today);
+        nextDay.setDate(today.getDate() + i);
+        return {
+          name: format(nextDay, "eee").toUpperCase(),
+          index: nextDay.getDate().toString(),
+          date: nextDay,
+        };
+      })
     );
-  }, [date, tasks]);
-
-  useEffect(() => {
-    const newDate = new Date(calendar.year, calendar.month - 1, calendar.day);
-    setDate(newDate);
-    setDay({
-      name: format(newDate, "eee").toUpperCase(),
-      index: calendar.day.toString(),
-    });
-  }, [calendar.day]);
+  }, [calendar.day, dayRange]);
 
   return (
-    <div className="App">
-      <CalendarContainer>
-        <DayViewContainer>
-          <DayViewNameContainer>
-            <p>
-              {day?.name}. <br /> <span>{day?.index} </span>
-            </p>
-            <AllDayTasksContainer>
-              {dayViewTasks.map(
-                (task) =>
-                  task.isAllDay && <AllDayTask>{task.title} </AllDayTask>
-              )}
-            </AllDayTasksContainer>
-          </DayViewNameContainer>
-
+    <CalendarContainer $displayType={displayType}>
+      <Calendar>
+        <HoursTitleContainer>
           {formattedHours.map((formattedHour, i) => (
-            <HourRangeContainer
-              key={formattedHour}
-              onClick={() => toggleAddTaskModal(i)}
-            >
-              <HoursTitle>{formattedHour}</HoursTitle>
-
-              {dayViewTasks.map(
-                (task) =>
-                  !task.isAllDay &&
-                  task.hour === i && (
-                    <TaskContainer
-                      key={task.id}
-                      onClick={() => toggleViewTaskModal(task.id)}
-                      $isDone={task.isDone}
-                    >
-                      {task.title}
-                      {`, ${getFormattedHour(task.hour)}`}
-                    </TaskContainer>
-                  )
-              )}
-
-              <TaskPlaceholderContainer>
-                {isAddTaskModalVisible &&
-                  !isViewTaskModalVisible &&
-                  calendar.hour === i && (
-                    <TaskContainer $isDone={false}>
-                      (No title), {getFormattedHour(calendar.hour)}
-                    </TaskContainer>
-                  )}
-              </TaskPlaceholderContainer>
-            </HourRangeContainer>
+            <HoursTitle key={formattedHour + i}>{formattedHour}</HoursTitle>
           ))}
-        </DayViewContainer>
-      </CalendarContainer>
-    </div>
+        </HoursTitleContainer>
+        {days.map((day) => (
+          <DayViewContainer key={day.name}>
+            <DayViewNameContainer>
+              <p>
+                {day.name}. <br /> <span>{day.index} </span>
+              </p>
+              <AllDayTasksContainer>
+                {tasks.map(
+                  (task) =>
+                    task.isAllDay &&
+                    task.dueDate.getTime() === day.date.getTime() && (
+                      <AllDayTask>{task.title} </AllDayTask>
+                    )
+                )}
+              </AllDayTasksContainer>
+            </DayViewNameContainer>
+
+            {formattedHours.map((formattedHour, i) => (
+              <HourRangeContainer
+                key={formattedHour}
+                onClick={() => handleHourRangeClick(i, day.date)}
+              >
+                <TaskPlaceholderContainer>
+                  {isAddTaskModalVisible &&
+                    !taskSelectedId &&
+                    calendar.hour === i &&
+                    day.date.getTime() === dateSelected.getTime() && (
+                      <TaskContainer $isDone={false}>
+                        (No title), {getFormattedHour(calendar.hour)}
+                      </TaskContainer>
+                    )}
+                </TaskPlaceholderContainer>
+
+                {tasks.map(
+                  (task) =>
+                    !task.isAllDay &&
+                    task.dueDate.getTime() === day.date.getTime() &&
+                    task.hour === i && (
+                      <TaskContainer
+                        key={task.id}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleTaskContainerClick(task.id);
+                        }}
+                        $isDone={task.isDone}
+                      >
+                        {task.title}
+
+                        {`, ${getFormattedHour(task.hour)}`}
+                      </TaskContainer>
+                    )
+                )}
+              </HourRangeContainer>
+            ))}
+          </DayViewContainer>
+        ))}
+      </Calendar>
+    </CalendarContainer>
   );
 };
 
