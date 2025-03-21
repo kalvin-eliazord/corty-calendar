@@ -124,7 +124,6 @@ export const TimeSettingsContainerLink = styled.div`
   flex-wrap: wrap;
   color: #e2e3e2;
   border-radius: 5px;
-  margin-bottom: 10px;
   img {
     position: relative;
     margin-right: 20px;
@@ -160,7 +159,7 @@ export const AddItemsContainer = styled.div`
 export const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 5px;
   margin-bottom: 10px;
   div {
     display: flex;
@@ -282,7 +281,8 @@ export const DescriptionImg = styled.img`
   width: 25px;
   padding-left: 32px;
   padding-right: 20px;
-  bottom: 150px;
+  position: relative;
+  bottom: 20px;
   right: 4px;
 `;
 
@@ -292,7 +292,7 @@ export const DescriptionTextArea = styled.textarea`
   color: #e2e3e2;
   width: 67%;
   padding-bottom: 30px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   background-color: #333436;
   border-radius: 5px;
   &::placeholder {
@@ -367,7 +367,6 @@ export const StyledSelect = styled.select`
 
 export const AllDayContainer = styled.div`
   margin-right: 50px;
-
   left: 64%;
   bottom: 65px;
   border: 0;
@@ -385,8 +384,39 @@ export const AllDayContainer = styled.div`
 
 export const HoursDropDown = styled.div`
   position: absolute;
-  left: 61.5%;
-  top: 36%;
+  &::-webkit-scrollbar {
+    width: 15px;
+    height: 12px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #3a3a3a;
+    border-radius: 10px;
+    border: 3px solid #1e1e1e;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  &::-webkit-scrollbar-thumb:active {
+    background: #777;
+  }
+
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: #1e1e1e;
+  }
+  left: 56%;
+  top: 32%;
   width: 110px;
   height: 200px;
   overflow-y: scroll;

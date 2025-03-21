@@ -64,7 +64,7 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ customCssProps }) => {
         <p>
           {monthName} {calendar.year}
         </p>
-        <ArrowsContainer>
+        <ArrowsContainer $customCss={customCss}>
           <LeftArrowButton
             onClick={() => calendarDispatch({ type: "PREVIOUS_MONTH" })}
             src="https://cdn-icons-png.flaticon.com/512/271/271228.png"

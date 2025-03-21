@@ -50,7 +50,7 @@ export const MonthCalendarContainer = styled.div<{
 }>`
   position: ${({ $customCss }) => ($customCss ? "none" : "fixed")};
   padding: 10px;
-  top: ${({ $customCss }) => ($customCss ? 240 : 5)}px;
+  top: ${({ $customCss }) => ($customCss ? 240 : -20)}px;
   left: ${({ $customCss }) => ($customCss ? 30 : 100)}px;
   transform: translate(
     ${({ $customCss }) => ($customCss ? `${0}%, ${0}% ` : `${-10}%, ${50}% `)}
@@ -79,10 +79,11 @@ export const MonthCalendarHeader = styled.div`
   }
 `;
 
-export const ArrowsContainer = styled.div`
+export const ArrowsContainer = styled.div<{ $customCss: boolean }>`
   padding-top: 15px;
   margin-right: 30px;
-  gap: 20px;
+  display:flex;
+  gap: ${({ $customCss }) => ($customCss ? "40px" : "20px")};
   &:hover {
     cursor: pointer;
   }

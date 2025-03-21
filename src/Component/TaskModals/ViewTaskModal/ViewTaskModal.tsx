@@ -41,6 +41,7 @@ const ViewTask = () => {
   const [taskSelected, setTaskSelected] = useState<Task>({} as Task);
   const [taskProgress, setTaskProgress] = useState<number>(0);
 
+  // Progress bar setting
   useEffect(() => {
     if (!taskSelected || !taskSelected.checks || taskSelected.checks.length < 1)
       return;
@@ -56,15 +57,7 @@ const ViewTask = () => {
     );
   }, [taskSelected]);
 
-  useEffect(() => {
-    const taskRetrieved = getTask(taskSelectedId);
-    if (!taskRetrieved) {
-      setIsViewTaskModalVisible(false);
-      return;
-    }
-    setTaskSelected(taskRetrieved);
-  }, [taskSelectedId, tasks]);
-
+  // Buttons 
   const handleIsDoneTaskButtonClick = () => {
     toggleIsDoneTask(taskSelected.id);
     setIsViewTaskModalVisible(false);
@@ -79,6 +72,15 @@ const ViewTask = () => {
     setIsViewTaskModalVisible(false);
     setIsAddTaskModalVisible(true);
   };
+
+  useEffect(() => {
+    const taskRetrieved = getTask(taskSelectedId);
+    if (!taskRetrieved) {
+      setIsViewTaskModalVisible(false);
+      return;
+    }
+    setTaskSelected(taskRetrieved);
+  }, [taskSelectedId, tasks]);
 
   return (
     <MainAddTaskContainer>
