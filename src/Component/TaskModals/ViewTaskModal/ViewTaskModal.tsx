@@ -26,6 +26,7 @@ import {
   ProgressBar,
   Footer,
   SliderView,
+  ItemTitle,
 } from "./ViewTask.styles";
 import { useTaskSelectedIdContext } from "../../../context/TaskSelectedIdContext";
 import { useAreModalsVisibleContext } from "../../../context/ModalsContext";
@@ -116,7 +117,7 @@ const ViewTask = () => {
           <ClockImg src="https://cdn-icons-png.flaticon.com/512/3114/3114812.png" />
           <p>
             {taskSelected.dueDate &&
-              format(taskSelected.dueDate, "d MMMM yyyy")}
+              format(taskSelected.dueDate, "d MMMM yyyy,")}
           </p>
           <p>{taskSelected.hour && getFormattedHour(taskSelected.hour)}</p>
         </TimeSettingsContainerLink>
@@ -132,18 +133,18 @@ const ViewTask = () => {
         )}
         <SlidersViewContainer>
           <SliderView>
-            <div>Priority:</div> <p>{taskSelected.priority}</p>
+            <div>Priority:</div> <div>{taskSelected.priority}</div>
           </SliderView>
 
           <SliderView>
-            <div>Complexity:</div> <p>{taskSelected.complexity} </p>
+            <div>Complexity:</div> <div>{taskSelected.complexity} </div>
           </SliderView>
         </SlidersViewContainer>
 
         <AddItemsContainer>
           {taskSelected.checks && taskSelected.checks.length > 0 && (
             <Form>
-              Checks
+              <ItemTitle>Checks</ItemTitle>
               <ItemInputContainer>
                 {taskSelected.checks.map((check) => (
                   <CheckContainer
@@ -159,7 +160,7 @@ const ViewTask = () => {
           )}
           {taskSelected.labels && taskSelected.labels.length > 0 && (
             <Form>
-              Labels
+              <ItemTitle>Labels</ItemTitle>
               <ItemInputContainer>
                 {taskSelected.labels.map((label) => (
                   <LabelContainer key={label.id}>{label.name}</LabelContainer>

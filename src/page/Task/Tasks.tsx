@@ -20,6 +20,19 @@ import {
   PowerModeBackground,
 } from "././Tasks.styles";
 
+const sortTypeOptions = {
+  default: "Pick a sort type",
+  priority: "Priority",
+  complexity: "Complexity",
+  dueDate: "Due date",
+};
+
+const sortValueOptions = {
+  default: "Default",
+  ascending: "Ascending",
+  descending: "Descending",
+};
+
 const Tasks = () => {
   // Context
   const {
@@ -193,18 +206,21 @@ const Tasks = () => {
             e.target.value !== "default" && setSortType(e.target.value);
           }}
         >
-          <option value="default"> Pick a sort type</option>
-          <option value="priority"> Priority </option>
-          <option value="complexity"> Complexity </option>
-          <option value="dueDate"> Due date </option>
+          {Object.entries(sortTypeOptions).map(([key, value]) => (
+            <option key={key} value={key}>
+              {value}
+            </option>
+          ))}
         </CalendarViewSelector>
 
         <CalendarViewSelector
           onChange={(e: any) => setSortValue(e.target.value)}
         >
-          <option value="default"> Default </option>
-          <option value="ascending"> Ascending </option>
-          <option value="descending"> Descending </option>
+          {Object.entries(sortValueOptions).map(([key, value]) => (
+            <option key={key} value={key}>
+              {value}
+            </option>
+          ))}
         </CalendarViewSelector>
         <CalendarViewSelector
           onChange={(e: any) =>

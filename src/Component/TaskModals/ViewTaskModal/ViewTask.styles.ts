@@ -33,16 +33,23 @@ export const SlidersViewContainer = styled.div`
   border: 1px solid #333436;
   margin-left: 75px;
   margin-bottom: 20px;
-  width: 67%;
+  width: 68%;
   border-radius: 5px;
   display: flex;
-  gap: 20px;
+  flex-direction: column;
+  gap: 10px;
   div {
     font-weight: bold;
   }
 `;
 
-export const SliderView = styled.div``;
+export const SliderView = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+  div {
+  }
+`;
 
 export const Footer = styled.div`
   display: flex;
@@ -57,6 +64,11 @@ export const IsDoneTaskButton = styled.p`
   &:hover {
     cursor: pointer;
   }
+`;
+
+export const ItemTitle = styled.div`
+  position: relative;
+  right: 5px;
 `;
 
 export const CheckContainer = styled.div<{ $isDone: boolean }>`

@@ -48,8 +48,6 @@ const Navbar = () => {
   const [formattedDate, setFormattedDate] = useState<string>("");
   const [isArrowMonthClicked, setIsArrowMonthClicked] =
     useState<boolean>(false);
-  const [isLeftSideCalendarMonthChanged, setIsLeftSideCalendarMonthChanged] =
-    useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -59,20 +57,12 @@ const Navbar = () => {
   }, [isViewTaskModalVisible]);
 
   useEffect(() => {
-    if (!isLeftSideCalendarMonthChanged) {
-      setFormattedDate(
-        `${calendar.day} ${getMonthByIndex(calendar.month)} ${calendar.year}`
-      );
-    }
-
-    setIsLeftSideCalendarMonthChanged(false);
-  }, [calendar.month, calendar.year]);
-
-  useEffect(() => {
     setFormattedDate(
       `${calendar.day} ${getMonthByIndex(calendar.month)} ${calendar.year}`
     );
+  }, [calendar]);
 
+  useEffect(() => {
     if (calendarView === "day" && !isAddTaskModalVisible) {
       navigate(
         `/calendar/${calendarView}/${calendar.year}/${calendar.month}/${calendar.day}`
@@ -198,7 +188,7 @@ const Navbar = () => {
       <AddTaskButton onClick={() => setIsAddTaskModalVisible(true)}>
         + Add Task
       </AddTaskButton>
-      <LeftSide onClick={() => setIsLeftSideCalendarMonthChanged(true)}>
+      <LeftSide>
         <MonthCalendar customCssProps />
       </LeftSide>
     </MainContainer>

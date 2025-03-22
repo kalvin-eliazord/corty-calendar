@@ -98,18 +98,6 @@ const CalendarProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const nextMonth = () => {
-    const currentDate = getCurrentDate();
-
-    const newDate = addMonths(currentDate, 1);
-    calendarDispatch({
-      type: "SET_DATE",
-      year: newDate.getFullYear(),
-      month: newDate.getMonth() + 1,
-      day: newDate.getDate(),
-    });
-  };
-
   const previousMonthAtDay = (month: number, day: number) => {
     const currentDate = new Date(calendar.year, month - 1, day);
 
@@ -138,6 +126,18 @@ const CalendarProvider = ({ children }: { children: ReactNode }) => {
     const currentDate = getCurrentDate();
 
     const newDate = subMonths(currentDate, 1);
+    calendarDispatch({
+      type: "SET_DATE",
+      year: newDate.getFullYear(),
+      month: newDate.getMonth() + 1,
+      day: newDate.getDate(),
+    });
+  };
+
+  const nextMonth = () => {
+    const currentDate = getCurrentDate();
+
+    const newDate = addMonths(currentDate, 1);
     calendarDispatch({
       type: "SET_DATE",
       year: newDate.getFullYear(),

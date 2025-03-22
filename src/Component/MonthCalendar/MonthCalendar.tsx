@@ -16,6 +16,7 @@ import {
   DayContainer,
   CalendarContainer,
 } from "./MonthCalendar.styles";
+import { addMonths, subMonths } from "date-fns";
 
 type MonthBodyProps = {
   monthIndexProps: number;
@@ -33,14 +34,12 @@ const MonthBody: React.FC<MonthBodyProps> = ({ monthIndexProps }) => {
 
   useEffect(() => {
     setMonthIndex(monthIndexProps);
-    const today = new Date(calendar.year, monthIndexProps, calendar.day);
-    setCurrentWeek(getWeekIndexOfMonth(weeks, today));
   }, [monthIndexProps]);
 
   useEffect(() => {
     const today = new Date(calendar.year, calendar.month, calendar.day);
     setCurrentWeek(getWeekIndexOfMonth(weeks, today));
-  }, [calendar.day]);
+  }, [weeks, calendar]);
 
   useEffect(() => {
     setWeeks(getWeeksOfMonth(calendar.year, calendar.month));
@@ -93,23 +92,53 @@ type MonthCalendarProps = {
 };
 
 const MonthCalendar: React.FC<MonthCalendarProps> = ({ customCssProps }) => {
+  // Context
+  const { calendar } = useCalendarContext();
+
+  // State
   const [customCss, setCustomCss] = useState<boolean>(customCssProps);
-  const { calendar, nextMonth, previousMonth } = useCalendarContext();
+  const [privateMonth, setPrivateMonth] = useState<number>(calendar.month);
+  const [privateYear, setPrivateYear] = useState<number>(calendar.year);
   const [monthName, setMonthName] = useState<string>("");
 
   useEffect(() => {
-    setMonthName(getMonthByIndex(calendar.month));
-  }, [calendar.month]);
+    setPrivateMonth(calendar.month);
+    setPrivateYear(calendar.year);
+  }, [calendar]);
+
+  useEffect(() => {
+    setMonthName(getMonthByIndex(privateMonth));
+  }, [privateMonth]);
 
   useEffect(() => {
     setCustomCss(customCssProps);
   }, [customCssProps]);
 
+  const getPrivateCurrentDate = (): Date => {
+    return new Date(privateYear, privateMonth, calendar.day);
+  };
+
+  const previousMonth = () => {
+    const currentDate = getPrivateCurrentDate();
+
+    const newDate = subMonths(currentDate, 1);
+    setPrivateYear(newDate.getFullYear());
+    setPrivateMonth(newDate.getMonth());
+  };
+
+  const nextMonth = () => {
+    const currentDate = getPrivateCurrentDate();
+
+    const newDate = addMonths(currentDate, 1);
+    setPrivateYear(newDate.getFullYear());
+    setPrivateMonth(newDate.getMonth());
+  };
+
   return (
     <MonthCalendarContainer $customCss={customCss}>
       <MonthCalendarHeader>
         <p>
-          {monthName} {calendar.year}
+          {monthName} {privateYear}
         </p>
         <ArrowsContainer $customCss={customCss}>
           <LeftArrowButton
@@ -129,7 +158,7 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ customCssProps }) => {
         ))}
       </DaysLetterContainer>
 
-      <MonthBody monthIndexProps={calendar.month} />
+      <MonthBody monthIndexProps={privateMonth} />
     </MonthCalendarContainer>
   );
 };

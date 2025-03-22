@@ -48,6 +48,14 @@ import {
 import { useTaskSelectedIdContext } from "../../../context/TaskSelectedIdContext";
 import { useDateSelectedContext } from "../../../context/DateSelectedContext";
 
+const recurringTypeOptions = {
+  oneTime: "Only one time",
+  everyDay: "Every day",
+  everyWeek: "Every week",
+  everyMonth: "Every month",
+  everyYear: "Every year",
+};
+
 const AddTask = () => {
   // Context
   const { calendar } = useCalendarContext();
@@ -80,13 +88,12 @@ const AddTask = () => {
   const [isCalendarClicked, setIsCalendarClicked] = useState<boolean>(false);
   const [formattedDate, setFormattedDate] = useState<string>("");
   const [formattedHour, setFormattedHour] = useState<string>("");
-  
+
   // Refs for inputs
   const dateInputRef = useRef<HTMLInputElement | null>(null);
   const hourInputRef = useRef<HTMLInputElement | null>(null);
   const recurringSelectorRef = useRef<HTMLSelectElement | null>(null);
   const monthCalendarModalRef = useRef<HTMLDivElement | null>(null);
-
 
   const handleOnBlurHour = () => {
     if (!hourInput || !hourInput.trim()) {
@@ -360,11 +367,11 @@ const AddTask = () => {
                 ref={recurringSelectorRef}
                 onChange={(e) => setRecurringValue(e.target.value)}
               >
-                <option value="oneTime">Only one time</option>
-                <option value="everyDay">Every day</option>
-                <option value="everyWeek">Every week</option>
-                <option value="everyMonth">Every month</option>
-                <option value="everyYear">Every year</option>
+                {Object.entries(recurringTypeOptions).map(([key, value]) => (
+                  <option key={key} value={key}>
+                    {value}
+                  </option>
+                ))}
               </StyledSelect>
               <AllDayContainer>
                 <label htmlFor="checkbox"> All day </label>
