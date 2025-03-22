@@ -119,6 +119,6 @@ export const PowerModeBackground = styled.div`
   position: absolute;
   width: 100%;
   height: 100vh;
-  background-color: rgba(11, 16, 24, 0.73);
+  background-color: rgba(105, 42, 86, 0.73);
   z-index: 5;
 `;

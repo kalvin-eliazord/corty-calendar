@@ -1,15 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {
-  eachWeekOfInterval,
-  eachDayOfInterval,
-  startOfMonth,
-  endOfMonth,
-  endOfWeek,
-  format,
-} from "date-fns";
 import daysLetterWeek from "../../utils/daysLetterWeek";
 import { getMonthByIndex } from "../../utils/getMonth";
 import { useCalendarContext } from "../../context/CalendarContext";
+import getWeeksOfMonth from "../../utils/getWeeksOfMonth";
 import {
   MonthCalendarContainer,
   MonthCalendarHeader,
@@ -22,38 +15,59 @@ import {
   CalendarContainer,
 } from "./MonthCalendar.styles";
 
-interface MonthCalendarProps {
-  customCssProps: boolean;
-}
+type MonthBodyProps = {
+  monthIndexProps: number;
+};
 
-const getWeeksOfMonth = (year: number, month: number): string[][] => {
-  const monthStart = startOfMonth(new Date(year, month - 1, 1));
-  const monthEnd = endOfMonth(new Date(year, month - 1, 1));
-  // Get start dates of each week in the month
-  const weeks = eachWeekOfInterval(
-    { start: monthStart, end: monthEnd },
-    { weekStartsOn: 1 } // Monday start
+const MonthBody: React.FC<MonthBodyProps> = ({ monthIndexProps }) => {
+  const [monthIndex, setMonthIndex] = useState<number>(0);
+  const [weeks, setWeeks] = useState<string[][]>([]);
+  const { calendar, calendarDispatch } = useCalendarContext();
+
+  useEffect(() => {
+    setMonthIndex(monthIndexProps);
+  }, [monthIndexProps]);
+
+  useEffect(() => {
+    setWeeks(getWeeksOfMonth(calendar.year, calendar.month));
+  }, [calendar]);
+
+  return (
+    <>
+      {weeks.map((week, indexWeek) => (
+        <WeekContainer key={indexWeek}>
+          {week.map((day, j) => (
+            <DayContainer
+              key={j}
+              onClick={() => {
+                calendarDispatch({ type: "SET_DAY", state: Number(day) });
+              }}
+              $isCurrentDay={
+                calendar.day === Number(day) &&
+                calendar.month === monthIndex &&
+                indexWeek < 4
+              }
+            >
+              <h4>{day}</h4>
+            </DayContainer>
+          ))}
+        </WeekContainer>
+      ))}
+    </>
   );
-  // Get all days for each week
-  return weeks.map((weekStart): string[] => {
-    const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
-    return eachDayOfInterval({ start: weekStart, end: weekEnd }).map((date) =>
-      format(date, "dd")
-    );
-  });
+};
+
+type MonthCalendarProps = {
+  customCssProps: boolean;
 };
 
 const MonthCalendar: React.FC<MonthCalendarProps> = ({ customCssProps }) => {
   const [customCss, setCustomCss] = useState<boolean>(customCssProps);
   const { calendar, calendarDispatch } = useCalendarContext();
   const [monthName, setMonthName] = useState<string>("");
-  const [weeks, setWeeks] = useState<string[][]>([]);
-  const [isCurrentDay, setIsCurrentDay] = useState<boolean>(false);
 
   useEffect(() => {
     setMonthName(getMonthByIndex(calendar.month));
-    setWeeks(getWeeksOfMonth(calendar.year, calendar.month));
-    setIsCurrentDay(false);
   }, [calendar]);
 
   useEffect(() => {
@@ -83,25 +97,10 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ customCssProps }) => {
           <h4 key={i}> {dayLetter}</h4>
         ))}
       </DaysLetterContainer>
-      {weeks.map((week, i) => (
-        <WeekContainer key={i}>
-          {week.map((day, j) => (
-            <DayContainer
-              key={j}
-              onClick={() => {
-                calendarDispatch({ type: "SET_DAY", state: Number(day) });
-              }}
-              $isCurrentDay={
-                calendar.day === Number(day) && !isCurrentDay ? true : false
-              }
-            >
-              <h4>{day}</h4>
-            </DayContainer>
-          ))}
-        </WeekContainer>
-      ))}
+
+      <MonthBody monthIndexProps={calendar.month} />
     </MonthCalendarContainer>
   );
 };
 
-export { MonthCalendar, CalendarContainer };
+export { MonthCalendar, CalendarContainer, MonthBody };

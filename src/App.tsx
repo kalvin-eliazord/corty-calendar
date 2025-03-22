@@ -17,6 +17,7 @@ import { useCalendarContext } from "./context/CalendarContext";
 import Tasks from "./page/Task/Tasks";
 import DayView from "./page/CalendarViews/DayView/DayView";
 import MonthView from "./page/CalendarViews/MonthView/MonthView";
+import YearView from "./page/CalendarViews/YearView/YearView";
 
 export default function App() {
   const {
@@ -58,19 +59,19 @@ export default function App() {
               />
               <Route
                 path="/calendar/day/:year/:month/:dayIndex"
-                element={<DayView dayRangeProps={1} displayType="block" />}
+                element={<DayView dayRangeProps={1} />}
               />
               <Route
                 path="/calendar/week/:year/:month/:dayIndex"
-                element={<DayView dayRangeProps={7} displayType="flex" />}
+                element={<DayView dayRangeProps={7} />}
               />
               <Route
                 path="/calendar/month/:year/:month/:dayIndex"
-                element={<MonthView monthRangeProps={1} />}
+                element={<MonthView />}
               />
               <Route
                 path="/calendar/year/:year/:month/:dayIndex"
-                element={<MonthView monthRangeProps={12} />}
+                element={<YearView />}
               />
               <Route path="/tasks" element={<Tasks />} />
             </Routes>

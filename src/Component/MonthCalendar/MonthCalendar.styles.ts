@@ -2,13 +2,13 @@ import styled from "styled-components";
 
 export const CalendarContainer = styled.div`
   color: white;
-  width: 73%;
+  width: 78%;
   max-height: 85%;
   border-radius: 20px;
   background-color: #0f1011;
   margin-left: 5%;
   position: absolute;
-  left: 18%;
+  left: 16%;
   top: 12%;
   overflow-y: auto;
   overflow-x: hidden;

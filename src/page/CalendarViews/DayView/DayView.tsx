@@ -31,22 +31,23 @@ type DayType = {
 
 type DayViewProps = {
   dayRangeProps: number;
-  displayType: string;
 };
 
-const DayView: React.FC<DayViewProps> = ({ dayRangeProps, displayType }) => {
+const DayView: React.FC<DayViewProps> = ({ dayRangeProps }) => {
+  // Context
   const { tasks } = useTasksContext();
   const { taskSelectedId, setTaskSelectedId } = useTaskSelectedIdContext();
   const { dateSelected, setDateSelected } = useDateSelectedContext();
   const { calendar, calendarDispatch } = useCalendarContext();
-  const [days, setDays] = useState<DayType[]>([]);
-  const [dayRange, setDayRange] = useState<number>(0);
-
   const {
     isAddTaskModalVisible,
     setIsAddTaskModalVisible,
     setIsViewTaskModalVisible,
   } = useAreModalsVisibleContext();
+
+  // State
+  const [days, setDays] = useState<DayType[]>([]);
+  const [dayRange, setDayRange] = useState<number>(0);
 
   useEffect(() => {
     setDayRange(dayRangeProps);

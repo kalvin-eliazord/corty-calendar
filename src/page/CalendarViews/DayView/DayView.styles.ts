@@ -111,11 +111,12 @@ export const HourRangeContainer = styled.div`
 `;
 
 export const TaskPlaceholderContainer = styled.div`
-  width: 100%;
+  width: 50%;
   height: 100%;
   position: relative;
   right: 3rem;
-  margin-left: 30px;
+  margin-left: 40px;
+  margin-right: 00px;
 `;
 
 export const TaskContainer = styled.div<{ $isDone: boolean }>`

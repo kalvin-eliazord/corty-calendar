@@ -132,7 +132,7 @@ export const CalendarViewSelector = styled.select`
     background-color: rgba(85, 90, 92, 0.18);
 
     &:focus {
-  background-color: #1b1b1b;
+      background-color: #1b1b1b;
     }
   }
 `;
@@ -150,6 +150,6 @@ export const StyledLink = styled(Link)`
   margin-right: 120px;
   text-wrap: nowrap;
   &:hover {
-    background-color: rgb(85, 90, 92);
+    background-color: rgba(85, 90, 92, 0.18);
   }
 `;
