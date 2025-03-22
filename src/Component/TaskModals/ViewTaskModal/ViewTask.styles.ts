@@ -32,7 +32,7 @@ export const ProgressBar = styled.div<{ $progress: number }>`
 export const SlidersViewContainer = styled.div`
   border: 1px solid #333436;
   margin-left: 75px;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
   width: 67%;
   border-radius: 5px;
   display: flex;
@@ -41,6 +41,8 @@ export const SlidersViewContainer = styled.div`
     font-weight: bold;
   }
 `;
+
+export const SliderView = styled.div``;
 
 export const Footer = styled.div`
   display: flex;

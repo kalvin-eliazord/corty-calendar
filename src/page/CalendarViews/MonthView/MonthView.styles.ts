@@ -4,12 +4,12 @@ import { CalendarContainer } from "../../../component/MonthCalendar/MonthCalenda
 export const DaysLetterContainer = styled.div`
   position: sticky;
   top: 0;
-  background-color: #7a7264;
   display: flex;
-  padding-left: 75px;
-  gap: 153px;
+  padding-left: 85px;
+  gap: 171px;
   font-weight: bold;
   font-size: 20px;
+  background-color: rgb(116, 116, 116);
 `;
 
 export const DayTasksContainer = styled.div`
@@ -61,11 +61,11 @@ export const DayTasksContainer = styled.div`
 `;
 
 export const MonthCalendarContainer = styled.div`
-  background-color: #7a7264;
+  background-color: #37393b;
 `;
 
 export const WeekCalendarContainer = styled.div`
-  border: 1px solid #7a7264;
+  border: 1px solid #37393b;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 1px;
@@ -76,7 +76,7 @@ export const DayCalendarContainer = styled.div`
   aspect-ratio: 1;
   background-color: #0f1110;
   &:hover {
-    background-color: rgba(114, 114, 114, 0.04);
+    background-color: rgba(116, 116, 116, 0.08);
   }
 `;
 

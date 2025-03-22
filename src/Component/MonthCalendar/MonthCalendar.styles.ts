@@ -56,7 +56,7 @@ export const CalendarContainer = styled.div`
 export const MonthCalendarContainer = styled.div<{ $customCss: boolean }>`
   position: ${({ $customCss }) => ($customCss ? "static" : "fixed")};
   padding: 10px;
-  top: ${({ $customCss }) => ($customCss ? 240 : -40)}px;
+  top: ${({ $customCss }) => ($customCss ? 240 : -50)}px;
   left: ${({ $customCss }) => ($customCss ? 30 : 100)}px;
   transform: translate(
     ${({ $customCss }) => ($customCss ? `0%, 0%` : `-10%, 50%`)}
@@ -82,14 +82,16 @@ export const MonthCalendarHeader = styled.div`
   border-radius: 10px;
   display: flex;
   background-color: #0f1110;
-  font-size: 14px;
+  font-size: 18px;
   padding-left: 30px;
   justify-content: space-between;
   padding-inline: 15px;
-  height: 35px;
-
+  padding-bottom: 0;
+  height: 40px;
   p {
-    margin-right: 10px;
+    position: relative;
+    bottom: 5px;
+    right: 5px;
     font-weight: bold;
   }
 
@@ -106,6 +108,15 @@ export const ArrowsContainer = styled.div<{ $customCss: boolean }>`
   gap: ${({ $customCss }) => ($customCss ? "40px" : "20px")};
 
   img {
+    width: 18px;
+    height: 18px;
+    filter: invert(1);
+    border-radius: 50%;
+    @media (max-width: 768px) {
+      width: 8px;
+      height: 8px;
+    }
+
     &:hover {
       background-color: rgba(103, 104, 104, 0.45);
     }
@@ -121,33 +132,20 @@ export const ArrowsContainer = styled.div<{ $customCss: boolean }>`
 `;
 
 export const LeftArrowButton = styled.img`
-  width: 10px;
-  height: 10px;
-  filter: invert(1);
   transform: scaleX(-100%);
-  @media (max-width: 768px) {
-    width: 8px;
-    height: 8px;
-  }
 `;
 
-export const RightArrowButton = styled.img`
-  width: 10px;
-  height: 10px;
-  filter: invert(1);
-  @media (max-width: 768px) {
-    width: 8px;
-    height: 8px;
-  }
-`;
+export const RightArrowButton = styled.img``;
 
 export const DaysLetterContainer = styled.div`
   background-color: #0f1110;
   height: 35px;
   display: flex;
-  font-size: 10px;
-  padding-inline: 15px;
-  justify-content: space-between;
+  font-size: 12px;
+  padding-left: 12px;
+  gap: 26.9px;
+  /padding-inline: 12px;
+  /justify-content: space-between;
 
   @media (max-width: 768px) {
     height: 30px;

@@ -49,8 +49,8 @@ const MonthView = () => {
     <CalendarContainer>
       <MonthCalendarContainer>
         <DaysLetterContainer>
-          {daysLetterWeek.map((dayLetter) => (
-            <div>{dayLetter}</div>
+          {daysLetterWeek.map((dayLetter, dayLetterIndex) => (
+            <div key={dayLetterIndex + 40}>{dayLetter}</div>
           ))}
         </DaysLetterContainer>
         {weeks.map((week, weekIndex) => (

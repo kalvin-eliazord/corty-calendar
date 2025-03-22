@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import daysLetterWeek from "../../utils/daysLetterWeek";
 import { getMonthByIndex } from "../../utils/getMonth";
 import { useCalendarContext } from "../../context/CalendarContext";
-import getWeeksOfMonth from "../../utils/getWeeksOfMonth";
+import getWeeksOfMonth, {
+  getWeekIndexOfMonth,
+} from "../../utils/getWeeksOfMonth";
 import {
   MonthCalendarContainer,
   MonthCalendarHeader,
@@ -20,17 +22,48 @@ type MonthBodyProps = {
 };
 
 const MonthBody: React.FC<MonthBodyProps> = ({ monthIndexProps }) => {
+  // Context
+  const { calendar, calendarDispatch, previousMonthAtDay, nextMonthAtDay } =
+    useCalendarContext();
+
+  // State
   const [monthIndex, setMonthIndex] = useState<number>(0);
   const [weeks, setWeeks] = useState<string[][]>([]);
-  const { calendar, calendarDispatch } = useCalendarContext();
+  const [currentWeek, setCurrentWeek] = useState<number>(0);
 
   useEffect(() => {
     setMonthIndex(monthIndexProps);
+    const today = new Date(calendar.year, monthIndexProps, calendar.day);
+    setCurrentWeek(getWeekIndexOfMonth(weeks, today));
   }, [monthIndexProps]);
 
   useEffect(() => {
+    const today = new Date(calendar.year, calendar.month, calendar.day);
+    setCurrentWeek(getWeekIndexOfMonth(weeks, today));
+  }, [calendar.day]);
+
+  useEffect(() => {
     setWeeks(getWeeksOfMonth(calendar.year, calendar.month));
-  }, [calendar]);
+  }, [calendar.year]);
+
+  const handleDayClick = (weekOfTheMonth: number, day: string) => {
+    const dayCasted = Number(day);
+    const previousMonthClicked = weekOfTheMonth < 3 && dayCasted > 20;
+    const nextMonthClicked = weekOfTheMonth > 4 && dayCasted < 15;
+
+    if (previousMonthClicked) {
+      previousMonthAtDay(monthIndex, dayCasted);
+    } else if (nextMonthClicked) {
+      nextMonthAtDay(monthIndex, dayCasted);
+    } else {
+      calendarDispatch({
+        type: "SET_DATE",
+        year: calendar.year,
+        month: monthIndex,
+        day: dayCasted,
+      });
+    }
+  };
 
   return (
     <>
@@ -39,13 +72,11 @@ const MonthBody: React.FC<MonthBodyProps> = ({ monthIndexProps }) => {
           {week.map((day, j) => (
             <DayContainer
               key={j}
-              onClick={() => {
-                calendarDispatch({ type: "SET_DAY", state: Number(day) });
-              }}
+              onClick={() => handleDayClick(indexWeek, day)}
               $isCurrentDay={
                 calendar.day === Number(day) &&
                 calendar.month === monthIndex &&
-                indexWeek < 4
+                currentWeek === indexWeek
               }
             >
               <h4>{day}</h4>
@@ -63,12 +94,12 @@ type MonthCalendarProps = {
 
 const MonthCalendar: React.FC<MonthCalendarProps> = ({ customCssProps }) => {
   const [customCss, setCustomCss] = useState<boolean>(customCssProps);
-  const { calendar, calendarDispatch } = useCalendarContext();
+  const { calendar, nextMonth, previousMonth } = useCalendarContext();
   const [monthName, setMonthName] = useState<string>("");
 
   useEffect(() => {
     setMonthName(getMonthByIndex(calendar.month));
-  }, [calendar]);
+  }, [calendar.month]);
 
   useEffect(() => {
     setCustomCss(customCssProps);
@@ -82,11 +113,11 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ customCssProps }) => {
         </p>
         <ArrowsContainer $customCss={customCss}>
           <LeftArrowButton
-            onClick={() => calendarDispatch({ type: "PREVIOUS_MONTH" })}
+            onClick={() => previousMonth()}
             src="https://cdn-icons-png.flaticon.com/512/271/271228.png"
           />
           <RightArrowButton
-            onClick={() => calendarDispatch({ type: "NEXT_MONTH" })}
+            onClick={() => nextMonth()}
             src="https://cdn-icons-png.flaticon.com/512/271/271228.png"
           />
         </ArrowsContainer>

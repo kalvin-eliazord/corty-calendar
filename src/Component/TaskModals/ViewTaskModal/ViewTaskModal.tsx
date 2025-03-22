@@ -25,6 +25,7 @@ import {
   ProgressBarContainer,
   ProgressBar,
   Footer,
+  SliderView,
 } from "./ViewTask.styles";
 import { useTaskSelectedIdContext } from "../../../context/TaskSelectedIdContext";
 import { useAreModalsVisibleContext } from "../../../context/ModalsContext";
@@ -57,7 +58,7 @@ const ViewTask = () => {
     );
   }, [taskSelected]);
 
-  // Buttons 
+  // Buttons
   const handleIsDoneTaskButtonClick = () => {
     toggleIsDoneTask(taskSelected.id);
     setIsViewTaskModalVisible(false);
@@ -130,8 +131,13 @@ const ViewTask = () => {
           </>
         )}
         <SlidersViewContainer>
-          <div>Priority:</div> <p>{taskSelected.priority}</p>
-          <div>Complexity:</div> <p>{taskSelected.complexity} </p>
+          <SliderView>
+            <div>Priority:</div> <p>{taskSelected.priority}</p>
+          </SliderView>
+
+          <SliderView>
+            <div>Complexity:</div> <p>{taskSelected.complexity} </p>
+          </SliderView>
         </SlidersViewContainer>
 
         <AddItemsContainer>

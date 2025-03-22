@@ -17,15 +17,8 @@ type CalendarType = {
 
 type CalendarAction =
   | { type: "SET_DATE"; year: number; month: number; day: number }
-  | { type: "SET_YEAR"; state: number }
   | { type: "NEXT_YEAR" }
   | { type: "PREVIOUS_YEAR" }
-  | { type: "SET_MONTH"; state: number }
-  | { type: "NEXT_MONTH" }
-  | { type: "PREVIOUS_MONTH" }
-  | { type: "SET_DAY"; state: number }
-  | { type: "NEXT_DAY" }
-  | { type: "PREVIOUS_DAY" }
   | { type: "SET_HOUR"; state: number };
 
 export const calendarReducer = (
@@ -40,28 +33,10 @@ export const calendarReducer = (
         month: action.month,
         day: action.day,
       };
-    case "SET_YEAR":
-      return { ...state, year: action.state };
     case "NEXT_YEAR":
       return { ...state, year: state.year + 1 };
     case "PREVIOUS_YEAR":
       return { ...state, year: state.year - 1 };
-    case "SET_MONTH":
-      return { ...state, month: action.state };
-    case "NEXT_MONTH":
-      return state.month > 11
-        ? { ...state, month: 1, year: state.year + 1 }
-        : { ...state, month: state.month + 1 };
-    case "PREVIOUS_MONTH":
-      return state.month < 2
-        ? { ...state, month: 12, year: state.year - 1 }
-        : { ...state, month: state.month - 1 };
-    case "SET_DAY":
-      return { ...state, day: action.state };
-    case "NEXT_DAY":
-      return { ...state, day: state.day + 1 };
-    case "PREVIOUS_DAY":
-      return { ...state, day: state.day - 1 };
     case "SET_HOUR":
       return { ...state, hour: action.state };
     default:
@@ -78,6 +53,8 @@ type CalendarContextType = {
   previousMonth: () => void;
   nextWeek: () => void;
   previousWeek: () => void;
+  previousMonthAtDay: (month: number, day: number) => void;
+  nextMonthAtDay: (month: number, day: number) => void;
 };
 
 const CalendarContext = createContext<CalendarContextType | undefined>(
@@ -123,6 +100,30 @@ const CalendarProvider = ({ children }: { children: ReactNode }) => {
 
   const nextMonth = () => {
     const currentDate = getCurrentDate();
+
+    const newDate = addMonths(currentDate, 1);
+    calendarDispatch({
+      type: "SET_DATE",
+      year: newDate.getFullYear(),
+      month: newDate.getMonth() + 1,
+      day: newDate.getDate(),
+    });
+  };
+
+  const previousMonthAtDay = (month: number, day: number) => {
+    const currentDate = new Date(calendar.year, month - 1, day);
+
+    const newDate = subMonths(currentDate, 1);
+    calendarDispatch({
+      type: "SET_DATE",
+      year: newDate.getFullYear(),
+      month: newDate.getMonth() + 1,
+      day: newDate.getDate(),
+    });
+  };
+
+  const nextMonthAtDay = (month: number, day: number) => {
+    const currentDate = new Date(calendar.year, month - 1, day);
 
     const newDate = addMonths(currentDate, 1);
     calendarDispatch({
@@ -180,6 +181,8 @@ const CalendarProvider = ({ children }: { children: ReactNode }) => {
         previousMonth,
         nextWeek,
         previousWeek,
+        previousMonthAtDay,
+        nextMonthAtDay,
       }}
     >
       {children}
