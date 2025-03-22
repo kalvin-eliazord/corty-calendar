@@ -1,4 +1,11 @@
-import { useReducer, createContext, ReactNode, useContext } from "react";
+import {
+  useReducer,
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { addDays, addWeeks, addMonths, addYears } from "date-fns";
 
 export type Check = {
@@ -110,8 +117,28 @@ type TasksContextType = {
 
 const TasksContext = createContext<TasksContextType | undefined>(undefined);
 
+const LOCAL_STORAGE_KEY = "calendarTasks";
+
 const TasksProvider = ({ children }: { children: ReactNode }) => {
-  const [tasks, tasksDispatch] = useReducer(tasksReducer, [] as Task[]);
+  const [tasks, tasksDispatch] = useReducer(tasksReducer, [], () => {
+    const savedTasks = localStorage.getItem(LOCAL_STORAGE_KEY);
+    return savedTasks
+      ? JSON.parse(savedTasks).map((task: Task) => ({
+          ...task,
+          dueDate: new Date(task.dueDate),
+        }))
+      : [];
+  });
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(tasks));
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+  }, [tasks]);
+
+  useEffect(() => {}, []);
 
   const setTask = (task: Task) => {
     tasksDispatch({

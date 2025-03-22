@@ -46,8 +46,6 @@ const Navbar = () => {
   const [currentDate, setCurrentDate] = useState({ year: 0, month: 0, day: 0 });
   const [calendarView, setCalendarView] = useState<string>("day");
   const [formattedDate, setFormattedDate] = useState<string>("");
-  const [isArrowMonthClicked, setIsArrowMonthClicked] =
-    useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -69,15 +67,6 @@ const Navbar = () => {
       );
     }
   }, [calendar.day]);
-
-  useEffect(() => {
-    if (isArrowMonthClicked) {
-      setFormattedDate(
-        `${calendar.day} ${getMonthByIndex(calendar.month)} ${calendar.year}`
-      );
-      setIsArrowMonthClicked(false);
-    }
-  }, [calendar.month]);
 
   useEffect(() => {
     setCurrentDate({
@@ -112,7 +101,6 @@ const Navbar = () => {
         break;
       case "month":
         previousMonth();
-        setIsArrowMonthClicked(true);
         break;
       case "year":
         calendarDispatch({ type: "PREVIOUS_YEAR" });
@@ -130,7 +118,6 @@ const Navbar = () => {
         break;
       case "month":
         nextMonth();
-        setIsArrowMonthClicked(true);
         break;
       case "year":
         calendarDispatch({ type: "NEXT_YEAR" });
