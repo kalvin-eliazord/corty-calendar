@@ -340,7 +340,7 @@ const AddTask = () => {
               </TimeContainer>
               {isHourDropDownVisible && (
                 <HoursDropDown>
-                  {formattedHours.map((formattedHour, index) => (
+                  {formattedHours.map((formattedHour) => (
                     <div
                       key={formattedHour}
                       onClick={() => {

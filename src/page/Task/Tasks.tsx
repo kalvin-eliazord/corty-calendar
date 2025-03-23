@@ -55,6 +55,23 @@ const Tasks = () => {
   const [isPowerModeModalVisible, setIsPowerModeModalVisible] =
     useState<boolean>(false);
 
+  const labelFiltering = (newSortedTasks: Task[]) => {
+    if (labelsSelected.length < 1) return newSortedTasks;
+
+    return newSortedTasks.filter((task) =>
+      task.labels.some((label) => labelsSelected.includes(label.name))
+    );
+  };
+
+  const searchFiltering = (newSortedTasks: Task[]) => {
+    if (!taskSearched || !taskSearched.trim()) return newSortedTasks;
+
+    const taskSearchedTrimmed = taskSearched.trim();
+    return newSortedTasks.filter((task) =>
+      task.title.toLowerCase().includes(taskSearchedTrimmed.toLowerCase())
+    );
+  };
+
   const getDueDateSortedTasks = (sortValue: string) => {
     switch (sortValue) {
       case "ascending":
@@ -94,37 +111,27 @@ const Tasks = () => {
     }
   };
 
-  const sortedTasks = useMemo(() => {
-    let newSortedTasks: Task[] = [];
-
+  const getSortedTasks = (sortType: string): Task[] => {
     switch (sortType) {
       case "complexity":
-        newSortedTasks = getComplexitySortedTasks(sortValue);
-        break;
+        return getComplexitySortedTasks(sortValue);
       case "priority":
-        newSortedTasks = getPrioritySortedTasks(sortValue);
-        break;
+        return getPrioritySortedTasks(sortValue);
       case "dueDate":
-        newSortedTasks = getDueDateSortedTasks(sortValue);
-        break;
+        return getDueDateSortedTasks(sortValue);
       default:
-        newSortedTasks = tasks;
+        return tasks;
     }
+  };
 
-    if (labelsSelected.length > 0) {
-      newSortedTasks = newSortedTasks.filter((task) =>
-        task.labels.some((label) => labelsSelected.includes(label.name))
-      );
-    }
+  const sortedTasks = useMemo(() => {
+    const newSortedTasks = getSortedTasks(sortType);
 
-    if (taskSearched !== "" && taskSearched.trim() !== "") {
-      const taskSearchedTrimmed = taskSearched.trim();
-      newSortedTasks = newSortedTasks.filter((task) =>
-        task.title.toLowerCase().includes(taskSearchedTrimmed.toLowerCase())
-      );
-    }
+    const labelFilteredTasks = labelFiltering(newSortedTasks);
 
-    return newSortedTasks;
+    const searchFilteredTasks = searchFiltering(labelFilteredTasks);
+
+    return searchFilteredTasks;
   }, [tasks, sortValue, labelsSelected, taskSearched]);
 
   const handleOnScroll = (e: any) => {
@@ -139,37 +146,31 @@ const Tasks = () => {
     setTaskSelectedId(taskId);
   };
 
-  const handleTasksContainerClick = () => {
-    if (isViewTaskModalVisible) setIsViewTaskModalVisible(false);
-    if (isAddTaskModalVisible) setIsAddTaskModalVisible(false);
-  };
-
-  const updateLabelsAvailable = () => {
-    let labelsName: string[] = [];
-
-    for (let i = 0; i < tasks.length; i++)
-      labelsName = labelsName.concat(
-        tasks[i].labels.map((label) => label.name)
-      );
-
+  const handleLabelSelectChange = (labelName: string) => {
     setLabelsAvailable((prev) =>
-      labelsName.filter((labelName) => !labelsSelected.includes(labelName))
+      prev.filter((labelAvailable) => labelAvailable !== labelName)
     );
+
+    setLabelSelected((prev) => [...prev, labelName]);
   };
 
-  useEffect(() => {
-    updateLabelsAvailable();
-  }, [labelsSelected]);
+  const updateLabelAvailable = () => {
+    if (tasks.length < 1) return;
+
+    for (const task of tasks) {
+      if (task.labels.length > 1) {
+        for (const label of task.labels) {
+          if (!labelsAvailable.includes(label.name))
+            setLabelsAvailable((prev) => [...prev, label.name]);
+        }
+      }
+    }
+  };
 
   useEffect(() => {
     setOriginalTasks(tasks);
-    updateLabelsAvailable();
+    updateLabelAvailable();
   }, [tasks]);
-
-  useEffect(() => {
-    if (isPowerModeModalVisible && !isViewTaskModalVisible)
-      setIsPowerModeModalVisible(false);
-  }, [isViewTaskModalVisible]);
 
   const handlePowerModeButtonClick = () => {
     if (!sortedTasks.find((task) => !task.isDone)) return;
@@ -187,11 +188,12 @@ const Tasks = () => {
   };
 
   return (
-    <CalendarContainer
-      onScroll={(e) => handleOnScroll(e)}
-      onClick={() => handleTasksContainerClick()}
-    >
-      {isPowerModeModalVisible && <PowerModeBackground></PowerModeBackground>}
+    <CalendarContainer onScroll={(e) => handleOnScroll(e)}>
+      {isPowerModeModalVisible && (
+        <PowerModeBackground
+          onClick={() => setIsPowerModeModalVisible(false)}
+        />
+      )}
 
       <HeaderTasksContainer>
         <SearchTaskInput
@@ -223,9 +225,7 @@ const Tasks = () => {
           ))}
         </CalendarViewSelector>
         <CalendarViewSelector
-          onChange={(e: any) =>
-            setLabelSelected([...labelsSelected, e.target.value])
-          }
+          onChange={(e: any) => handleLabelSelectChange(e.target.value)}
         >
           <option value="default"> Select a label </option>
           {labelsAvailable.map((labelAvailable) => (

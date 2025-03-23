@@ -3,12 +3,14 @@ import styled from "styled-components";
 export const CalendarContainer = styled.div`
   color: white;
   width: 78%;
+  max-width: 78%;
+
   max-height: 85%;
   border-radius: 20px;
   background-color: #0f1011;
   margin-left: 5%;
-  position: absolute;
-  left: 16%;
+  position: fixed;
+  left: 10%;
   top: 12%;
   overflow-y: auto;
   overflow-x: hidden;

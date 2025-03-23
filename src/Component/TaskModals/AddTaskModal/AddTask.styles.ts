@@ -199,10 +199,11 @@ export const ItemInputContainer = styled.div`
   overflow-x: auto;
   overflow-y: hidden;
   border: 0;
-  width: 82%;
-  margin-left: 4px;
+  width: 84%;
   background-color: #292b2c;
   border-radius: 5px;
+  position: relative;
+  right: 2%;
   span {
     color: #777472;
   }
@@ -249,7 +250,6 @@ export const ItemContainer = styled.div`
   background-color: #013a5f;
   padding: 5px;
   border-radius: 5px;
-
   &:hover {
     cursor: pointer;
     background-color: red;

@@ -12,26 +12,28 @@ export const getWeekIndexOfMonth = (
   calendarDate: Date
 ): number => {
   let isCurrentMonthDate = false;
+  let foundWeekIndex = 0;
 
-  for (let weekIndex = 0; weekIndex < weeks.length; weekIndex++) {
-    const week = weeks[weekIndex];
-    for (let j = 0; j < week.length; j++) {
-      const day = week[j];
-      if (Number(day) === 1) isCurrentMonthDate = !isCurrentMonthDate;
+  weeks.forEach((week, weekIndex) => {
+    week.forEach((day) => {
+      const dayCasted = Number(day);
+
+      if (dayCasted === 1) isCurrentMonthDate = !isCurrentMonthDate;
 
       if (isCurrentMonthDate) {
         const currentDate = new Date(
           calendarDate.getFullYear(),
           calendarDate.getMonth(),
-          Number(day)
+          dayCasted
         );
 
-        if (calendarDate.getTime() === currentDate.getTime()) return weekIndex;
+        if (calendarDate.getTime() === currentDate.getTime())
+          foundWeekIndex = weekIndex;
       }
-    }
-  }
+    });
+  });
 
-  return 0;
+  return foundWeekIndex;
 };
 
 const getWeeksOfMonth = (year: number, month: number): string[][] => {

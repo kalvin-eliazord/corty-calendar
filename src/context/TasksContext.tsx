@@ -115,9 +115,9 @@ type TasksContextType = {
   getTask(taskId: string): Task | undefined;
 };
 
-const TasksContext = createContext<TasksContextType | undefined>(undefined);
-
 const LOCAL_STORAGE_KEY = "calendarTasks";
+
+const TasksContext = createContext<TasksContextType | undefined>(undefined);
 
 const TasksProvider = ({ children }: { children: ReactNode }) => {
   const [tasks, tasksDispatch] = useReducer(tasksReducer, [], () => {
