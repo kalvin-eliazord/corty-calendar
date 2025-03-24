@@ -19,10 +19,14 @@ import {
 import { addMonths, subMonths } from "date-fns";
 
 type MonthBodyProps = {
+  yearMonthIndexProps: number | null;
   monthIndexProps: number;
 };
 
-const MonthBody: React.FC<MonthBodyProps> = ({ monthIndexProps }) => {
+const MonthBody: React.FC<MonthBodyProps> = ({
+  yearMonthIndexProps,
+  monthIndexProps,
+}) => {
   // Context
   const { calendar, calendarDispatch, previousMonthAtDay, nextMonthAtDay } =
     useCalendarContext();
@@ -52,7 +56,7 @@ const MonthBody: React.FC<MonthBodyProps> = ({ monthIndexProps }) => {
     } else {
       calendarDispatch({
         type: "SET_DATE",
-        year: calendar.year,
+        year: yearMonthIndexProps || calendar.year,
         month: monthIndexProps,
         day: dayCasted,
       });
@@ -93,17 +97,11 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ customCssProps }) => {
   // State
   const [privateMonth, setPrivateMonth] = useState<number>(calendar.month);
   const [privateYear, setPrivateYear] = useState<number>(calendar.year);
-  const [monthName, setMonthName] = useState<string>("");
 
   useEffect(() => {
     setPrivateMonth(calendar.month);
     setPrivateYear(calendar.year);
   }, [calendar]);
-
-  useEffect(() => {
-    setMonthName(getMonthByIndex(privateMonth));
-    console.log("bug month Calendar, no december: ", privateMonth);
-  }, [privateMonth]);
 
   const getPrivateCurrentDate = (): Date =>
     new Date(privateYear, privateMonth, calendar.day);
@@ -113,7 +111,13 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ customCssProps }) => {
 
     const newDate = subMonths(currentDate, 1);
     setPrivateYear(newDate.getFullYear());
-    setPrivateMonth(newDate.getMonth());
+    setPrivateMonth(
+      newDate.getMonth() === -1
+        ? 0
+        : newDate.getMonth() === 0
+        ? 12
+        : newDate.getMonth()
+    );
   };
 
   const nextMonth = () => {
@@ -121,14 +125,14 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ customCssProps }) => {
 
     const newDate = addMonths(currentDate, 1);
     setPrivateYear(newDate.getFullYear());
-    setPrivateMonth(newDate.getMonth());
+    setPrivateMonth(newDate.getMonth() === 0 ? 1 : newDate.getMonth());
   };
 
   return (
     <MonthCalendarContainer $customCss={customCssProps}>
       <MonthCalendarHeader>
         <p>
-          {monthName} {privateYear}
+          {getMonthByIndex(privateMonth)} {privateYear}
         </p>
         <ArrowsContainer $customCss={customCssProps}>
           <LeftArrowButton
@@ -148,7 +152,10 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ customCssProps }) => {
         ))}
       </DaysLetterContainer>
 
-      <MonthBody monthIndexProps={calendar.month} />
+      <MonthBody
+        yearMonthIndexProps={privateYear}
+        monthIndexProps={privateMonth}
+      />
     </MonthCalendarContainer>
   );
 };

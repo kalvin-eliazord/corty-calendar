@@ -17,7 +17,10 @@ const YearView = () => {
             <MonthNameContainer>
               {getMonthByIndex(month + 1)}
             </MonthNameContainer>
-            <MonthBody monthIndexProps={month + 1} />
+            <MonthBody
+              yearMonthIndexProps={null}
+              monthIndexProps={month + 1}
+            />
           </MonthContainer>
         ))}
       </YearContainer>

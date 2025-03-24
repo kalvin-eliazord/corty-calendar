@@ -185,7 +185,6 @@ const Tasks = () => {
           {tasks.length > 0 &&
             tasks.filter((task) => !task.isDone).length > 0 &&
             `${tasks.filter((task) => !task.isDone).length} tasks unfinished`}
-          {" , tasks rendered: " + renderedTasks}
         </TaskUnfinishedText>
         <SearchTaskInput
           value={taskSearched}
