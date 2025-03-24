@@ -4,6 +4,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import AreModalsVisibleProvider from "./context/ModalsContext";
 import CalendarProvider from "./context/CalendarContext";
+import TaskSelectedIdProvider from "./context/TaskSelectedIdContext";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -12,9 +13,11 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <CalendarProvider>
-      <AreModalsVisibleProvider>
-        <App />
-      </AreModalsVisibleProvider>
+      <TaskSelectedIdProvider>
+        <AreModalsVisibleProvider>
+          <App />
+        </AreModalsVisibleProvider>
+      </TaskSelectedIdProvider>
     </CalendarProvider>
   </React.StrictMode>
 );

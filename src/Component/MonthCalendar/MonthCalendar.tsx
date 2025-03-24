@@ -28,13 +28,8 @@ const MonthBody: React.FC<MonthBodyProps> = ({ monthIndexProps }) => {
     useCalendarContext();
 
   // State
-  const [monthIndex, setMonthIndex] = useState<number>(0);
   const [weeks, setWeeks] = useState<string[][]>([]);
   const [currentWeek, setCurrentWeek] = useState<number>(0);
-
-  useEffect(() => {
-    setMonthIndex(monthIndexProps);
-  }, [monthIndexProps]);
 
   useEffect(() => {
     const today = new Date(calendar.year, calendar.month, calendar.day);
@@ -51,14 +46,14 @@ const MonthBody: React.FC<MonthBodyProps> = ({ monthIndexProps }) => {
     const nextMonthClicked = weekOfTheMonth > 4 && dayCasted < 15;
 
     if (previousMonthClicked) {
-      previousMonthAtDay(monthIndex, dayCasted);
+      previousMonthAtDay(monthIndexProps, dayCasted);
     } else if (nextMonthClicked) {
-      nextMonthAtDay(monthIndex, dayCasted);
+      nextMonthAtDay(monthIndexProps, dayCasted);
     } else {
       calendarDispatch({
         type: "SET_DATE",
         year: calendar.year,
-        month: monthIndex,
+        month: monthIndexProps,
         day: dayCasted,
       });
     }
@@ -74,7 +69,7 @@ const MonthBody: React.FC<MonthBodyProps> = ({ monthIndexProps }) => {
               onClick={() => handleDayClick(indexWeek, day)}
               $isCurrentDay={
                 calendar.day === Number(day) &&
-                calendar.month === monthIndex &&
+                calendar.month === monthIndexProps &&
                 currentWeek === indexWeek
               }
             >
@@ -96,7 +91,6 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ customCssProps }) => {
   const { calendar } = useCalendarContext();
 
   // State
-  const [customCss, setCustomCss] = useState<boolean>(customCssProps);
   const [privateMonth, setPrivateMonth] = useState<number>(calendar.month);
   const [privateYear, setPrivateYear] = useState<number>(calendar.year);
   const [monthName, setMonthName] = useState<string>("");
@@ -108,15 +102,11 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ customCssProps }) => {
 
   useEffect(() => {
     setMonthName(getMonthByIndex(privateMonth));
+    console.log(privateMonth);
   }, [privateMonth]);
 
-  useEffect(() => {
-    setCustomCss(customCssProps);
-  }, [customCssProps]);
-
-  const getPrivateCurrentDate = (): Date => {
-    return new Date(privateYear, privateMonth, calendar.day);
-  };
+  const getPrivateCurrentDate = (): Date =>
+    new Date(privateYear, privateMonth, calendar.day);
 
   const previousMonth = () => {
     const currentDate = getPrivateCurrentDate();
@@ -135,12 +125,12 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ customCssProps }) => {
   };
 
   return (
-    <MonthCalendarContainer $customCss={customCss}>
+    <MonthCalendarContainer $customCss={customCssProps}>
       <MonthCalendarHeader>
         <p>
           {monthName} {privateYear}
         </p>
-        <ArrowsContainer $customCss={customCss}>
+        <ArrowsContainer $customCss={customCssProps}>
           <LeftArrowButton
             onClick={() => previousMonth()}
             src="https://cdn-icons-png.flaticon.com/512/271/271228.png"
@@ -158,7 +148,7 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ customCssProps }) => {
         ))}
       </DaysLetterContainer>
 
-      <MonthBody monthIndexProps={privateMonth} />
+      <MonthBody monthIndexProps={calendar.month} />
     </MonthCalendarContainer>
   );
 };

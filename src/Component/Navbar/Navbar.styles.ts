@@ -1,9 +1,12 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
+export const NavbarBodyContainer = styled.div`
+  display: flex;
+`;
+
 export const MainContainer = styled.div`
-  padding: 10px;
-  background-color: #1b1b1b;
+  background-color: #141617;
   color: #e2e3e2;
 
   p {
@@ -16,26 +19,25 @@ export const MainContainer = styled.div`
 `;
 
 export const Header = styled.div`
-  margin-bottom: 60px;
-  padding-top: 20px;
+  padding-top: 30px;
   display: flex;
+  gap:120px;
+  justify-content:space-evenly;
+  background-color: #141617;
 `;
 
 export const LeftSide = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 10px;
-  height: 100vh;
-  div {
-    bottom: 20vh;
-  }
+  padding: 20px;
 `;
 
 export const AddTaskButton = styled.div`
   padding: 20px;
-  margin-left: 15px;
+  padding-right: 80px;
   margin-bottom: 20px;
-
+  text-wrap: nowrap;
+  width: 100px;
   border-radius: 15px;
   background-color: #36393a;
   width: 6%;
@@ -48,8 +50,9 @@ export const AddTaskButton = styled.div`
 export const LogoContainer = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-right: 250px;
   gap: 35px;
+  position:relative;
+  right:4.5%;
   &:hover {
     cursor: pointer;
   }

@@ -2,16 +2,11 @@ import styled from "styled-components";
 
 export const CalendarContainer = styled.div`
   color: white;
-  width: 78%;
-  max-width: 78%;
-
-  max-height: 85%;
+  width: 87%;
   border-radius: 20px;
   background-color: #0f1011;
-  margin-left: 5%;
-  position: fixed;
-  left: 10%;
-  top: 12%;
+  margin-top: 1%;
+  max-height: 1100px;
   overflow-y: auto;
   overflow-x: hidden;
 
@@ -56,7 +51,7 @@ export const CalendarContainer = styled.div`
 `;
 
 export const MonthCalendarContainer = styled.div<{ $customCss: boolean }>`
-  position: ${({ $customCss }) => ($customCss ? "static" : "fixed")};
+  position: ${({ $customCss }) => ($customCss ? "" : "fixed")};
   padding: 10px;
   top: ${({ $customCss }) => ($customCss ? 240 : -50)}px;
   left: ${({ $customCss }) => ($customCss ? 30 : 100)}px;

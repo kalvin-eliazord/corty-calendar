@@ -1,9 +1,10 @@
 import styled from "styled-components";
 
-export const DayViewContainer = styled.div`
+export const DayViewContainer = styled.div<{ $isWeekView: boolean }>`
   border-inline: solid #7a7264 1px;
   margin-top: 2%;
   width: 100%;
+  ${({ $isWeekView }) => $isWeekView && `max-width: 300px;`}
 `;
 
 export const DayViewNameContainer = styled.div`
@@ -51,8 +52,9 @@ export const AllDayTask = styled.div`
 export const HoursTitleContainer = styled.div`
   display: flex;
   flex-direction: column;
-  margin-top: 90px;
-  gap: 40px;
+  justify-content: space-evenly;
+  margin-top: 80px;
+  padding-bottom: 10px;
   margin-right: 10px;
 `;
 
@@ -128,7 +130,7 @@ export const TaskContainer = styled.div<{ $isDone: boolean }>`
   z-index: 1;
   color: white;
   font-weight: bold;
-  padding-inline: 2%;
+  padding-inline: 1%;
   text-wrap: nowrap;
   text-decoration: ${({ $isDone }) => $isDone && "line-through"};
 

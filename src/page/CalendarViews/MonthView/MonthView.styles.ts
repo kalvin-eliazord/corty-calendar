@@ -5,9 +5,11 @@ export const DaysLetterContainer = styled.div`
   position: sticky;
   top: 0;
   display: flex;
+  z-index: 70;
   padding-left: 85px;
-  gap: 171px;
+  justify-content: space-between;
   font-weight: bold;
+  padding-inline: 155px;
   font-size: 20px;
   background-color: rgb(116, 116, 116);
 `;
@@ -16,10 +18,11 @@ export const DayTasksContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
+  padding-inline: 10px;
+  max-width: 300px;
+  max-height: 200px;
   overflow-x: hidden;
   overflow-y: auto;
-  padding-right: 10px;
-
   &::-webkit-scrollbar {
     width: 15px;
     height: 12px;
@@ -69,6 +72,8 @@ export const WeekCalendarContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 1px;
+  overflow-x: hidden;
+  overflow-y: hidden;
 `;
 
 export const DayCalendarContainer = styled.div`

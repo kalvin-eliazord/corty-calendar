@@ -31,9 +31,10 @@ type DayType = {
 
 type DayViewProps = {
   dayRangeProps: number;
+  isWeekView: boolean;
 };
 
-const DayView: React.FC<DayViewProps> = ({ dayRangeProps }) => {
+const DayView: React.FC<DayViewProps> = ({ dayRangeProps, isWeekView }) => {
   // Context
   const { tasks } = useTasksContext();
   const { taskSelectedId, setTaskSelectedId } = useTaskSelectedIdContext();
@@ -90,7 +91,7 @@ const DayView: React.FC<DayViewProps> = ({ dayRangeProps }) => {
           ))}
         </HoursTitleContainer>
         {days.map((day) => (
-          <DayViewContainer key={day.name}>
+          <DayViewContainer key={day.name} $isWeekView={isWeekView}>
             <DayViewNameContainer>
               <p>
                 {day.name}. <br /> <span>{day.index} </span>

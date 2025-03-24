@@ -18,7 +18,8 @@ export const HeaderTasksContainer = styled.div`
   background-color: #2a2e31;
   padding: 20px;
   display: flex;
-  gap: 70px;
+  gap: 200px;
+  justify-content:space-evenly;
   select {
     postion: relative;
     top: 0.5px;
@@ -85,6 +86,7 @@ export const LabelsSelectedContainer = styled.div`
   padding-left: 15px;
   border-bottom: 1px solid grey;
   font-weight: bold;
+  padding-top: 15px;
 `;
 
 export const LabelSelected = styled.div`

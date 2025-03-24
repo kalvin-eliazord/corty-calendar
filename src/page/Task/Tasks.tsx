@@ -19,6 +19,7 @@ import {
   SearchTaskInput,
   PowerModeBackground,
 } from "././Tasks.styles";
+import LabelSelector from "../../component/LabelOption";
 
 const sortTypeOptions = {
   default: "Pick a sort type",
@@ -35,12 +36,8 @@ const sortValueOptions = {
 
 const Tasks = () => {
   // Context
-  const {
-    isAddTaskModalVisible,
-    setIsAddTaskModalVisible,
-    isViewTaskModalVisible,
-    setIsViewTaskModalVisible,
-  } = useAreModalsVisibleContext();
+  const { isViewTaskModalVisible, setIsViewTaskModalVisible } =
+    useAreModalsVisibleContext();
   const { setTaskSelectedId } = useTaskSelectedIdContext();
   const { tasks, tasksDispatch } = useTasksContext();
 
@@ -49,7 +46,6 @@ const Tasks = () => {
   const [sortType, setSortType] = useState<string>("");
   const [sortValue, setSortValue] = useState<string>("");
   const [renderedTasks, setRenderedTasks] = useState<number>(10);
-  const [labelsAvailable, setLabelsAvailable] = useState<string[]>([]);
   const [labelsSelected, setLabelSelected] = useState<string[]>([]);
   const [taskSearched, setTaskSearched] = useState<string>("");
   const [isPowerModeModalVisible, setIsPowerModeModalVisible] =
@@ -147,29 +143,11 @@ const Tasks = () => {
   };
 
   const handleLabelSelectChange = (labelName: string) => {
-    setLabelsAvailable((prev) =>
-      prev.filter((labelAvailable) => labelAvailable !== labelName)
-    );
-
     setLabelSelected((prev) => [...prev, labelName]);
-  };
-
-  const updateLabelAvailable = () => {
-    if (tasks.length < 1) return;
-
-    for (const task of tasks) {
-      if (task.labels.length > 1) {
-        for (const label of task.labels) {
-          if (!labelsAvailable.includes(label.name))
-            setLabelsAvailable((prev) => [...prev, label.name]);
-        }
-      }
-    }
   };
 
   useEffect(() => {
     setOriginalTasks(tasks);
-    updateLabelAvailable();
   }, [tasks]);
 
   const handlePowerModeButtonClick = () => {
@@ -224,16 +202,11 @@ const Tasks = () => {
             </option>
           ))}
         </CalendarViewSelector>
-        <CalendarViewSelector
-          onChange={(e: any) => handleLabelSelectChange(e.target.value)}
-        >
-          <option value="default"> Select a label </option>
-          {labelsAvailable.map((labelAvailable) => (
-            <option key={labelAvailable} value={labelAvailable}>
-              {labelAvailable}
-            </option>
-          ))}
-        </CalendarViewSelector>
+        <LabelSelector
+          tasks={tasks}
+          labelsSelected={labelsSelected}
+          handleLabelSelectChange={handleLabelSelectChange}
+        />
         <HeaderButton
           alt="powerMode"
           src="https://cdn-icons-png.flaticon.com/512/159/159607.png"
