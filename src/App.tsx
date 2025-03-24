@@ -20,6 +20,7 @@ import YearView from "./page/CalendarViews/YearView/YearView";
 import TopNavbar from "./component/Navbar/TopNavbar";
 import LeftNavbar from "./component/Navbar/LeftNavbar";
 import { NavbarBodyContainer } from "./component/Navbar/Navbar.styles";
+import { PowerModeBackground } from "./page/Task/Tasks.styles";
 
 export default function App() {
   const {

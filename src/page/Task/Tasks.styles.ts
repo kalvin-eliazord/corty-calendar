@@ -19,7 +19,7 @@ export const HeaderTasksContainer = styled.div`
   padding: 20px;
   display: flex;
   gap: 200px;
-  justify-content:space-evenly;
+  justify-content: space-evenly;
   select {
     postion: relative;
     top: 0.5px;
@@ -119,8 +119,9 @@ export const SearchTaskInput = styled.input`
 
 export const PowerModeBackground = styled.div`
   position: absolute;
-  width: 100%;
-  height: 100vh;
+  transform: translate(-50%, -50%);
+  width: 200%;
+  height: 200%;
   background-color: rgba(105, 42, 86, 0.73);
   z-index: 5;
 `;

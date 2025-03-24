@@ -59,7 +59,7 @@ export const MonthCalendarContainer = styled.div<{ $customCss: boolean }>`
     ${({ $customCss }) => ($customCss ? `0%, 0%` : `-10%, 50%`)}
   );
   background-color: #0f1110;
-  z-index: 10;
+  z-index: 3;
   display: flex;
   border-radius: 10px;
   flex-direction: column;

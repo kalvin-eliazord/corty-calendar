@@ -165,6 +165,11 @@ const Tasks = () => {
     setIsViewTaskModalVisible(true);
   };
 
+  useEffect(() => {
+    if (!isViewTaskModalVisible && isPowerModeModalVisible)
+      setIsPowerModeModalVisible(false);
+  }, [isViewTaskModalVisible]);
+
   return (
     <CalendarContainer onScroll={(e) => handleOnScroll(e)}>
       {isPowerModeModalVisible && (
