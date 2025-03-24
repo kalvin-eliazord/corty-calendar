@@ -8,8 +8,8 @@ const getFormattedHour = (hour: number): string => {
 };
 
 const getNonFormattedHour = (hourValue: number, hourFormat: string): number => {
-  if (hourFormat === "AM") {
-    return hourValue;
+  if (hourFormat.trim() === "AM") {
+    return hourValue === 12 ? 0 : hourValue;
   } else {
     return hourValue === 12 ? hourValue : hourValue + 12;
   }

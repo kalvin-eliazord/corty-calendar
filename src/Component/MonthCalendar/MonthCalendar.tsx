@@ -102,7 +102,7 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ customCssProps }) => {
 
   useEffect(() => {
     setMonthName(getMonthByIndex(privateMonth));
-    console.log(privateMonth);
+    console.log("bug month Calendar, no december: ", privateMonth);
   }, [privateMonth]);
 
   const getPrivateCurrentDate = (): Date =>

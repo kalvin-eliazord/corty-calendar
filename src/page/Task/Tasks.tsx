@@ -18,6 +18,7 @@ import {
   LabelSelected,
   SearchTaskInput,
   PowerModeBackground,
+  TaskUnfinishedText,
 } from "././Tasks.styles";
 import LabelSelector from "../../component/LabelOption";
 
@@ -43,9 +44,9 @@ const Tasks = () => {
 
   // State
   const [originalTasks, setOriginalTasks] = useState<Task[]>([] as Task[]);
-  const [sortType, setSortType] = useState<string>("");
+  const [sortType, setSortType] = useState<string>("default");
   const [sortValue, setSortValue] = useState<string>("");
-  const [renderedTasks, setRenderedTasks] = useState<number>(10);
+  const [renderedTasks, setRenderedTasks] = useState<number>(20);
   const [labelsSelected, setLabelSelected] = useState<string[]>([]);
   const [taskSearched, setTaskSearched] = useState<string>("");
   const [isPowerModeModalVisible, setIsPowerModeModalVisible] =
@@ -133,8 +134,9 @@ const Tasks = () => {
   const handleOnScroll = (e: any) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
 
-    if (Math.floor(scrollTop + clientHeight) === scrollHeight - 1)
-      setRenderedTasks((prev) => prev + 10);
+    if (scrollHeight - Math.floor(scrollTop + clientHeight) < 50)
+      if (renderedTasks >= tasks.length) setRenderedTasks(tasks.length);
+      else setRenderedTasks((prev) => prev + 10);
   };
 
   const handleTaskClick = (taskId: string) => {
@@ -179,6 +181,12 @@ const Tasks = () => {
       )}
 
       <HeaderTasksContainer>
+        <TaskUnfinishedText>
+          {tasks.length > 0 &&
+            tasks.filter((task) => !task.isDone).length > 0 &&
+            `${tasks.filter((task) => !task.isDone).length} tasks unfinished`}
+          {" , tasks rendered: " + renderedTasks}
+        </TaskUnfinishedText>
         <SearchTaskInput
           value={taskSearched}
           placeholder="Search a task"
@@ -187,26 +195,30 @@ const Tasks = () => {
           }}
         />
         <CalendarViewSelector
-          onChange={(e: any) => {
-            e.target.value !== "default" && setSortType(e.target.value);
-          }}
+          onChange={(e: any) => setSortType(e.target.value)}
         >
           {Object.entries(sortTypeOptions).map(([key, value]) => (
-            <option key={key} value={key}>
+            <option
+              key={key}
+              value={key}
+              disabled={sortType !== "default" && key === "default"}
+            >
               {value}
             </option>
           ))}
         </CalendarViewSelector>
 
-        <CalendarViewSelector
-          onChange={(e: any) => setSortValue(e.target.value)}
-        >
-          {Object.entries(sortValueOptions).map(([key, value]) => (
-            <option key={key} value={key}>
-              {value}
-            </option>
-          ))}
-        </CalendarViewSelector>
+        {sortType !== "" && (
+          <CalendarViewSelector
+            onChange={(e: any) => setSortValue(e.target.value)}
+          >
+            {Object.entries(sortValueOptions).map(([key, value]) => (
+              <option key={key} value={key}>
+                {value}
+              </option>
+            ))}
+          </CalendarViewSelector>
+        )}
         <LabelSelector
           tasks={tasks}
           labelsSelected={labelsSelected}
@@ -238,7 +250,9 @@ const Tasks = () => {
       )}
 
       <MainContainer>
+        {/* no need a state for sorted task, just call the piping func on my tasks array*/}
         {tasks.length < 1 && <Text>No tasks! 🍕</Text>}
+
         {sortedTasks.slice(0, renderedTasks).map((task: Task) => (
           <div key={task.id}>
             <TaskContainer

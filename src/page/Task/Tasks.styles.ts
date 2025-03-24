@@ -10,6 +10,13 @@ export const MainContainer = styled.div`
   }
 `;
 
+export const TaskUnfinishedText = styled.p`
+  font-size: 20px;
+  font-weight: bold;
+  text-wrap:nowrap;
+  padding-left:10px;
+`;
+
 export const HeaderTasksContainer = styled.div`
   position: sticky;
   top: 0;

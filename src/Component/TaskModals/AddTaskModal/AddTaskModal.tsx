@@ -205,6 +205,7 @@ const AddTask = () => {
     const parsedDueDate =
       parse(dateInput, "d MMMM yyyy", new Date()) || new Date();
 
+
     const newHour = isAllDayInput
       ? 0
       : getNonFormattedHour(Number(hourInput.slice(0, 2)), hourInput.slice(2));
