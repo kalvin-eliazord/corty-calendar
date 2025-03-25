@@ -40,51 +40,6 @@ type TaskPipingType = {
   taskPiping: (tasks: Task[]) => Task[];
 };
 
-const getDueDateSortedTasks = (sortValue: string) => {
-  return (tasks: Task[]) => {
-    switch (sortValue) {
-      case "ascending":
-        return [...tasks].sort(
-          (a, b) =>
-            new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
-        );
-      case "descending":
-        return [...tasks].sort(
-          (a, b) =>
-            new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime()
-        );
-      default:
-        return tasks;
-    }
-  };
-};
-
-const getPrioritySortedTasks = (sortValue: string) => {
-  return (tasks: Task[]) => {
-    switch (sortValue) {
-      case "ascending":
-        return [...tasks].sort((a, b) => a.priority - b.priority);
-      case "descending":
-        return [...tasks].sort((a, b) => b.priority - a.priority);
-      default:
-        return tasks;
-    }
-  };
-};
-
-const getComplexitySortedTasks = (sortValue: string) => {
-  return (tasks: Task[]) => {
-    switch (sortValue) {
-      case "ascending":
-        return [...tasks].sort((a, b) => a.complexity - b.complexity);
-      case "descending":
-        return [...tasks].sort((a, b) => b.complexity - a.complexity);
-      default:
-        return tasks;
-    }
-  };
-};
-
 const Tasks = () => {
   // Context
   const { isViewTaskModalVisible, setIsViewTaskModalVisible } =
@@ -103,6 +58,52 @@ const Tasks = () => {
   );
   const [isPowerModeModalVisible, setIsPowerModeModalVisible] =
     useState<boolean>(false);
+
+  // Sorting
+  const getDueDateSortedTasks = (sortValue: string) => {
+    return (tasks: Task[]) => {
+      switch (sortValue) {
+        case "ascending":
+          return [...tasks].sort(
+            (a, b) =>
+              new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+          );
+        case "descending":
+          return [...tasks].sort(
+            (a, b) =>
+              new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime()
+          );
+        default:
+          return tasks;
+      }
+    };
+  };
+
+  const getPrioritySortedTasks = (sortValue: string) => {
+    return (tasks: Task[]) => {
+      switch (sortValue) {
+        case "ascending":
+          return [...tasks].sort((a, b) => a.priority - b.priority);
+        case "descending":
+          return [...tasks].sort((a, b) => b.priority - a.priority);
+        default:
+          return tasks;
+      }
+    };
+  };
+
+  const getComplexitySortedTasks = (sortValue: string) => {
+    return (tasks: Task[]) => {
+      switch (sortValue) {
+        case "ascending":
+          return [...tasks].sort((a, b) => a.complexity - b.complexity);
+        case "descending":
+          return [...tasks].sort((a, b) => b.complexity - a.complexity);
+        default:
+          return tasks;
+      }
+    };
+  };
 
   const getSortedTasks = (sortType: string, sortValue: string) => {
     switch (sortType) {
@@ -125,6 +126,13 @@ const Tasks = () => {
     setSortValue((prev) => newSortValue);
   };
 
+  const handleSortTypeChange = (newSortType: string) => {
+    removePiping(sortType);
+    setSortType(newSortType);
+    setSortValue("default");
+  };
+
+  // Filtering
   const labelFiltering = (labelsSelected: string[]) => {
     return (tasks: Task[]) => {
       return tasks.filter((task) =>
@@ -141,6 +149,24 @@ const Tasks = () => {
     }
   }, [labelsSelected]);
 
+  const filterTaskName = (taskSearchedInput: string) => {
+    return (tasks: Task[]) => {
+      const taskSearchedTrimmed = taskSearchedInput.trim();
+      return tasks.filter((task) =>
+        task.title.toLowerCase().includes(taskSearchedTrimmed.toLowerCase())
+      );
+    };
+  };
+
+  useEffect(() => {
+    if (!taskSearchedInput || !taskSearchedInput.trim()) {
+      removePiping("taskNameFiltering");
+    } else {
+      addPiping("taskNameFiltering", filterTaskName(taskSearchedInput));
+    }
+  }, [taskSearchedInput]);
+
+  // Piping
   const removePiping = (pipingId: string) => {
     const updatePiping = taskPiping.find((piping) => piping.id === pipingId);
     if (updatePiping) {
@@ -167,25 +193,7 @@ const Tasks = () => {
     });
   };
 
-  const filterTaskName = (taskSearchedInput: string) => {
-    return (tasks: Task[]) => {
-      const taskSearchedTrimmed = taskSearchedInput.trim();
-      return tasks.filter((task) =>
-        task.title.toLowerCase().includes(taskSearchedTrimmed.toLowerCase())
-      );
-    };
-  };
-
-  useEffect(() => {
-    if (!taskSearchedInput || !taskSearchedInput.trim()) {
-      removePiping("taskNameFiltering");
-    } else {
-      addPiping("taskNameFiltering", filterTaskName(taskSearchedInput));
-    }
-  }, [taskSearchedInput]);
-
   const getPippedTasks = (tasks: Task[]): Task[] => {
-    console.log(taskPiping);
     return taskPiping.reduce(
       (acc, pipingItem) => pipingItem.taskPiping(acc),
       tasks
@@ -225,12 +233,6 @@ const Tasks = () => {
     if (!isViewTaskModalVisible && isPowerModeModalVisible)
       setIsPowerModeModalVisible(false);
   }, [isViewTaskModalVisible]);
-
-  const handleSortTypeChange = (newSortType: string) => {
-    removePiping(sortType);
-    setSortType(newSortType);
-    setSortValue("default");
-  };
 
   return (
     <CalendarContainer onScroll={(e) => handleOnScroll(e)}>
