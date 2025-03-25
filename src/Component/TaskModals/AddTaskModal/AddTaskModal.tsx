@@ -286,7 +286,7 @@ const AddTask = () => {
           <TitleTaskInput
             type="text"
             value={taskTitleInput}
-            onChange={(e) => setTaskTitleInput(e.target.value)}
+            onChange={(e:any) => setTaskTitleInput(e.target.value)}
             placeholder="Add a title"
             autoFocus
           />
@@ -325,7 +325,7 @@ const AddTask = () => {
                   ref={dateInputRef}
                   value={dateInput}
                   onClick={() => setIsMonthCalendarVisible(true)}
-                  onChange={(e) => setDateInput(e.target.value)}
+                  onChange={(e:any) => setDateInput(e.target.value)}
                   onBlur={handleOnBlurDate}
                 />
                 {!isAllDayInput && (
@@ -334,7 +334,7 @@ const AddTask = () => {
                     type="text"
                     value={hourInput}
                     onClick={() => setIsHourDropDownVisible(true)}
-                    onChange={(e) => setHourInput(e.target.value)}
+                    onChange={(e:any) => setHourInput(e.target.value)}
                     onBlur={handleOnBlurHour}
                   />
                 )}
@@ -366,7 +366,7 @@ const AddTask = () => {
             <TimeContainer>
               <StyledSelect
                 ref={recurringSelectorRef}
-                onChange={(e) => setRecurringValue(e.target.value)}
+                onChange={(e:any) => setRecurringValue(e.target.value)}
               >
                 {Object.entries(recurringTypeOptions).map(([key, value]) => (
                   <option key={key} value={key}>
@@ -393,7 +393,7 @@ const AddTask = () => {
             alt="description icon"
           />
           <DescriptionTextArea
-            onChange={(e) => setDescriptionInput(e.target.value)}
+            onChange={(e:any) => setDescriptionInput(e.target.value)}
             value={descriptionInput}
             placeholder="Add a description"
           />
@@ -421,7 +421,7 @@ const AddTask = () => {
             <ItemInput
               placeholder="Add a check"
               value={checkInput}
-              onChange={(e) => setCheckInput(e.target.value)}
+              onChange={(e:any) => setCheckInput(e.target.value)}
             />
             <ItemInputContainer>
               {checks.map((check) => (
@@ -440,7 +440,7 @@ const AddTask = () => {
             <ItemInput
               placeholder="Add a label"
               value={labelInput}
-              onChange={(e) => setLabelInput(e.target.value)}
+              onChange={(e:any) => setLabelInput(e.target.value)}
             />
             <ItemInputContainer>
               {labels.map((label) => (

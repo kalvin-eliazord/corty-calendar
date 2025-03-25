@@ -6,7 +6,12 @@ export const CalendarContainer = styled.div`
   border-radius: 20px;
   background-color: #0f1011;
   margin-top: 1%;
-  max-height: 1100px;
+  max-height: 80vh;
+
+  @media (min-width: 2000px) {
+    max-height: 90vh;
+  }
+
   overflow-y: auto;
   overflow-x: hidden;
 
@@ -141,8 +146,6 @@ export const DaysLetterContainer = styled.div`
   font-size: 12px;
   padding-left: 12px;
   gap: 26.9px;
-  /padding-inline: 12px;
-  /justify-content: space-between;
 
   @media (max-width: 768px) {
     height: 30px;

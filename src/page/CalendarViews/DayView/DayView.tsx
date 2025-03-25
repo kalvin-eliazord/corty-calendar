@@ -109,6 +109,7 @@ const DayView: React.FC<DayViewProps> = ({ dayRangeProps, isWeekView }) => {
 
             {formattedHours.map((formattedHour, i) => (
               <HourRangeContainer
+                $isWeekView={isWeekView}
                 key={formattedHour}
                 onClick={() => handleHourRangeClick(i, day.date)}
               >
@@ -130,7 +131,7 @@ const DayView: React.FC<DayViewProps> = ({ dayRangeProps, isWeekView }) => {
                     task.hour === i && (
                       <TaskContainer
                         key={task.id}
-                        onClick={(e) => {
+                        onClick={(e: any) => {
                           e.stopPropagation();
                           handleTaskContainerClick(task.id);
                         }}

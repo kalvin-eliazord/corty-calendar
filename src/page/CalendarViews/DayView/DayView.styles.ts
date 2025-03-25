@@ -14,7 +14,9 @@ export const DayViewNameContainer = styled.div`
   background-color: #0f1110;
   top: 0;
   border-bottom: solid #7a7264 1px;
-
+  @media (min-width: 2000px) {
+    gap: 120px;
+  }
   p {
     margin-left: 2%;
     color: #246694;
@@ -32,7 +34,10 @@ export const AllDayTasksContainer = styled.div`
   width: 100%;
   display: flex;
   overflow-x: auto;
-  padding-left: 20px;
+  padding-left: 10px;
+  overflow-y: hidden;
+  height: 20px;
+  max-height: 20px;
 `;
 
 export const AllDayTask = styled.div`
@@ -41,8 +46,8 @@ export const AllDayTask = styled.div`
   z-index: 1;
   color: white;
   font-weight: bold;
-  padding-inline: 1%;
   border-radius: 15px;
+  padding-inline: 5%;
 
   &:hover {
     cursor: pointer;
@@ -66,10 +71,14 @@ export const HoursTitle = styled.div`
   margin-bottom: 1.5px;
 `;
 
-export const HourRangeContainer = styled.div`
+export const HourRangeContainer = styled.div<{ $isWeekView: boolean }>`
   display: flex;
   border-bottom: solid #7a7264 1px;
+  @media (max-width: 2000px) {
+    ${({ $isWeekView }) => $isWeekView && `max-width: 130px;`}
+  }
   max-height: 0px;
+
   padding: 18px;
   padding-bottom: 40px;
   overflow-y: hidden;
@@ -118,7 +127,7 @@ export const TaskPlaceholderContainer = styled.div`
   position: relative;
   right: 3rem;
   margin-left: 40px;
-  margin-right: 00px;
+  padding-inline: 5%;
 `;
 
 export const TaskContainer = styled.div<{ $isDone: boolean }>`
@@ -128,9 +137,9 @@ export const TaskContainer = styled.div<{ $isDone: boolean }>`
   width: 100%;
   height: 100%;
   z-index: 1;
+  padding-inline: 5%;
   color: white;
   font-weight: bold;
-  padding-inline: 1%;
   text-wrap: nowrap;
   text-decoration: ${({ $isDone }) => $isDone && "line-through"};
 
@@ -141,4 +150,5 @@ export const TaskContainer = styled.div<{ $isDone: boolean }>`
 
 export const Calendar = styled.div`
   display: flex;
+  justify-content: center;
 `;

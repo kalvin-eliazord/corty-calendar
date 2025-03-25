@@ -26,7 +26,7 @@ const Slider: React.FC<SliderProps> = ({
         id={name}
         type="range"
         value={sliderValue}
-        onChange={(e) => setSliderValue(e.target.value)}
+        onChange={(e:any) => setSliderValue(e.target.value)}
         name={name}
         min={min}
         max={max}

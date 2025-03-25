@@ -74,7 +74,7 @@ const MonthView = () => {
                         ).getTime() && (
                         <TaskContainer
                           key={task.id}
-                          onClick={(e) => {
+                          onClick={(e:any) => {
                             e.stopPropagation();
                             handleTaskContainerClick(task.id);
                           }}

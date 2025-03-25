@@ -146,7 +146,7 @@ const TopNavbar = () => {
         </ArrowsContainer>
         <CalendarDateText>{formattedDate}</CalendarDateText>
         <CalendarViewSelector
-          onChange={(e) => handleClickDayView(e.target.value)}
+          onChange={(e: any) => handleClickDayView(e.target.value)}
           value={calendarView}
         >
           {calendarViews.map((view) => (

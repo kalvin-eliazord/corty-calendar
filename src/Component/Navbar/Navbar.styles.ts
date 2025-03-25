@@ -21,8 +21,11 @@ export const MainContainer = styled.div`
 export const Header = styled.div`
   padding-top: 30px;
   display: flex;
-  gap:120px;
-  justify-content:space-evenly;
+
+  @media (min-width: 2000px) {
+    gap: 120px;
+  }
+  justify-content: space-evenly;
   background-color: #141617;
 `;
 
@@ -51,8 +54,13 @@ export const LogoContainer = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 35px;
-  position:relative;
-  right:4.5%;
+  position: relative;
+  right: 4%;
+
+  @media (min-width: 2000px) {
+    right: 4.5%;
+  }
+
   &:hover {
     cursor: pointer;
   }

@@ -20,7 +20,9 @@ export const DayTasksContainer = styled.div`
   gap: 10px;
   padding-inline: 10px;
   max-width: 300px;
-  max-height: 200px;
+  @media (max-width: 2000px) {
+    max-height: 100px;
+  }
   overflow-x: hidden;
   overflow-y: auto;
   &::-webkit-scrollbar {
@@ -65,6 +67,7 @@ export const DayTasksContainer = styled.div`
 
 export const MonthCalendarContainer = styled.div`
   background-color: #37393b;
+  border-right: 1px solid #37393b;
 `;
 
 export const WeekCalendarContainer = styled.div`
@@ -79,6 +82,14 @@ export const WeekCalendarContainer = styled.div`
 export const DayCalendarContainer = styled.div`
   text-align: center;
   aspect-ratio: 1;
+
+  @media (max-width: 2000px) {
+    width: 170px;
+    height: 170px;
+    max-width: 170px;
+    max-height: 170px;
+  }
+
   background-color: #0f1110;
   &:hover {
     background-color: rgba(116, 116, 116, 0.08);
