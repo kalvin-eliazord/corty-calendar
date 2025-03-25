@@ -4,17 +4,19 @@ import { CalendarViewSelector } from "./Navbar/Navbar.styles";
 type LabelSelectorProps = {
   tasks: Task[];
   labelsSelected: string[];
-  handleLabelSelectChange(value: string): void;
+  setLabelSelected: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
 const LabelSelector: React.FC<LabelSelectorProps> = ({
   tasks,
   labelsSelected,
-  handleLabelSelectChange,
+  setLabelSelected,
 }) => {
   return (
     <CalendarViewSelector
-      onChange={(e: any) => handleLabelSelectChange(e.target.value)}
+      onChange={(e: any) =>
+        setLabelSelected((prev) => [...prev, e.target.value])
+      }
     >
       <option value="default"> Select a label </option>
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { differenceInDays, isSameDay } from "date-fns";
 import { CalendarContainer } from "../../component/MonthCalendar/MonthCalendar";
 import { useTasksContext, Task } from "../../context/TasksContext";
@@ -35,41 +35,13 @@ const sortValueOptions = {
   descending: "Descending",
 };
 
-const Tasks = () => {
-  // Context
-  const { isViewTaskModalVisible, setIsViewTaskModalVisible } =
-    useAreModalsVisibleContext();
-  const { setTaskSelectedId } = useTaskSelectedIdContext();
-  const { tasks, tasksDispatch } = useTasksContext();
+type TaskPipingType = {
+  id: string;
+  taskPiping: (tasks: Task[]) => Task[];
+};
 
-  // State
-  const [originalTasks, setOriginalTasks] = useState<Task[]>([] as Task[]);
-  const [sortType, setSortType] = useState<string>("default");
-  const [sortValue, setSortValue] = useState<string>("");
-  const [renderedTasks, setRenderedTasks] = useState<number>(20);
-  const [labelsSelected, setLabelSelected] = useState<string[]>([]);
-  const [taskSearched, setTaskSearched] = useState<string>("");
-  const [isPowerModeModalVisible, setIsPowerModeModalVisible] =
-    useState<boolean>(false);
-
-  const labelFiltering = (newSortedTasks: Task[]) => {
-    if (labelsSelected.length < 1) return newSortedTasks;
-
-    return newSortedTasks.filter((task) =>
-      task.labels.some((label) => labelsSelected.includes(label.name))
-    );
-  };
-
-  const searchFiltering = (newSortedTasks: Task[]) => {
-    if (!taskSearched || !taskSearched.trim()) return newSortedTasks;
-
-    const taskSearchedTrimmed = taskSearched.trim();
-    return newSortedTasks.filter((task) =>
-      task.title.toLowerCase().includes(taskSearchedTrimmed.toLowerCase())
-    );
-  };
-
-  const getDueDateSortedTasks = (sortValue: string) => {
+const getDueDateSortedTasks = (sortValue: string) => {
+  return (tasks: Task[]) => {
     switch (sortValue) {
       case "ascending":
         return [...tasks].sort(
@@ -82,33 +54,57 @@ const Tasks = () => {
             new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime()
         );
       default:
-        return originalTasks;
+        return tasks;
     }
   };
+};
 
-  const getPrioritySortedTasks = (sortValue: string) => {
+const getPrioritySortedTasks = (sortValue: string) => {
+  return (tasks: Task[]) => {
     switch (sortValue) {
       case "ascending":
         return [...tasks].sort((a, b) => a.priority - b.priority);
       case "descending":
         return [...tasks].sort((a, b) => b.priority - a.priority);
       default:
-        return originalTasks;
+        return tasks;
     }
   };
+};
 
-  const getComplexitySortedTasks = (sortValue: string) => {
+const getComplexitySortedTasks = (sortValue: string) => {
+  return (tasks: Task[]) => {
     switch (sortValue) {
       case "ascending":
         return [...tasks].sort((a, b) => a.complexity - b.complexity);
       case "descending":
         return [...tasks].sort((a, b) => b.complexity - a.complexity);
       default:
-        return originalTasks;
+        return tasks;
     }
   };
+};
 
-  const getSortedTasks = (sortType: string): Task[] => {
+const Tasks = () => {
+  // Context
+  const { isViewTaskModalVisible, setIsViewTaskModalVisible } =
+    useAreModalsVisibleContext();
+  const { setTaskSelectedId } = useTaskSelectedIdContext();
+  const { tasks, tasksDispatch } = useTasksContext();
+
+  // State
+  const [sortType, setSortType] = useState<string>("default");
+  const [sortValue, setSortValue] = useState<string>("");
+  const [renderedTasks, setRenderedTasks] = useState<number>(20);
+  const [labelsSelected, setLabelSelected] = useState<string[]>([] as string[]);
+  const [taskSearchedInput, setTaskSearched] = useState<string>("");
+  const [taskPiping, setTaskPiping] = useState<TaskPipingType[]>(
+    [] as TaskPipingType[]
+  );
+  const [isPowerModeModalVisible, setIsPowerModeModalVisible] =
+    useState<boolean>(false);
+
+  const getSortedTasks = (sortType: string, sortValue: string) => {
     switch (sortType) {
       case "complexity":
         return getComplexitySortedTasks(sortValue);
@@ -117,19 +113,84 @@ const Tasks = () => {
       case "dueDate":
         return getDueDateSortedTasks(sortValue);
       default:
-        return tasks;
+        return () => tasks;
     }
   };
 
-  const sortedTasks = useMemo(() => {
-    const newSortedTasks = getSortedTasks(sortType);
+  const handleSortValueChange = (newSortValue: string) => {
+    if (sortValue !== "default") {
+      removePiping(sortType);
+    }
+    addPiping(sortType, getSortedTasks(sortType, newSortValue));
+    setSortValue((prev) => newSortValue);
+  };
 
-    const labelFilteredTasks = labelFiltering(newSortedTasks);
+  const labelFiltering = (labelsSelected: string[]) => {
+    return (tasks: Task[]) => {
+      return tasks.filter((task) =>
+        task.labels.some((label) => labelsSelected.includes(label.name))
+      );
+    };
+  };
 
-    const searchFilteredTasks = searchFiltering(labelFilteredTasks);
+  useEffect(() => {
+    if (labelsSelected.length < 1) {
+      removePiping("labelFiltering");
+    } else {
+      addPiping("labelFiltering", labelFiltering(labelsSelected));
+    }
+  }, [labelsSelected]);
 
-    return searchFilteredTasks;
-  }, [tasks, sortValue, labelsSelected, taskSearched]);
+  const removePiping = (pipingId: string) => {
+    const updatePiping = taskPiping.find((piping) => piping.id === pipingId);
+    if (updatePiping) {
+      setTaskPiping((prev) => prev.filter((piping) => piping.id !== pipingId));
+    }
+  };
+
+  const addPiping = (pipingId: string, pipingFn: (tasks: Task[]) => Task[]) => {
+    setTaskPiping((prev) => {
+      const updatePiping = prev.find((piping) => piping.id === pipingId);
+      if (updatePiping) {
+        return prev.map((piping) =>
+          piping.id === pipingId ? { ...piping, taskPiping: pipingFn } : piping
+        );
+      } else {
+        return [
+          ...prev,
+          {
+            id: pipingId,
+            taskPiping: pipingFn,
+          },
+        ];
+      }
+    });
+  };
+
+  const filterTaskName = (taskSearchedInput: string) => {
+    return (tasks: Task[]) => {
+      const taskSearchedTrimmed = taskSearchedInput.trim();
+      return tasks.filter((task) =>
+        task.title.toLowerCase().includes(taskSearchedTrimmed.toLowerCase())
+      );
+    };
+  };
+
+  useEffect(() => {
+    if (!taskSearchedInput || !taskSearchedInput.trim()) {
+      removePiping("taskNameFiltering");
+    } else {
+      addPiping("taskNameFiltering", filterTaskName(taskSearchedInput));
+    }
+  }, [taskSearchedInput]);
+
+  const getPippedTasks = (tasks: Task[]): Task[] => {
+    console.log(taskPiping);
+    return taskPiping.reduce(
+      (acc, pipingItem) => pipingItem.taskPiping(acc),
+      tasks
+    );
+  };
 
   const handleOnScroll = (e: any) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
@@ -144,15 +205,8 @@ const Tasks = () => {
     setTaskSelectedId(taskId);
   };
 
-  const handleLabelSelectChange = (labelName: string) => {
-    setLabelSelected((prev) => [...prev, labelName]);
-  };
-
-  useEffect(() => {
-    setOriginalTasks(tasks);
-  }, [tasks]);
-
   const handlePowerModeButtonClick = () => {
+    const sortedTasks = getPippedTasks(tasks);
     if (!sortedTasks.find((task) => !task.isDone)) return;
 
     const tasksPowerMode = [...sortedTasks].sort(
@@ -172,6 +226,12 @@ const Tasks = () => {
       setIsPowerModeModalVisible(false);
   }, [isViewTaskModalVisible]);
 
+  const handleSortTypeChange = (newSortType: string) => {
+    removePiping(sortType);
+    setSortType(newSortType);
+    setSortValue("default");
+  };
+
   return (
     <CalendarContainer onScroll={(e) => handleOnScroll(e)}>
       {isPowerModeModalVisible && (
@@ -187,14 +247,15 @@ const Tasks = () => {
             `${tasks.filter((task) => !task.isDone).length} tasks unfinished`}
         </TaskUnfinishedText>
         <SearchTaskInput
-          value={taskSearched}
+          value={taskSearchedInput}
           placeholder="Search a task"
           onChange={(e: any) => {
             tasks.length > 0 && setTaskSearched(e.target.value);
           }}
         />
         <CalendarViewSelector
-          onChange={(e: any) => setSortType(e.target.value)}
+          value={sortType}
+          onChange={(e: any) => handleSortTypeChange(e.target.value)}
         >
           {Object.entries(sortTypeOptions).map(([key, value]) => (
             <option
@@ -209,7 +270,8 @@ const Tasks = () => {
 
         {sortType !== "" && (
           <CalendarViewSelector
-            onChange={(e: any) => setSortValue(e.target.value)}
+            value={sortValue}
+            onChange={(e: any) => handleSortValueChange(e.target.value)}
           >
             {Object.entries(sortValueOptions).map(([key, value]) => (
               <option key={key} value={key}>
@@ -221,7 +283,7 @@ const Tasks = () => {
         <LabelSelector
           tasks={tasks}
           labelsSelected={labelsSelected}
-          handleLabelSelectChange={handleLabelSelectChange}
+          setLabelSelected={setLabelSelected}
         />
         <HeaderButton
           alt="powerMode"
@@ -249,35 +311,36 @@ const Tasks = () => {
       )}
 
       <MainContainer>
-        {/* no need a state for sorted task, just call the piping func on my tasks array*/}
         {tasks.length < 1 && <Text>No tasks! 🍕</Text>}
 
-        {sortedTasks.slice(0, renderedTasks).map((task: Task) => (
-          <div key={task.id}>
-            <TaskContainer
-              onClick={() => handleTaskClick(task.id)}
-              $isDone={task.isDone}
-              $dueDateLeft={
-                isSameDay(task.dueDate, new Date())
-                  ? 0
-                  : differenceInDays(task.dueDate, new Date()) + 1
-              }
-            >
-              <Text>
-                {task.title}, {getFormattedHour(task.hour)}
-              </Text>
-            </TaskContainer>
-            <DeleteButtonContainer>
-              <DeleteButton
-                alt="DeleteButton"
-                src="https://cdn-icons-png.flaticon.com/512/3405/3405244.png"
-                onClick={() =>
-                  tasksDispatch({ type: "REMOVE_TASK", state: task.id })
+        {getPippedTasks(tasks)
+          .slice(0, renderedTasks)
+          .map((task: Task) => (
+            <div key={task.id}>
+              <TaskContainer
+                onClick={() => handleTaskClick(task.id)}
+                $isDone={task.isDone}
+                $dueDateLeft={
+                  isSameDay(task.dueDate, new Date())
+                    ? 0
+                    : differenceInDays(task.dueDate, new Date()) + 1
                 }
-              />
-            </DeleteButtonContainer>
-          </div>
-        ))}
+              >
+                <Text>
+                  {task.title}, {getFormattedHour(task.hour)}
+                </Text>
+              </TaskContainer>
+              <DeleteButtonContainer>
+                <DeleteButton
+                  alt="DeleteButton"
+                  src="https://cdn-icons-png.flaticon.com/512/3405/3405244.png"
+                  onClick={() =>
+                    tasksDispatch({ type: "REMOVE_TASK", state: task.id })
+                  }
+                />
+              </DeleteButtonContainer>
+            </div>
+          ))}
       </MainContainer>
     </CalendarContainer>
   );
