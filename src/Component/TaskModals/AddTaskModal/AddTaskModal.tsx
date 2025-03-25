@@ -60,7 +60,7 @@ const AddTask = () => {
   // Context
   const { calendar } = useCalendarContext();
   const { dateSelected } = useDateSelectedContext();
-  const { taskSelectedId, setTaskSelectedId } = useTaskSelectedIdContext();
+  const { taskSelectedId } = useTaskSelectedIdContext();
   const { addTask, getTask, setTask } = useTasksContext();
   const { setIsAddTaskModalVisible } = useAreModalsVisibleContext();
 
@@ -89,11 +89,14 @@ const AddTask = () => {
   const [formattedDate, setFormattedDate] = useState<string>("");
   const [formattedHour, setFormattedHour] = useState<string>("");
 
-  // Refs for inputs
-  const dateInputRef = useRef<HTMLInputElement | null>(null);
-  const hourInputRef = useRef<HTMLInputElement | null>(null);
+  // Ref
   const recurringSelectorRef = useRef<HTMLSelectElement | null>(null);
-  const monthCalendarModalRef = useRef<HTMLDivElement | null>(null);
+
+  const getStringNoSpace = (stringValue: string): string =>
+    stringValue.replace(/\s+/g, "");
+
+  const getFirstFormattedPart = (stringNoSpace: string): string =>
+    stringNoSpace.slice(0, Number(stringNoSpace[1]) >= 0 ? 2 : 1);
 
   const handleOnBlurHour = () => {
     if (!hourInput || !hourInput.trim()) {
@@ -101,8 +104,8 @@ const AddTask = () => {
       return;
     }
 
-    const hourNoSpace = hourInput.replace(/\s+/g, "");
-    const hourValue = hourNoSpace.slice(0, Number(hourNoSpace[1]) >= 0 ? 2 : 1);
+    const hourNoSpace = getStringNoSpace(hourInput);
+    const hourValue = getFirstFormattedPart(hourNoSpace);
     const hourValueCasted = Number(hourValue);
     if (!hourValueCasted || hourValueCasted < 0 || hourValueCasted > 12) {
       setHourInput(formattedHour);
@@ -128,8 +131,8 @@ const AddTask = () => {
       return;
     }
 
-    const dateNoSpace = dateInput.replace(/\s+/g, "");
-    const day = dateNoSpace.slice(0, Number(dateNoSpace[1]) >= 0 ? 2 : 1);
+    const dateNoSpace = getStringNoSpace(dateInput);
+    const day = getFirstFormattedPart(dateNoSpace);
     if (!Number(day)) {
       setDateInput(formattedDate);
       return;
@@ -156,7 +159,7 @@ const AddTask = () => {
     setDateInput(`${day} ${month} ${year}`);
   };
 
-  // Add Task inputs setting
+  // Add Task Modal inputs setting
   useEffect(() => {
     if (!dateSelected) return;
 
@@ -167,9 +170,10 @@ const AddTask = () => {
     setHourInput(newFormattedHour);
   }, [dateSelected]);
 
-  // Edit Task inputs setting
+  // Edit Task Modal inputs setting
   useEffect(() => {
     if (!taskSelectedId) return;
+
     const taskRetrieved = getTask(taskSelectedId);
     if (!taskRetrieved) return;
 
@@ -201,39 +205,6 @@ const AddTask = () => {
     setIsMonthCalendarVisible(false);
   }, [calendar.day]);
 
-  const createTaskFromInputs = (): Task => {
-    const parsedDueDate =
-      parse(dateInput, "d MMMM yyyy", new Date()) || new Date();
-
-
-    const newHour = isAllDayInput
-      ? 0
-      : getNonFormattedHour(Number(hourInput.slice(0, 2)), hourInput.slice(2));
-
-    return {
-      id: taskId ? taskId : crypto.randomUUID(),
-      title: taskTitleInput.trim() || "No title",
-      description: descriptionInput ? descriptionInput.trim() : "",
-      isAllDay: isAllDayInput,
-      hour: newHour,
-      complexity: Number(complexitySliderValue),
-      priority: Number(prioritySliderValue),
-      dueDate: parsedDueDate,
-      checks: checks,
-      labels: labels,
-      isDone: false,
-    };
-  };
-
-  const handleCreateTask = () => {
-    const newTask = createTaskFromInputs();
-
-    taskSelectedId ? setTask(newTask) : addTask(newTask, recurringValue);
-
-    setTaskSelectedId("");
-    setIsAddTaskModalVisible(false);
-  };
-
   const handleCheckSubmit = (e: any) => {
     e.preventDefault();
     if (!checkInput.trim()) return;
@@ -256,6 +227,37 @@ const AddTask = () => {
 
   const handleIsAllDayChange = () => {
     setIsAllDay((prev) => !prev);
+  };
+
+  // Task submit
+  const createTaskFromInputs = (): Task => {
+    const parsedDueDate =
+      parse(dateInput, "d MMMM yyyy", new Date()) || new Date();
+
+    const newHour = isAllDayInput
+      ? 0
+      : getNonFormattedHour(Number(hourInput.slice(0, 2)), hourInput.slice(2));
+
+    return {
+      id: taskId ? taskId : crypto.randomUUID(),
+      title: taskTitleInput.trim() || "No title",
+      description: descriptionInput ? descriptionInput.trim() : "",
+      isAllDay: isAllDayInput,
+      hour: newHour,
+      complexity: Number(complexitySliderValue),
+      priority: Number(prioritySliderValue),
+      dueDate: parsedDueDate,
+      checks: checks,
+      labels: labels,
+      isDone: false,
+    };
+  };
+
+  const handleCreateTask = () => {
+    const newTask = createTaskFromInputs();
+    taskSelectedId ? setTask(newTask) : addTask(newTask, recurringValue);
+
+    setIsAddTaskModalVisible(false);
   };
 
   const handleClickModal = () => {
@@ -286,7 +288,7 @@ const AddTask = () => {
           <TitleTaskInput
             type="text"
             value={taskTitleInput}
-            onChange={(e:any) => setTaskTitleInput(e.target.value)}
+            onChange={(e: any) => setTaskTitleInput(e.target.value)}
             placeholder="Add a title"
             autoFocus
           />
@@ -322,19 +324,17 @@ const AddTask = () => {
                 />
                 <DateInput
                   type="text"
-                  ref={dateInputRef}
                   value={dateInput}
                   onClick={() => setIsMonthCalendarVisible(true)}
-                  onChange={(e:any) => setDateInput(e.target.value)}
+                  onChange={(e: any) => setDateInput(e.target.value)}
                   onBlur={handleOnBlurDate}
                 />
                 {!isAllDayInput && (
                   <HourInput
-                    ref={hourInputRef}
                     type="text"
                     value={hourInput}
                     onClick={() => setIsHourDropDownVisible(true)}
-                    onChange={(e:any) => setHourInput(e.target.value)}
+                    onChange={(e: any) => setHourInput(e.target.value)}
                     onBlur={handleOnBlurHour}
                   />
                 )}
@@ -356,7 +356,6 @@ const AddTask = () => {
               )}
               {isMonthCalendarVisible && (
                 <MonthCalendarWrapper
-                  ref={monthCalendarModalRef}
                   onClick={() => setIsCalendarClicked(true)}
                 >
                   <MonthCalendar customCssProps={false} />
@@ -366,7 +365,7 @@ const AddTask = () => {
             <TimeContainer>
               <StyledSelect
                 ref={recurringSelectorRef}
-                onChange={(e:any) => setRecurringValue(e.target.value)}
+                onChange={(e: any) => setRecurringValue(e.target.value)}
               >
                 {Object.entries(recurringTypeOptions).map(([key, value]) => (
                   <option key={key} value={key}>
@@ -393,7 +392,7 @@ const AddTask = () => {
             alt="description icon"
           />
           <DescriptionTextArea
-            onChange={(e:any) => setDescriptionInput(e.target.value)}
+            onChange={(e: any) => setDescriptionInput(e.target.value)}
             value={descriptionInput}
             placeholder="Add a description"
           />
@@ -421,7 +420,7 @@ const AddTask = () => {
             <ItemInput
               placeholder="Add a check"
               value={checkInput}
-              onChange={(e:any) => setCheckInput(e.target.value)}
+              onChange={(e: any) => setCheckInput(e.target.value)}
             />
             <ItemInputContainer>
               {checks.map((check) => (
@@ -440,7 +439,7 @@ const AddTask = () => {
             <ItemInput
               placeholder="Add a label"
               value={labelInput}
-              onChange={(e:any) => setLabelInput(e.target.value)}
+              onChange={(e: any) => setLabelInput(e.target.value)}
             />
             <ItemInputContainer>
               {labels.map((label) => (

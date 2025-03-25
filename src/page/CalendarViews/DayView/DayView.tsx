@@ -48,11 +48,6 @@ const DayView: React.FC<DayViewProps> = ({ dayRangeProps, isWeekView }) => {
 
   // State
   const [days, setDays] = useState<DayType[]>([]);
-  const [dayRange, setDayRange] = useState<number>(0);
-
-  useEffect(() => {
-    setDayRange(dayRangeProps);
-  }, [dayRangeProps]);
 
   const handleHourRangeClick = (clickedHour: number, clickedDate: Date) => {
     setIsAddTaskModalVisible(true);
@@ -70,7 +65,7 @@ const DayView: React.FC<DayViewProps> = ({ dayRangeProps, isWeekView }) => {
     const today = new Date(calendar.year, calendar.month - 1, calendar.day);
 
     setDays(
-      Array.from({ length: dayRange }, (_, i) => {
+      Array.from({ length: dayRangeProps }, (_, i) => {
         const nextDay = new Date(today);
         nextDay.setDate(today.getDate() + i);
         return {
@@ -80,7 +75,7 @@ const DayView: React.FC<DayViewProps> = ({ dayRangeProps, isWeekView }) => {
         };
       })
     );
-  }, [calendar.day, dayRange]);
+  }, [calendar.day, dayRangeProps]);
 
   return (
     <CalendarContainer>

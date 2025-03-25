@@ -235,7 +235,7 @@ const Tasks = () => {
   }, [isViewTaskModalVisible]);
 
   return (
-    <CalendarContainer onScroll={(e:any) => handleOnScroll(e)}>
+    <CalendarContainer onScroll={(e: any) => handleOnScroll(e)}>
       {isPowerModeModalVisible && (
         <PowerModeBackground
           onClick={() => setIsPowerModeModalVisible(false)}
