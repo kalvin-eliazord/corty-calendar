@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { differenceInDays, isSameDay } from "date-fns";
 import { CalendarContainer } from "../../component/MonthCalendar/MonthCalendar";
 import { useTasksContext, Task } from "../../context/TasksContext";
@@ -6,7 +6,7 @@ import { getFormattedHour } from "../../utils/getFormattedHour";
 import { useAreModalsVisibleContext } from "../../context/ModalsContext";
 import { useTaskSelectedIdContext } from "../../context/TaskSelectedIdContext";
 import { CalendarViewSelector } from "../../component/Navbar/Navbar.styles";
-import { HeaderButton } from "../../component/TaskModals/AddTaskModal/AddTask.styles";
+import { HeaderButton } from "../../component/TaskModals/AddTaskModal/AddTaskModal.styles";
 import {
   MainContainer,
   HeaderTasksContainer,
@@ -52,7 +52,7 @@ const Tasks = () => {
   const [sortValue, setSortValue] = useState<string>("");
   const [renderedTasks, setRenderedTasks] = useState<number>(20);
   const [labelsSelected, setLabelSelected] = useState<string[]>([] as string[]);
-  const [taskSearchedInput, setTaskSearched] = useState<string>("");
+  const [taskSearchedInput, setTaskSearchedInput] = useState<string>("");
   const [taskPiping, setTaskPiping] = useState<TaskPipingType[]>(
     [] as TaskPipingType[]
   );
@@ -114,7 +114,7 @@ const Tasks = () => {
       case "dueDate":
         return getDueDateSortedTasks(sortValue);
       default:
-        return () => tasks;
+        return () => [...tasks];
     }
   };
 
@@ -193,12 +193,12 @@ const Tasks = () => {
     });
   };
 
-  const getPippedTasks = (tasks: Task[]): Task[] => {
+  const pipedTasks = useMemo(() => {
     return taskPiping.reduce(
       (acc, pipingItem) => pipingItem.taskPiping(acc),
       tasks
     );
-  };
+  }, [taskPiping, tasks]);
 
   const handleOnScroll = (e: any) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
@@ -214,7 +214,7 @@ const Tasks = () => {
   };
 
   const handlePowerModeButtonClick = () => {
-    const sortedTasks = getPippedTasks(tasks);
+    const sortedTasks = pipedTasks;
     if (!sortedTasks.find((task) => !task.isDone)) return;
 
     const tasksPowerMode = [...sortedTasks].sort(
@@ -252,7 +252,7 @@ const Tasks = () => {
           value={taskSearchedInput}
           placeholder="Search a task"
           onChange={(e: any) => {
-            tasks.length > 0 && setTaskSearched(e.target.value);
+            tasks.length > 0 && setTaskSearchedInput(e.target.value);
           }}
         />
         <CalendarViewSelector
@@ -315,34 +315,32 @@ const Tasks = () => {
       <MainContainer>
         {tasks.length < 1 && <Text>No tasks! 🍕</Text>}
 
-        {getPippedTasks(tasks)
-          .slice(0, renderedTasks)
-          .map((task: Task) => (
-            <div key={task.id}>
-              <TaskContainer
-                onClick={() => handleTaskClick(task.id)}
-                $isDone={task.isDone}
-                $dueDateLeft={
-                  isSameDay(task.dueDate, new Date())
-                    ? 0
-                    : differenceInDays(task.dueDate, new Date()) + 1
+        {pipedTasks.slice(0, renderedTasks).map((task: Task) => (
+          <div key={task.id}>
+            <TaskContainer
+              onClick={() => handleTaskClick(task.id)}
+              $isDone={task.isDone}
+              $dueDateLeft={
+                isSameDay(task.dueDate, new Date())
+                  ? 0
+                  : differenceInDays(task.dueDate, new Date()) + 1
+              }
+            >
+              <Text>
+                {task.title}, {getFormattedHour(task.hour)}
+              </Text>
+            </TaskContainer>
+            <DeleteButtonContainer>
+              <DeleteButton
+                alt="DeleteButton"
+                src="https://cdn-icons-png.flaticon.com/512/3405/3405244.png"
+                onClick={() =>
+                  tasksDispatch({ type: "REMOVE_TASK", state: task.id })
                 }
-              >
-                <Text>
-                  {task.title}, {getFormattedHour(task.hour)}
-                </Text>
-              </TaskContainer>
-              <DeleteButtonContainer>
-                <DeleteButton
-                  alt="DeleteButton"
-                  src="https://cdn-icons-png.flaticon.com/512/3405/3405244.png"
-                  onClick={() =>
-                    tasksDispatch({ type: "REMOVE_TASK", state: task.id })
-                  }
-                />
-              </DeleteButtonContainer>
-            </div>
-          ))}
+              />
+            </DeleteButtonContainer>
+          </div>
+        ))}
       </MainContainer>
     </CalendarContainer>
   );

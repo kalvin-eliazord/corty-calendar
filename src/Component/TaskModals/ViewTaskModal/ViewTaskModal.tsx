@@ -14,7 +14,7 @@ import {
   DescriptionTextArea,
   TaskTitle,
   Form,
-} from "../AddTaskModal/AddTask.styles";
+} from "../AddTaskModal/AddTaskModal.styles";
 
 import {
   HeaderContainer,
@@ -27,17 +27,16 @@ import {
   Footer,
   SliderView,
   ItemTitle,
-} from "./ViewTask.styles";
+} from "./ViewTaskModal.styles";
 import { useTaskSelectedIdContext } from "../../../context/TaskSelectedIdContext";
 import { useAreModalsVisibleContext } from "../../../context/ModalsContext";
 
-const ViewTask = () => {
+const ViewTaskModal = () => {
   // Context
   const { tasks, removeTask, getTask, toggleIsDoneTask, toggleIsDoneCheck } =
     useTasksContext();
   const { taskSelectedId } = useTaskSelectedIdContext();
-  const { setIsViewTaskModalVisible, setIsAddTaskModalVisible } =
-    useAreModalsVisibleContext();
+  const { setIsViewTaskModalVisible } = useAreModalsVisibleContext();
 
   // State
   const [taskSelected, setTaskSelected] = useState<Task>({} as Task);
@@ -70,15 +69,21 @@ const ViewTask = () => {
     setIsViewTaskModalVisible(false);
   };
 
-  const handleEditTaskButton = () => {
-    setIsViewTaskModalVisible(false);
-    setIsAddTaskModalVisible(true);
+  const handleEditTaskButton = async () => {
+    try {
+      await removeTask(taskSelected.id);
+      setIsViewTaskModalVisible(false);
+    } catch (error) {
+      console.error("Failed to delete task:", error);
+      alert("An error occurred while deleting the task. Please try again.");
+    }
   };
 
   useEffect(() => {
     const taskRetrieved = getTask(taskSelectedId);
     if (!taskRetrieved) {
       setIsViewTaskModalVisible(false);
+      alert("Task not found.");
       return;
     }
     setTaskSelected(taskRetrieved);
@@ -181,4 +186,4 @@ const ViewTask = () => {
   );
 };
 
-export default ViewTask;
+export default ViewTaskModal;

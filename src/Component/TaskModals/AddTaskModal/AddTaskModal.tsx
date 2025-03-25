@@ -44,7 +44,7 @@ import {
   Footer,
   DescriptionContainer,
   TimeContainer,
-} from "./AddTask.styles";
+} from "./AddTaskModal.styles";
 import { useTaskSelectedIdContext } from "../../../context/TaskSelectedIdContext";
 import { useDateSelectedContext } from "../../../context/DateSelectedContext";
 
@@ -56,7 +56,52 @@ const recurringTypeOptions = {
   everyYear: "Every year",
 };
 
-const AddTask = () => {
+type TaskForm = {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  hour: string;
+  priority: string;
+  complexity: string;
+  recurring: "oneTime" | "daily" | "weekly" | "monthly";
+  isAllDay: boolean;
+  checks: Check[];
+  labels: Label[];
+  isDone: boolean;
+};
+
+function useTaskForm(initialState = {}) {
+  const [taskForm, setTaskState] = useState<TaskForm>({
+    id: "",
+    title: "",
+    description: "",
+    date: "",
+    hour: "",
+    priority: "1",
+    complexity: "1",
+    recurring: "oneTime",
+    isAllDay: false,
+    checks: [],
+    labels: [],
+    isDone: false,
+    ...initialState,
+  });
+
+  const updateTaskFormField = (field: string, value: any) => {
+    setTaskState((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  return {
+    taskForm,
+    updateTaskFormField,
+  };
+}
+
+const AddTaskModal = () => {
   // Context
   const { calendar } = useCalendarContext();
   const { dateSelected } = useDateSelectedContext();
@@ -64,33 +109,62 @@ const AddTask = () => {
   const { addTask, getTask, setTask } = useTasksContext();
   const { setIsAddTaskModalVisible } = useAreModalsVisibleContext();
 
-  // Form input states
-  const [dateInput, setDateInput] = useState<string>("");
-  const [descriptionInput, setDescriptionInput] = useState<string>("");
-  const [hourInput, setHourInput] = useState<string>("");
-  const [recurringValue, setRecurringValue] = useState<string>("oneTime");
+  // State
+  const { taskForm, updateTaskFormField } = useTaskForm();
+
+  // Form
   const [checkInput, setCheckInput] = useState<string>("");
   const [labelInput, setLabelInput] = useState<string>("");
-  const [taskTitleInput, setTaskTitleInput] = useState<string>("");
   const [prioritySliderValue, setPrioritySliderValue] = useState<string>("1");
   const [complexitySliderValue, setComplexitySliderValue] =
     useState<string>("1");
-  const [checks, setChecks] = useState<Check[]>([]);
-  const [labels, setLabels] = useState<Label[]>([]);
+
+  // UI
   const [isHourDropDownVisible, setIsHourDropDownVisible] =
     useState<boolean>(false);
   const [isMonthCalendarVisible, setIsMonthCalendarVisible] =
     useState<boolean>(false);
   const [isDateContainerClicked, setIsDateContainerClicked] =
     useState<boolean>(false);
-  const [isAllDayInput, setIsAllDay] = useState<boolean>(false);
-  const [taskId, setTaskId] = useState<string>("");
+
   const [isCalendarClicked, setIsCalendarClicked] = useState<boolean>(false);
   const [formattedDate, setFormattedDate] = useState<string>("");
   const [formattedHour, setFormattedHour] = useState<string>("");
 
   // Ref
   const recurringSelectorRef = useRef<HTMLSelectElement | null>(null);
+
+  // Task form setting
+  useEffect(() => {
+    if (!dateSelected) return;
+
+    updateTaskFormField("date", format(dateSelected, "d MMMM yyyy"));
+
+    const newFormattedHour = getFormattedHour(calendar.hour);
+    setFormattedHour(newFormattedHour);
+    updateTaskFormField("hour", newFormattedHour);
+  }, [dateSelected]);
+
+  useEffect(() => {
+    if (!taskSelectedId) return;
+
+    const taskRetrieved = getTask(taskSelectedId);
+    if (!taskRetrieved) return;
+
+    // Update task form using taskRetrieved
+    updateTaskFormField("id", taskRetrieved.id);
+    updateTaskFormField("title", taskRetrieved.title);
+    updateTaskFormField("description", taskRetrieved.description);
+    updateTaskFormField("priority", taskRetrieved.priority.toString());
+    updateTaskFormField("complexity", taskRetrieved.complexity.toString());
+    updateTaskFormField("isAllDay", taskRetrieved.isAllDay);
+
+    const formattedHr = getFormattedHour(taskRetrieved.hour);
+    updateTaskFormField("hour", formattedHr);
+
+    const newFormattedDate = format(taskRetrieved.dueDate, "d MMMM yyyy");
+    updateTaskFormField("date", newFormattedDate);
+  }, [taskSelectedId]);
 
   const getStringNoSpace = (stringValue: string): string =>
     stringValue.replace(/\s+/g, "");
@@ -99,16 +173,16 @@ const AddTask = () => {
     stringNoSpace.slice(0, Number(stringNoSpace[1]) >= 0 ? 2 : 1);
 
   const handleOnBlurHour = () => {
-    if (!hourInput || !hourInput.trim()) {
-      setHourInput(formattedHour);
+    if (!taskForm.hour || !taskForm.hour.trim()) {
+      updateTaskFormField("hour", formattedHour);
       return;
     }
 
-    const hourNoSpace = getStringNoSpace(hourInput);
+    const hourNoSpace = getStringNoSpace(taskForm.hour);
     const hourValue = getFirstFormattedPart(hourNoSpace);
     const hourValueCasted = Number(hourValue);
     if (!hourValueCasted || hourValueCasted < 0 || hourValueCasted > 12) {
-      setHourInput(formattedHour);
+      updateTaskFormField("hour", formattedHour);
       return;
     }
 
@@ -118,78 +192,46 @@ const AddTask = () => {
       (hourFormat === "AM" && hourValueCasted > 12) ||
       (hourFormat === "PM" && hourValueCasted > 12)
     ) {
-      setHourInput(formattedHour);
+      updateTaskFormField("hour", formattedHour);
       return;
     }
 
-    setHourInput(`${hourValue} ${hourFormat}`);
+    updateTaskFormField("hour", `${hourValue} ${hourFormat}`);
   };
 
   const handleOnBlurDate = () => {
-    if (!dateInput || !dateInput.trim()) {
-      setDateInput(formattedDate);
+    if (!taskForm.date || !taskForm.date.trim()) {
+      updateTaskFormField("date", formattedDate);
       return;
     }
 
-    const dateNoSpace = getStringNoSpace(dateInput);
+    const dateNoSpace = getStringNoSpace(taskForm.date);
     const day = getFirstFormattedPart(dateNoSpace);
     if (!Number(day)) {
-      setDateInput(formattedDate);
+      updateTaskFormField("date", formattedDate);
       return;
     }
 
     const month = getFilteredMonth(dateNoSpace.slice(day.length));
     if (!month) {
-      setDateInput(formattedDate);
+      updateTaskFormField("date", formattedDate);
       return;
     }
 
     const year = dateNoSpace.slice(day.length + month.length);
     if (!year) {
-      setDateInput(formattedDate);
+      updateTaskFormField("date", formattedDate);
       return;
     }
 
     const date = new Date(`${day}-${month}-${year}`);
     if (!date.getTime()) {
-      setDateInput(formattedDate);
+      updateTaskFormField("date", formattedDate);
       return;
     }
 
-    setDateInput(`${day} ${month} ${year}`);
+    updateTaskFormField("date", `${day} ${month} ${year}`);
   };
-
-  // Add Task Modal inputs setting
-  useEffect(() => {
-    if (!dateSelected) return;
-
-    setDateInput(format(dateSelected, "d MMMM yyyy"));
-
-    const newFormattedHour = getFormattedHour(calendar.hour);
-    setFormattedHour(newFormattedHour);
-    setHourInput(newFormattedHour);
-  }, [dateSelected]);
-
-  // Edit Task Modal inputs setting
-  useEffect(() => {
-    if (!taskSelectedId) return;
-
-    const taskRetrieved = getTask(taskSelectedId);
-    if (!taskRetrieved) return;
-
-    setTaskId(taskRetrieved.id);
-    setTaskTitleInput(taskRetrieved.title);
-    setDescriptionInput(taskRetrieved.description);
-    setPrioritySliderValue(taskRetrieved.priority.toString());
-    setComplexitySliderValue(taskRetrieved.complexity.toString());
-    setIsAllDay(taskRetrieved.isAllDay);
-
-    const formattedHr = getFormattedHour(taskRetrieved.hour);
-    setHourInput(formattedHr);
-
-    const newFormattedDate = format(taskRetrieved.dueDate, "d MMMM yyyy");
-    setDateInput(newFormattedDate);
-  }, [taskSelectedId]);
 
   useEffect(() => {
     if (!isCalendarClicked) return;
@@ -200,7 +242,7 @@ const AddTask = () => {
     );
 
     setFormattedDate(newFormattedDate);
-    setDateInput(newFormattedDate);
+    updateTaskFormField("date", newFormattedDate);
     setIsCalendarClicked(false);
     setIsMonthCalendarVisible(false);
   }, [calendar.day]);
@@ -208,8 +250,9 @@ const AddTask = () => {
   const handleCheckSubmit = (e: any) => {
     e.preventDefault();
     if (!checkInput.trim()) return;
-    setChecks([
-      ...checks,
+
+    updateTaskFormField("checks", [
+      ...taskForm.checks,
       { id: crypto.randomUUID(), name: checkInput.trim(), isDone: false },
     ]);
     setCheckInput("");
@@ -218,46 +261,55 @@ const AddTask = () => {
   const handleLabelSubmit = (e: any) => {
     e.preventDefault();
     const labelTrimmed = labelInput ? labelInput.trim() : null;
-    if (!labelTrimmed || labels.find((label) => label.name === labelTrimmed))
+    if (
+      !labelTrimmed ||
+      taskForm.labels.find((label) => label.name === labelTrimmed)
+    )
       return;
 
-    setLabels([...labels, { id: crypto.randomUUID(), name: labelTrimmed }]);
+    updateTaskFormField("labels", [
+      ...taskForm.labels,
+      { id: crypto.randomUUID(), name: labelTrimmed },
+    ]);
     setLabelInput("");
-  };
-
-  const handleIsAllDayChange = () => {
-    setIsAllDay((prev) => !prev);
   };
 
   // Task submit
   const createTaskFromInputs = (): Task => {
     const parsedDueDate =
-      parse(dateInput, "d MMMM yyyy", new Date()) || new Date();
+      parse(taskForm.date, "d MMMM yyyy", new Date()) || new Date();
 
-    const newHour = isAllDayInput
+    const newHour = taskForm.isAllDay
       ? 0
-      : getNonFormattedHour(Number(hourInput.slice(0, 2)), hourInput.slice(2));
+      : getNonFormattedHour(
+          Number(taskForm.hour.slice(0, 2)),
+          taskForm.hour.slice(2)
+        );
 
     return {
-      id: taskId ? taskId : crypto.randomUUID(),
-      title: taskTitleInput.trim() || "No title",
-      description: descriptionInput ? descriptionInput.trim() : "",
-      isAllDay: isAllDayInput,
+      id: taskForm.id ? taskForm.id : crypto.randomUUID(),
+      title: taskForm.title.trim() || "No title",
+      description: taskForm.description ? taskForm.description.trim() : "",
+      isAllDay: taskForm.isAllDay,
       hour: newHour,
-      complexity: Number(complexitySliderValue),
-      priority: Number(prioritySliderValue),
+      complexity: Number(taskForm.complexity),
+      priority: Number(taskForm.priority),
       dueDate: parsedDueDate,
-      checks: checks,
-      labels: labels,
+      checks: taskForm.checks,
+      labels: taskForm.labels,
       isDone: false,
     };
   };
 
-  const handleCreateTask = () => {
-    const newTask = createTaskFromInputs();
-    taskSelectedId ? setTask(newTask) : addTask(newTask, recurringValue);
-
-    setIsAddTaskModalVisible(false);
+  const handleTaskSubmit = async () => {
+    try {
+      const newTask = createTaskFromInputs();
+      taskSelectedId ? setTask(newTask) : addTask(newTask, taskForm.recurring);
+      setIsAddTaskModalVisible(false);
+    } catch (error) {
+      console.error("Failed to add task:", error);
+      alert("An error occurred while adding the task. Please try again.");
+    }
   };
 
   const handleClickModal = () => {
@@ -282,13 +334,13 @@ const AddTask = () => {
         <Form
           onSubmit={(e: any) => {
             e.preventDefault();
-            handleCreateTask();
+            handleTaskSubmit();
           }}
         >
           <TitleTaskInput
             type="text"
-            value={taskTitleInput}
-            onChange={(e: any) => setTaskTitleInput(e.target.value)}
+            value={taskForm.title}
+            onChange={(e: any) => updateTaskFormField("title", e.target.value)}
             placeholder="Add a title"
             autoFocus
           />
@@ -303,10 +355,10 @@ const AddTask = () => {
               alt="clock"
             />
             <DateLink onClick={() => setIsMonthCalendarVisible(true)}>
-              {dateInput}
+              {taskForm.date}
             </DateLink>
             <HourLink onClick={() => setIsHourDropDownVisible(true)}>
-              {hourInput}
+              {taskForm.hour}
             </HourLink>
             <RecurringLink
               onClick={() => recurringSelectorRef.current?.focus()}
@@ -324,17 +376,21 @@ const AddTask = () => {
                 />
                 <DateInput
                   type="text"
-                  value={dateInput}
+                  value={taskForm.date}
                   onClick={() => setIsMonthCalendarVisible(true)}
-                  onChange={(e: any) => setDateInput(e.target.value)}
+                  onChange={(e: any) =>
+                    updateTaskFormField("date", e.target.value)
+                  }
                   onBlur={handleOnBlurDate}
                 />
-                {!isAllDayInput && (
+                {!taskForm.isAllDay && (
                   <HourInput
                     type="text"
-                    value={hourInput}
+                    value={taskForm.hour}
                     onClick={() => setIsHourDropDownVisible(true)}
-                    onChange={(e: any) => setHourInput(e.target.value)}
+                    onChange={(e: any) =>
+                      updateTaskFormField("hour", e.target.value)
+                    }
                     onBlur={handleOnBlurHour}
                   />
                 )}
@@ -345,7 +401,7 @@ const AddTask = () => {
                     <div
                       key={formattedHour}
                       onClick={() => {
-                        setHourInput(formattedHour);
+                        updateTaskFormField("hour", formattedHour);
                         setIsHourDropDownVisible(false);
                       }}
                     >
@@ -365,7 +421,10 @@ const AddTask = () => {
             <TimeContainer>
               <StyledSelect
                 ref={recurringSelectorRef}
-                onChange={(e: any) => setRecurringValue(e.target.value)}
+                onChange={(e: any) =>
+                  updateTaskFormField("recurring", e.target.value)
+                }
+                value={taskForm.recurring}
               >
                 {Object.entries(recurringTypeOptions).map(([key, value]) => (
                   <option key={key} value={key}>
@@ -378,8 +437,10 @@ const AddTask = () => {
                 <input
                   id="checkbox"
                   type="checkbox"
-                  checked={isAllDayInput}
-                  onChange={handleIsAllDayChange}
+                  checked={taskForm.isAllDay}
+                  onChange={() =>
+                    updateTaskFormField("isAllDay", !taskForm.isAllDay)
+                  }
                 />
               </AllDayContainer>
             </TimeContainer>
@@ -392,8 +453,10 @@ const AddTask = () => {
             alt="description icon"
           />
           <DescriptionTextArea
-            onChange={(e: any) => setDescriptionInput(e.target.value)}
-            value={descriptionInput}
+            onChange={(e: any) =>
+              updateTaskFormField("description", e.target.value)
+            }
+            value={taskForm.description}
             placeholder="Add a description"
           />
         </DescriptionContainer>
@@ -423,11 +486,14 @@ const AddTask = () => {
               onChange={(e: any) => setCheckInput(e.target.value)}
             />
             <ItemInputContainer>
-              {checks.map((check) => (
+              {taskForm.checks.map((check) => (
                 <ItemContainer
                   key={check.id}
                   onClick={() =>
-                    setChecks(checks.filter((c) => c.id !== check.id))
+                    updateTaskFormField(
+                      "checks",
+                      taskForm.checks.filter((c) => c.id !== check.id)
+                    )
                   }
                 >
                   {check.name}
@@ -442,11 +508,14 @@ const AddTask = () => {
               onChange={(e: any) => setLabelInput(e.target.value)}
             />
             <ItemInputContainer>
-              {labels.map((label) => (
+              {taskForm.labels.map((label) => (
                 <ItemContainer
                   key={label.id}
                   onClick={() =>
-                    setLabels(labels.filter((l) => l.id !== label.id))
+                    updateTaskFormField(
+                      "labels",
+                      taskForm.labels.filter((l) => l.id !== label.id)
+                    )
                   }
                 >
                   {label.name}
@@ -457,11 +526,11 @@ const AddTask = () => {
         </AddItemsContainer>
 
         <Footer>
-          <div onClick={handleCreateTask}> Save </div>
+          <div onClick={handleTaskSubmit}> Save </div>
         </Footer>
       </BodyContainer>
     </MainAddTaskContainer>
   );
 };
 
-export default AddTask;
+export default AddTaskModal;

@@ -9,7 +9,7 @@ import { useAreModalsVisibleContext } from "./context/ModalsContext";
 import { TasksProvider } from "./context/TasksContext";
 import ViewTaskModal from "./component/TaskModals/ViewTaskModal/ViewTaskModal";
 import AddTaskModal from "./component/TaskModals/AddTaskModal/AddTaskModal";
-import { ModalBackground } from "./component/TaskModals/AddTaskModal/AddTask.styles";
+import { ModalBackground } from "./component/TaskModals/AddTaskModal/AddTaskModal.styles";
 import { useTaskSelectedIdContext } from "./context/TaskSelectedIdContext";
 import DateSelectedProvider from "./context/DateSelectedContext";
 import { useCalendarContext } from "./context/CalendarContext";
