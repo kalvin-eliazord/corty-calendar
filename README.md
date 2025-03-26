@@ -1,46 +1,89 @@
-# Getting Started with Create React App
+# Corty Calendar Documentation
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Overview
 
-## Available Scripts
+Corty Calendar is a React application that replicates Google Calendar functionalities, including task management, multiple calendar views (day, week, month, year), with on top of that dynamic filtering/sorting of tasks. The project is built using Create React App and leverages React Router for navigation, Context API for state management, and various custom hooks for enhanced code reuse and performance.
 
-In the project directory, you can run:
+## Table of Contents
 
-### `npm start`
+1. [Project Setup and Installation](#project-setup-and-installation)
+2. [Architecture Overview](#architecture-overview)
+3. [Component Structure](#component-structure)
+    - [App Component & Routing](#app-component--routing)
+    - [Navbar Components](#navbar-components)
+    - [Calendar Components](#calendar-components)
+    - [Task Modals](#task-modals)
+    - [Tasks List & Sorting/Filtering](#tasks-list--sortingfiltering)
+4. [State Management & Contexts](#state-management--contexts)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Project Setup and Installation
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+1. Clone the repository from your GitHub account.
+2. Navigate to the project directory:  
 
-### `npm test`
+   ```bash
+   cd corty-calendar
+   
+3. Install dependencies using npm or yarn:  
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+   ```bash
+   npm install
+    # or
+   yarn install
+   
+4. Once installation is complete, the project will be ready to run and available locally in the browser at http://localhost:3000.  
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Architecture Overview
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+The Corty Calendar is built using the following technologies:
+- React for building the user interface.
+- React Router for navigating between views.
+- Context API to share state across components, managing tasks, calendar dates, and modals.
+- Custom Hooks for reusable state logic, such as form management.
+- Styled Components for consistent and maintainable styling.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Component Structure
 
-### `npm run eject`
+### App Component & Routing
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+The App component serves as the main entry point. It sets up the router and global contexts (such as Tasks, Calendar, and Modals) and defines routes for various views:
+- Calendar Views (Day, Week, Month, Year)
+- Tasks Page (for managing tasks)
+- Modal Management (for conditionally rendering modals to add or view tasks)
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Navbar Components
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+The navigation is provided by two main components:
+- **TopNavbar:** Displays the current date, navigation arrows for changing dates, and a view selector (day/week/month/year). It also provides links to switch to the tasks view.
+- **LeftNavbar:** Contains an "Add Task" button and an embedded mini calendar (MonthCalendar) for quick navigation.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### Calendar Components
 
-## Learn More
+The calendar section comprises:
+- **MonthCalendar & MonthBody:** These render the month view, manage month-to-month navigation, and handle day selection.
+- **Other Views:** Additional views (DayView, WeekView, and YearView) offer alternative representations of the calendar, each linked through routing.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Task Modals
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+The application offers two primary modals for task management:
+- **AddTaskModal:** A form for creating or editing tasks. It includes fields for task title, description, due date, time (with validation and formatting), priority, complexity, and options for recurring tasks.
+- **ViewTaskModal:** Displays detailed task information, including progress (using a progress bar for subtasks) and interactive buttons to edit, delete, or toggle the task's completion status.
+
+Both modals utilize context to update and share task data throughout the application.
+
+### Tasks List & Sorting/Filtering
+
+The Tasks component handles several key functionalities:
+- **Dynamic Filtering:** Users can filter tasks based on search terms (by task title) and selected labels.
+- **Sorting:** Tasks can be sorted by criteria such as due date, priority, or complexity. The sorting logic is encapsulated in a generic sorting function.
+- **Infinite Scrolling:** Tasks are loaded incrementally as the user scrolls through the list.
+- **Power Mode:** A specialized mode that sorts tasks based on a combination of complexity and priority, highlighting the most challenging tasks.
+
+## State Management & Contexts
+
+The application uses React Context to manage and share state across components:
+- **TasksContext:** Manages the list of tasks and operations (adding, removing, updating, toggling completion).
+- **CalendarContext:** Maintains the current calendar view state (date, month, year, etc.) and provides navigation functions.
+- **ModalsContext:** Controls the visibility of modals (AddTaskModal and ViewTaskModal).
+- **TaskSelectedIdContext & DateSelectedContext:** Provide information about the currently selected task and date.
