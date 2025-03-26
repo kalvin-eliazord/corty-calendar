@@ -1,4 +1,4 @@
-# Corty Calendar Documentation
+# Corty Calendar
 
 ## Overview
 
