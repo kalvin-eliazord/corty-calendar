@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { CalendarContainer } from "../../../component/MonthCalendar/MonthCalendar";
 
 export const DaysLetterContainer = styled.div`
   position: sticky;
@@ -95,5 +94,3 @@ export const DayCalendarContainer = styled.div`
     background-color: rgba(116, 116, 116, 0.08);
   }
 `;
-
-export { CalendarContainer };

@@ -127,6 +127,15 @@ export const TaskPlaceholderContainer = styled.div`
   right: 3rem;
   margin-left: 40px;
   padding-inline: 5%;
+  animation: fadeIn 1s linear forwards;
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 `;
 
 export const TaskContainer = styled.div<{ $isDone: boolean }>`
@@ -141,7 +150,15 @@ export const TaskContainer = styled.div<{ $isDone: boolean }>`
   font-weight: bold;
   text-wrap: nowrap;
   text-decoration: ${({ $isDone }) => $isDone && "line-through"};
-
+  animation: slideIn 1s linear;
+  @keyframes slideIn {
+    from {
+      transform: translateX(-40%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
   &:hover {
     cursor: pointer;
   }

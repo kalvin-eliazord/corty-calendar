@@ -14,7 +14,6 @@ import {
   DaysLetterContainer,
   WeekContainer,
   DayContainer,
-  CalendarContainer,
 } from "./MonthCalendar.styles";
 import { addMonths, subMonths } from "date-fns";
 import { useTasksContext } from "../../context/TasksContext";
@@ -188,4 +187,4 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ customCssProps }) => {
   );
 };
 
-export { MonthCalendar, CalendarContainer, MonthBody };
+export { MonthCalendar, MonthBody };

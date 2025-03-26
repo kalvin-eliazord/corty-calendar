@@ -65,14 +65,9 @@ const ViewTaskModal = () => {
     setIsViewTaskModalVisible(false);
   };
 
-  const handleDeleteButtonClick = async () => {
-    try {
-      await removeTask(taskSelected.id);
-      setIsViewTaskModalVisible(false);
-    } catch (error) {
-      console.error("Failed to delete task:", error);
-      alert("An error occurred while deleting the task. Please try again.");
-    }
+  const handleDeleteButtonClick = () => {
+    removeTask(taskSelected.id);
+    setIsViewTaskModalVisible(false);
   };
 
   const handleEditTaskButton = () => {

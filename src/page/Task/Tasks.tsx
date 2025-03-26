@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { differenceInDays, isSameDay } from "date-fns";
-import { CalendarContainer } from "../../component/MonthCalendar/MonthCalendar";
+import { CalendarContainer } from "../../component/MonthCalendar/MonthCalendar.styles";
 import { useTasksContext, Task } from "../../context/TasksContext";
 import { getFormattedHour } from "../../utils/getFormattedHour";
 import { useAreModalsVisibleContext } from "../../context/ModalsContext";
@@ -58,7 +58,6 @@ const Tasks = () => {
   );
   const [isPowerModeModalVisible, setIsPowerModeModalVisible] =
     useState<boolean>(false);
-  const [isSlideOutTaskId, setIsSlideOutTaskId] = useState<string>("");
 
   // Sorting
   const getDueDateSortedTasks = (sortValue: string) => {

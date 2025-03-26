@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { CalendarContainer } from "../../../component/MonthCalendar/MonthCalendar";
+import { CalendarContainer } from "../../../component/MonthCalendar/MonthCalendar.styles";
 import { useTasksContext } from "../../../context/TasksContext";
 import { useAreModalsVisibleContext } from "../../../context/ModalsContext";
 import { getFormattedHour } from "../../../utils/getFormattedHour";

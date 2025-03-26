@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import getWeeksOfMonth from "../../../utils/getWeeksOfMonth";
-import { CalendarContainer } from "../../../component/MonthCalendar/MonthCalendar";
+import { CalendarContainer } from "../../../component/MonthCalendar/MonthCalendar.styles";
 import daysLetterWeek from "../../../utils/daysLetterWeek";
 import {
   MonthCalendarContainer,
@@ -74,7 +74,7 @@ const MonthView = () => {
                         ).getTime() && (
                         <TaskContainer
                           key={task.id}
-                          onClick={(e:any) => {
+                          onClick={(e: any) => {
                             e.stopPropagation();
                             handleTaskContainerClick(task.id);
                           }}
