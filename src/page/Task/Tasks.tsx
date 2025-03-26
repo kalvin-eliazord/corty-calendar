@@ -45,7 +45,7 @@ const Tasks = () => {
   const { isViewTaskModalVisible, setIsViewTaskModalVisible } =
     useAreModalsVisibleContext();
   const { setTaskSelectedId } = useTaskSelectedIdContext();
-  const { tasks, tasksDispatch } = useTasksContext();
+  const { tasks, removeTask } = useTasksContext();
 
   // State
   const [sortType, setSortType] = useState<string>("default");
@@ -58,6 +58,7 @@ const Tasks = () => {
   );
   const [isPowerModeModalVisible, setIsPowerModeModalVisible] =
     useState<boolean>(false);
+  const [isSlideOutTaskId, setIsSlideOutTaskId] = useState<string>("");
 
   // Sorting
   const getDueDateSortedTasks = (sortValue: string) => {
@@ -334,9 +335,7 @@ const Tasks = () => {
               <DeleteButton
                 alt="DeleteButton"
                 src="https://cdn-icons-png.flaticon.com/512/3405/3405244.png"
-                onClick={() =>
-                  tasksDispatch({ type: "REMOVE_TASK", state: task.id })
-                }
+                onClick={() => removeTask(task.id)}
               />
             </DeleteButtonContainer>
           </div>

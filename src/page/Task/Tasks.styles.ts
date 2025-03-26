@@ -62,6 +62,16 @@ export const TaskContainer = styled.div<{
   margin-bottom: 20px;
   padding-left: 2%;
   margin-right: 1%;
+  animation: slideIn 0.2s linear;
+  @keyframes slideIn {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
   &:hover {
     cursor: pointer;
   }
@@ -70,6 +80,15 @@ export const TaskContainer = styled.div<{
 export const DeleteButtonContainer = styled.div`
   width: 50px;
   padding-left: 20px;
+  animation: fadeIn 1s linear;
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
   &:hover {
     background-color: red;
     border-radius: 5px;

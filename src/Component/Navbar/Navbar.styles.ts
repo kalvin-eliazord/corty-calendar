@@ -86,13 +86,13 @@ export const CalendarDateText = styled.p`
   bottom: 15px;
   margin-right: 90px;
   text-wrap: nowrap;
+  width:100px;
 `;
 
 export const ArrowsContainer = styled.div`
   display: flex;
   gap: 70px;
   margin-right: 120px;
-
   img {
     padding: 10px;
     border-radius: 30px;

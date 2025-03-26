@@ -6,6 +6,16 @@ export const ModalBackground = styled.div`
   background-color: rgba(0, 0, 0, 0.66);
   width: 100%;
   height: 100vh;
+  animation: fadeIn 0.5 linear;
+  transition: opacity 5s linear;
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 `;
 
 export const MainAddTaskContainer = styled.div`
@@ -23,6 +33,16 @@ export const MainAddTaskContainer = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   color: #e2e3e2;
+
+  animation: fadeIn 0.5s linear;
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 
   &::-webkit-scrollbar {
     width: 15px;

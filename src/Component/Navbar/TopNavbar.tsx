@@ -47,11 +47,7 @@ const TopNavbar = () => {
   }, [calendar]);
 
   useEffect(() => {
-    if (calendarView === "day" && !isAddTaskModalVisible) {
-      navigate(
-        `/calendar/${calendarView}/${calendar.year}/${calendar.month}/${calendar.day}`
-      );
-    }
+
   }, [calendar.day]);
 
   useEffect(() => {

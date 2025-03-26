@@ -78,8 +78,7 @@ export const HourRangeContainer = styled.div<{ $isWeekView: boolean }>`
     ${({ $isWeekView }) => $isWeekView && `max-width: 130px;`}
   }
   max-height: 0px;
-
-  padding: 18px;
+  padding: 28px;
   padding-bottom: 40px;
   overflow-y: hidden;
   overflow-x: auto;
