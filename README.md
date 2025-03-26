@@ -31,8 +31,12 @@ Corty Calendar is a React application that replicates Google Calendar functional
     # or
    yarn install
    
-4. Once installation is complete, the project will be ready to run and available locally in the browser at http://localhost:3000.  
+4. Run it using npm or yarn:  
 
+   ```bash
+   npm start
+    # or
+   yarn start 
 
 ## Architecture Overview
 
