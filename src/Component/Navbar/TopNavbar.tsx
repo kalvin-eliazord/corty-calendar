@@ -130,7 +130,9 @@ const TopNavbar = () => {
           />
           <Logo src="https://ssl.gstatic.com/calendar/images/dynamiclogo_2020q4/calendar_21_2x.png" />
         </LogoContainer>
-        <StyledLink to="/tasks"> My Tasks</StyledLink>
+        <StyledLink to="/tasks" onClick={() => setCalendarView("")}>
+          My Tasks
+        </StyledLink>
         <StyledLink to="" onClick={handleClickToday}>
           Today
         </StyledLink>

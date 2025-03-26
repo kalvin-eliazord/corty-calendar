@@ -5,6 +5,8 @@ type AreModalsVisibleContextType = {
   setIsAddTaskModalVisible(isAddTaskModalVisible: boolean): void;
   isViewTaskModalVisible: boolean;
   setIsViewTaskModalVisible(isAddTaskModalVisible: boolean): void;
+  isYearViewTasksModalVisible: boolean;
+  setIsYearViewTasksModalVisible(isYearViewTasksModalVisible: boolean): void;
 };
 
 const AreModalsVisibleContext = createContext<
@@ -18,6 +20,9 @@ const AreModalsVisibleProvider = ({ children }: { children: ReactNode }) => {
   const [isViewTaskModalVisible, setIsViewTaskModalVisible] =
     useState<boolean>(false);
 
+  const [isYearViewTasksModalVisible, setIsYearViewTasksModalVisible] =
+    useState<boolean>(false);
+
   return (
     <AreModalsVisibleContext.Provider
       value={{
@@ -25,6 +30,8 @@ const AreModalsVisibleProvider = ({ children }: { children: ReactNode }) => {
         setIsAddTaskModalVisible,
         isViewTaskModalVisible,
         setIsViewTaskModalVisible,
+        isYearViewTasksModalVisible,
+        setIsYearViewTasksModalVisible,
       }}
     >
       {children}

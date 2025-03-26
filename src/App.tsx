@@ -9,6 +9,7 @@ import { useAreModalsVisibleContext } from "./context/ModalsContext";
 import { TasksProvider } from "./context/TasksContext";
 import ViewTaskModal from "./component/TaskModals/ViewTaskModal/ViewTaskModal";
 import AddTaskModal from "./component/TaskModals/AddTaskModal/AddTaskModal";
+import YearViewTasksModal from "./component/TaskModals/ViewTaskModal/YearViewTasksModal";
 import { ModalBackground } from "./component/TaskModals/AddTaskModal/AddTaskModal.styles";
 import { useTaskSelectedIdContext } from "./context/TaskSelectedIdContext";
 import DateSelectedProvider from "./context/DateSelectedContext";
@@ -20,14 +21,15 @@ import YearView from "./page/CalendarViews/YearView/YearView";
 import TopNavbar from "./component/Navbar/TopNavbar";
 import LeftNavbar from "./component/Navbar/LeftNavbar";
 import { NavbarBodyContainer } from "./component/Navbar/Navbar.styles";
-import { PowerModeBackground } from "./page/Task/Tasks.styles";
 
 export default function App() {
   const {
     isAddTaskModalVisible,
     isViewTaskModalVisible,
+    isYearViewTasksModalVisible,
     setIsAddTaskModalVisible,
     setIsViewTaskModalVisible,
+    setIsYearViewTasksModalVisible,
   } = useAreModalsVisibleContext();
   const { calendar } = useCalendarContext();
   const { setTaskSelectedId } = useTaskSelectedIdContext();
@@ -36,7 +38,8 @@ export default function App() {
     setTaskSelectedId("");
 
     if (isAddTaskModalVisible) setIsAddTaskModalVisible(false);
-    else setIsViewTaskModalVisible(false);
+    else if (isViewTaskModalVisible) setIsViewTaskModalVisible(false);
+    else setIsYearViewTasksModalVisible(false);
   };
 
   return (
@@ -45,10 +48,12 @@ export default function App() {
       <TasksProvider>
         <DateSelectedProvider>
           {isAddTaskModalVisible && <AddTaskModal />}
-
           {isViewTaskModalVisible && <ViewTaskModal />}
+          {isYearViewTasksModalVisible && <YearViewTasksModal />}
 
-          {(isViewTaskModalVisible || isAddTaskModalVisible) && (
+          {(isViewTaskModalVisible ||
+            isAddTaskModalVisible ||
+            isYearViewTasksModalVisible) && (
             <ModalBackground onClick={() => handleModalBackgroundClick()} />
           )}
           <TopNavbar />

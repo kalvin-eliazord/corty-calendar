@@ -118,6 +118,8 @@ const AddTaskModal = () => {
   const [prioritySliderValue, setPrioritySliderValue] = useState<string>("1");
   const [complexitySliderValue, setComplexitySliderValue] =
     useState<string>("1");
+  const [formattedDate, setFormattedDate] = useState<string>("");
+  const [formattedHour, setFormattedHour] = useState<string>("");
 
   // UI
   const [isHourDropDownVisible, setIsHourDropDownVisible] =
@@ -126,10 +128,7 @@ const AddTaskModal = () => {
     useState<boolean>(false);
   const [isDateContainerClicked, setIsDateContainerClicked] =
     useState<boolean>(false);
-
   const [isCalendarClicked, setIsCalendarClicked] = useState<boolean>(false);
-  const [formattedDate, setFormattedDate] = useState<string>("");
-  const [formattedHour, setFormattedHour] = useState<string>("");
 
   // Ref
   const recurringSelectorRef = useRef<HTMLSelectElement | null>(null);

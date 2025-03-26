@@ -164,7 +164,10 @@ export const WeekContainer = styled.div`
   }
 `;
 
-export const DayContainer = styled.div<{ $isCurrentDay: boolean }>`
+export const DayContainer = styled.div<{
+  $isCurrentDay: boolean;
+  $isTaskHere: boolean;
+}>`
   text-align: center;
   width: 35px;
   height: 35px;
@@ -172,8 +175,8 @@ export const DayContainer = styled.div<{ $isCurrentDay: boolean }>`
   margin-bottom: 10px;
   border-radius: 50%;
   color: ${({ $isCurrentDay }) => $isCurrentDay && `#C2E6FE`};
-  background-color: ${({ $isCurrentDay }) =>
-    $isCurrentDay ? `#004B76` : `#0f1110`};
+  background-color: ${({ $isCurrentDay, $isTaskHere }) =>
+    $isTaskHere ? `#6B2FCF` : $isCurrentDay ? `#004B76` : `#0f1110`};
 
   &:hover {
     cursor: pointer;

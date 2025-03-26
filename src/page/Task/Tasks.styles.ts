@@ -13,8 +13,8 @@ export const MainContainer = styled.div`
 export const TaskUnfinishedText = styled.p`
   font-size: 20px;
   font-weight: bold;
-  text-wrap:nowrap;
-  padding-left:10px;
+  text-wrap: nowrap;
+  padding-left: 10px;
 `;
 
 export const HeaderTasksContainer = styled.div`
@@ -25,7 +25,9 @@ export const HeaderTasksContainer = styled.div`
   background-color: #2a2e31;
   padding: 20px;
   display: flex;
-  gap: 200px;
+  @media (min-width: 2000px) {
+    gap: 200px;
+  }
   justify-content: space-evenly;
   select {
     postion: relative;

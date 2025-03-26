@@ -17,6 +17,9 @@ import {
   CalendarContainer,
 } from "./MonthCalendar.styles";
 import { addMonths, subMonths } from "date-fns";
+import { useTasksContext } from "../../context/TasksContext";
+import { useAreModalsVisibleContext } from "../../context/ModalsContext";
+import { useDateSelectedContext } from "../../context/DateSelectedContext";
 
 type MonthBodyProps = {
   yearMonthIndexProps: number | null;
@@ -28,20 +31,23 @@ const MonthBody: React.FC<MonthBodyProps> = ({
   monthIndexProps,
 }) => {
   // Context
+  const { tasks } = useTasksContext();
   const { calendar, calendarDispatch, previousMonthAtDay, nextMonthAtDay } =
     useCalendarContext();
 
   // State
-  const [weeks, setWeeks] = useState<string[][]>([]);
+  const [weeksDays, setWeeksDays] = useState<string[][]>([]);
   const [currentWeek, setCurrentWeek] = useState<number>(0);
+  const { setIsYearViewTasksModalVisible } = useAreModalsVisibleContext();
+  const { setDateSelected } = useDateSelectedContext();
 
   useEffect(() => {
     const today = new Date(calendar.year, calendar.month, calendar.day);
-    setCurrentWeek(getWeekIndexOfMonth(weeks, today));
-  }, [weeks, calendar]);
+    setCurrentWeek(getWeekIndexOfMonth(weeksDays, today));
+  }, [weeksDays, calendar]);
 
   useEffect(() => {
-    setWeeks(getWeeksOfMonth(calendar.year, calendar.month));
+    setWeeksDays(getWeeksOfMonth(calendar.year, calendar.month));
   }, [calendar.year]);
 
   const handleDayClick = (weekOfTheMonth: number, day: string) => {
@@ -61,16 +67,38 @@ const MonthBody: React.FC<MonthBodyProps> = ({
         day: dayCasted,
       });
     }
+
+    const clickedDate = new Date(calendar.year, monthIndexProps - 1, dayCasted);
+
+    const taskFound = tasks.find(
+      (task) => task.dueDate.getTime() === clickedDate.getTime()
+    );
+    if (taskFound) {
+      setDateSelected(clickedDate);
+      setIsYearViewTasksModalVisible(true);
+    }
+  };
+
+  const isTaskFound = (dayCasted: number, indexWeek: number): boolean => {
+    return tasks.some(
+      (task) =>
+        task.dueDate.getTime() ===
+          new Date(calendar.year, monthIndexProps - 1, dayCasted).getTime() &&
+        getWeekIndexOfMonth(weeksDays, task.dueDate) === indexWeek
+    );
   };
 
   return (
     <>
-      {weeks.map((week, indexWeek) => (
+      {weeksDays.map((week, indexWeek) => (
         <WeekContainer key={indexWeek}>
           {week.map((day, j) => (
             <DayContainer
               key={j}
               onClick={() => handleDayClick(indexWeek, day)}
+              $isTaskHere={
+                !yearMonthIndexProps && isTaskFound(Number(day), indexWeek)
+              }
               $isCurrentDay={
                 calendar.day === Number(day) &&
                 calendar.month === monthIndexProps &&

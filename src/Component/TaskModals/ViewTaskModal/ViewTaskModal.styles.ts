@@ -12,6 +12,12 @@ export const HeaderContainer = styled.div`
   padding: 10px;
 `;
 
+export const YearViewTasksModalHeader = styled.p`
+  font-weight: bold;
+  text-align: left;
+  padding-left: 20px;
+`;
+
 export const ProgressBarContainer = styled.div`
   width: 50%;
   height: 40px;

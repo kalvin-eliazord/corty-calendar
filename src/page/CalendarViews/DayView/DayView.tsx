@@ -96,7 +96,7 @@ const DayView: React.FC<DayViewProps> = ({ dayRangeProps, isWeekView }) => {
                   (task) =>
                     task.isAllDay &&
                     task.dueDate.getTime() === day.date.getTime() && (
-                      <AllDayTask>{task.title} </AllDayTask>
+                      <AllDayTask key={task.id}>{task.title} </AllDayTask>
                     )
                 )}
               </AllDayTasksContainer>
