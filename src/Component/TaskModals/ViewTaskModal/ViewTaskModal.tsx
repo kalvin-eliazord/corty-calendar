@@ -36,7 +36,8 @@ const ViewTaskModal = () => {
   const { tasks, removeTask, getTask, toggleIsDoneTask, toggleIsDoneCheck } =
     useTasksContext();
   const { taskSelectedId } = useTaskSelectedIdContext();
-  const { setIsViewTaskModalVisible } = useAreModalsVisibleContext();
+  const { setIsViewTaskModalVisible, setIsAddTaskModalVisible } =
+    useAreModalsVisibleContext();
 
   // State
   const [taskSelected, setTaskSelected] = useState<Task>({} as Task);
@@ -64,12 +65,7 @@ const ViewTaskModal = () => {
     setIsViewTaskModalVisible(false);
   };
 
-  const handleDeleteButtonClick = () => {
-    removeTask(taskSelected.id);
-    setIsViewTaskModalVisible(false);
-  };
-
-  const handleEditTaskButton = async () => {
+  const handleDeleteButtonClick = async () => {
     try {
       await removeTask(taskSelected.id);
       setIsViewTaskModalVisible(false);
@@ -79,11 +75,15 @@ const ViewTaskModal = () => {
     }
   };
 
+  const handleEditTaskButton = () => {
+    setIsViewTaskModalVisible(false);
+    setIsAddTaskModalVisible(true);
+  };
+
   useEffect(() => {
     const taskRetrieved = getTask(taskSelectedId);
     if (!taskRetrieved) {
       setIsViewTaskModalVisible(false);
-      alert("Task not found.");
       return;
     }
     setTaskSelected(taskRetrieved);
