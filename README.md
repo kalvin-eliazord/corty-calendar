@@ -69,8 +69,7 @@ The calendar section comprises:
 The application offers two primary modals for task management:
 - **AddTaskModal:** A form for creating or editing tasks. It includes fields for task title, description, due date, time (with validation and formatting), priority, complexity, and options for recurring tasks.
 - **ViewTaskModal:** Displays detailed task information, including progress (using a progress bar for subtasks) and interactive buttons to edit, delete, or toggle the task's completion status.
-
-Both modals utilize context to update and share task data throughout the application.
+- **YearViewTasksModal:** Displays months in a year, and display a modal with the tasks scheduled for a specific day in the year view with deleting task possibility.
 
 ### Tasks List & Sorting/Filtering
 
