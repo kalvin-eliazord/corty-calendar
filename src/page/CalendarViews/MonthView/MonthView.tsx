@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import getWeeksOfMonth from "../../../utils/getWeeksOfMonth";
+import getWeeksOfMonth, {
+  getDatePosition,
+} from "../../../utils/getWeeksOfMonth";
 import { CalendarContainer } from "../../../component/MonthCalendar/MonthCalendar.styles";
 import daysLetterWeek from "../../../utils/daysLetterWeek";
 import {
@@ -41,9 +43,12 @@ const MonthView = () => {
     setIsViewTaskModalVisible(true);
   };
 
-  const isSameDay = () => {
-    
-  }
+  const isSameDay = (weekIndex: number, dayIndex: number) => {
+    const weeksDays = getWeeksOfMonth(calendar.year, calendar.month);
+    const datePosition = getDatePosition(weeksDays, weekIndex, dayIndex);
+
+    return datePosition === "currentMonth" ? true : false;
+  };
 
   useEffect(() => {
     setWeeks(getWeeksOfMonth(calendar.year, calendar.month));
@@ -75,7 +80,8 @@ const MonthView = () => {
                           calendar.year,
                           calendar.month - 1,
                           Number(day)
-                        ).getTime() && (
+                        ).getTime() &&
+                      isSameDay(weekIndex, Number(day)) && (
                         <MonthTaskContainer
                           key={task.id}
                           onClick={(e: any) => {
