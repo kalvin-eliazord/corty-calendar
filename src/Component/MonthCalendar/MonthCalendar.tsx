@@ -42,7 +42,6 @@ const MonthBody: React.FC<MonthBodyProps> = ({
   // State
   const [weeksDays, setWeeksDays] = useState<string[][]>([]);
   const [currentWeek, setCurrentWeek] = useState<number>(0);
-  const [isCurrentMonth, setIsCurrentMonth] = useState<boolean>(false);
 
   useEffect(() => {
     const today = new Date(calendar.year, calendar.month, calendar.day);
@@ -55,17 +54,8 @@ const MonthBody: React.FC<MonthBodyProps> = ({
 
   const handleDayClick = (weekOfTheMonth: number, day: string) => {
     const dayCasted = Number(day);
-    // monthcalendar have 6 weeks -> I have days from previous and next month
-    // how to get the date from the current month and not from the previous and next month
-    // weeks, month, day
-    const currentDate = new Date(calendar.year, monthIndexProps, dayCasted);
-    // const weekIndex = getWeekIndexOfMonth(weeksDays, currentDate); cuz I have t
     const datePosition = getDatePosition(weeksDays, weekOfTheMonth, dayCasted);
-    //isCurrentMonth
-    //getWeekIndexOfMonth(weeksDays, )
-    // const previousMonthClicked = weekOfTheMonth < 3 && dayCasted > 20;
-    //const nextMonthClicked = weekOfTheMonth > 4 && dayCasted < 15;
-    console.log("dayCasted ", dayCasted);
+
     switch (datePosition) {
       case "previousMonth":
         previousMonthAtDay(monthIndexProps, dayCasted);

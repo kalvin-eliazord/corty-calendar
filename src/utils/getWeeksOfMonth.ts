@@ -14,9 +14,10 @@ export const getDatePosition = (
 ): string => {
   let datePosition = "previousMonth";
 
-  weeks.forEach((week, currWeekIndex) => {
-    week.forEach((day) => {
-      const dayCasted = Number(day);
+  for (let currWeekIndex = 0; currWeekIndex < weeks.length; currWeekIndex++) {
+    const week = weeks[currWeekIndex];
+    for (let j = 0; j < week.length; j++) {
+      const dayCasted = Number(week[j]);
 
       if (dayCasted === 1 && datePosition === "currentMonth")
         datePosition = "nextMonth";
@@ -25,8 +26,8 @@ export const getDatePosition = (
 
       if (weekIndex === currWeekIndex && dayIndex === dayCasted)
         return datePosition;
-    });
-  });
+    }
+  }
 
   return "";
 };
