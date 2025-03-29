@@ -58,7 +58,10 @@ export const HoursTitleContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
-  margin-top: 80px;
+  margin-top: 70px;
+  @media (min-width: 2100px) {
+    margin-top: 100px;
+  }
   padding-bottom: 10px;
   margin-right: 10px;
 `;

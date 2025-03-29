@@ -20,7 +20,7 @@ const LeftNavbar = () => {
         <AddTaskButton onClick={() => handleAddTaskButtonClick()}>
           + Add Task
         </AddTaskButton>
-        <MonthCalendar customCssProps />
+        <MonthCalendar customCssProps isYearView={false}/>
       </LeftSide>
     </MainContainer>
   );

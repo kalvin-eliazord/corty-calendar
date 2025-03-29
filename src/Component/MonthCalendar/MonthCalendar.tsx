@@ -3,6 +3,7 @@ import daysLetterWeek from "../../utils/daysLetterWeek";
 import { getMonthByIndex } from "../../utils/getMonth";
 import { useCalendarContext } from "../../context/CalendarContext";
 import getWeeksOfMonth, {
+  getDatePosition,
   getWeekIndexOfMonth,
 } from "../../utils/getWeeksOfMonth";
 import {
@@ -21,24 +22,27 @@ import { useAreModalsVisibleContext } from "../../context/ModalsContext";
 import { useDateSelectedContext } from "../../context/DateSelectedContext";
 
 type MonthBodyProps = {
-  yearMonthIndexProps: number | null;
+  yearIndexProps: number | null;
   monthIndexProps: number;
+  isYearView: boolean;
 };
 
 const MonthBody: React.FC<MonthBodyProps> = ({
-  yearMonthIndexProps,
+  yearIndexProps,
   monthIndexProps,
+  isYearView,
 }) => {
   // Context
   const { tasks } = useTasksContext();
   const { calendar, calendarDispatch, previousMonthAtDay, nextMonthAtDay } =
     useCalendarContext();
+  const { setIsYearViewTasksModalVisible } = useAreModalsVisibleContext();
+  const { setDateSelected } = useDateSelectedContext();
 
   // State
   const [weeksDays, setWeeksDays] = useState<string[][]>([]);
   const [currentWeek, setCurrentWeek] = useState<number>(0);
-  const { setIsYearViewTasksModalVisible } = useAreModalsVisibleContext();
-  const { setDateSelected } = useDateSelectedContext();
+  const [isCurrentMonth, setIsCurrentMonth] = useState<boolean>(false);
 
   useEffect(() => {
     const today = new Date(calendar.year, calendar.month, calendar.day);
@@ -51,20 +55,35 @@ const MonthBody: React.FC<MonthBodyProps> = ({
 
   const handleDayClick = (weekOfTheMonth: number, day: string) => {
     const dayCasted = Number(day);
-    const previousMonthClicked = weekOfTheMonth < 3 && dayCasted > 20;
-    const nextMonthClicked = weekOfTheMonth > 4 && dayCasted < 15;
-
-    if (previousMonthClicked) {
-      previousMonthAtDay(monthIndexProps, dayCasted);
-    } else if (nextMonthClicked) {
-      nextMonthAtDay(monthIndexProps, dayCasted);
-    } else {
-      calendarDispatch({
-        type: "SET_DATE",
-        year: yearMonthIndexProps || calendar.year,
-        month: monthIndexProps,
-        day: dayCasted,
-      });
+    // monthcalendar have 6 weeks -> I have days from previous and next month
+    // how to get the date from the current month and not from the previous and next month
+    // weeks, month, day
+    const currentDate = new Date(calendar.year, monthIndexProps, dayCasted);
+    // const weekIndex = getWeekIndexOfMonth(weeksDays, currentDate); cuz I have t
+    const datePosition = getDatePosition(weeksDays, weekOfTheMonth, dayCasted);
+    //isCurrentMonth
+    //getWeekIndexOfMonth(weeksDays, )
+    // const previousMonthClicked = weekOfTheMonth < 3 && dayCasted > 20;
+    //const nextMonthClicked = weekOfTheMonth > 4 && dayCasted < 15;
+    console.log("dayCasted ", dayCasted);
+    switch (datePosition) {
+      case "previousMonth":
+        previousMonthAtDay(monthIndexProps, dayCasted);
+        break;
+      case "currentMonth":
+        calendarDispatch({
+          type: "SET_DATE",
+          year: yearIndexProps || calendar.year,
+          month: monthIndexProps,
+          day: dayCasted,
+        });
+        break;
+      case "nextMonth":
+        nextMonthAtDay(monthIndexProps, dayCasted);
+        break;
+      default:
+        console.error("Could not get the date position");
+        break;
     }
 
     const clickedDate = new Date(calendar.year, monthIndexProps - 1, dayCasted);
@@ -72,7 +91,8 @@ const MonthBody: React.FC<MonthBodyProps> = ({
     const taskFound = tasks.find(
       (task) => task.dueDate.getTime() === clickedDate.getTime()
     );
-    if (taskFound) {
+
+    if (taskFound && !yearIndexProps) {
       setDateSelected(clickedDate);
       setIsYearViewTasksModalVisible(true);
     }
@@ -96,13 +116,14 @@ const MonthBody: React.FC<MonthBodyProps> = ({
               key={j}
               onClick={() => handleDayClick(indexWeek, day)}
               $isTaskHere={
-                !yearMonthIndexProps && isTaskFound(Number(day), indexWeek)
+                !yearIndexProps && isTaskFound(Number(day), indexWeek)
               }
               $isCurrentDay={
                 calendar.day === Number(day) &&
                 calendar.month === monthIndexProps &&
                 currentWeek === indexWeek
               }
+              $isYearView={isYearView}
             >
               <h4>{day}</h4>
             </DayContainer>
@@ -115,9 +136,13 @@ const MonthBody: React.FC<MonthBodyProps> = ({
 
 type MonthCalendarProps = {
   customCssProps: boolean;
+  isYearView: boolean;
 };
 
-const MonthCalendar: React.FC<MonthCalendarProps> = ({ customCssProps }) => {
+const MonthCalendar: React.FC<MonthCalendarProps> = ({
+  customCssProps,
+  isYearView,
+}) => {
   // Context
   const { calendar } = useCalendarContext();
 
@@ -180,8 +205,9 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ customCssProps }) => {
       </DaysLetterContainer>
 
       <MonthBody
-        yearMonthIndexProps={privateYear}
+        yearIndexProps={privateYear}
         monthIndexProps={privateMonth}
+        isYearView={isYearView}
       />
     </MonthCalendarContainer>
   );

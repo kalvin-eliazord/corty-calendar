@@ -19,6 +19,8 @@ import {
   SearchTaskInput,
   PowerModeBackground,
   TaskUnfinishedText,
+  HeaderLeftPart,
+  HeaderRightPart,
 } from "././Tasks.styles";
 import LabelSelector from "../../component/LabelOption";
 
@@ -243,55 +245,59 @@ const Tasks = () => {
       )}
 
       <HeaderTasksContainer>
-        <TaskUnfinishedText>
-          {tasks.length > 0 &&
-            tasks.filter((task) => !task.isDone).length > 0 &&
-            `${tasks.filter((task) => !task.isDone).length} tasks unfinished`}
-        </TaskUnfinishedText>
-        <SearchTaskInput
-          value={taskSearchedInput}
-          placeholder="Search a task"
-          onChange={(e: any) => {
-            tasks.length > 0 && setTaskSearchedInput(e.target.value);
-          }}
-        />
-        <CalendarViewSelector
-          value={sortType}
-          onChange={(e: any) => handleSortTypeChange(e.target.value)}
-        >
-          {Object.entries(sortTypeOptions).map(([key, value]) => (
-            <option
-              key={key}
-              value={key}
-              disabled={sortType !== "default" && key === "default"}
-            >
-              {value}
-            </option>
-          ))}
-        </CalendarViewSelector>
-
-        {sortType !== "" && (
+        <HeaderLeftPart>
+          <HeaderButton
+            alt="powerMode"
+            src="https://cdn-icons-png.flaticon.com/512/159/159607.png"
+            onClick={() => handlePowerModeButtonClick()}
+          />
+          <SearchTaskInput
+            value={taskSearchedInput}
+            placeholder="Search a task"
+            onChange={(e: any) => {
+              tasks.length > 0 && setTaskSearchedInput(e.target.value);
+            }}
+          />
+          <TaskUnfinishedText>
+            {tasks.length > 0 &&
+              tasks.filter((task) => !task.isDone).length > 0 &&
+              `${tasks.filter((task) => !task.isDone).length} unfinished tasks`}
+          </TaskUnfinishedText>
+        </HeaderLeftPart>
+        <HeaderRightPart>
           <CalendarViewSelector
-            value={sortValue}
-            onChange={(e: any) => handleSortValueChange(e.target.value)}
+            value={sortType}
+            onChange={(e: any) => handleSortTypeChange(e.target.value)}
           >
-            {Object.entries(sortValueOptions).map(([key, value]) => (
-              <option key={key} value={key}>
+            {Object.entries(sortTypeOptions).map(([key, value]) => (
+              <option
+                key={key}
+                value={key}
+                disabled={sortType !== "default" && key === "default"}
+              >
                 {value}
               </option>
             ))}
           </CalendarViewSelector>
-        )}
-        <LabelSelector
-          tasks={tasks}
-          labelsSelected={labelsSelected}
-          setLabelSelected={setLabelSelected}
-        />
-        <HeaderButton
-          alt="powerMode"
-          src="https://cdn-icons-png.flaticon.com/512/159/159607.png"
-          onClick={() => handlePowerModeButtonClick()}
-        />
+
+          {sortType !== "" && (
+            <CalendarViewSelector
+              value={sortValue}
+              onChange={(e: any) => handleSortValueChange(e.target.value)}
+            >
+              {Object.entries(sortValueOptions).map(([key, value]) => (
+                <option key={key} value={key}>
+                  {value}
+                </option>
+              ))}
+            </CalendarViewSelector>
+          )}
+          <LabelSelector
+            tasks={tasks}
+            labelsSelected={labelsSelected}
+            setLabelSelected={setLabelSelected}
+          />
+        </HeaderRightPart>
       </HeaderTasksContainer>
 
       {labelsSelected.length > 0 && (
@@ -311,7 +317,6 @@ const Tasks = () => {
           ))}
         </LabelsSelectedContainer>
       )}
-
       <MainContainer>
         {tasks.length < 1 && <Text>No tasks! 🍕</Text>}
 

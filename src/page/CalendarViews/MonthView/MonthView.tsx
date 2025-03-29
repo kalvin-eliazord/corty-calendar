@@ -8,13 +8,13 @@ import {
   DayCalendarContainer,
   DaysLetterContainer,
   DayTasksContainer,
+  MonthTaskContainer,
 } from "./MonthView.styles";
 import { useCalendarContext } from "../../../context/CalendarContext";
 import { useTasksContext } from "../../../context/TasksContext";
 import { useTaskSelectedIdContext } from "../../../context/TaskSelectedIdContext";
 import { useDateSelectedContext } from "../../../context/DateSelectedContext";
 import { useAreModalsVisibleContext } from "../../../context/ModalsContext";
-import { TaskContainer } from "../DayView/DayView.styles";
 import { getFormattedHour } from "../../../utils/getFormattedHour";
 
 const MonthView = () => {
@@ -40,6 +40,10 @@ const MonthView = () => {
     setTaskSelectedId(taskId);
     setIsViewTaskModalVisible(true);
   };
+
+  const isSameDay = () => {
+    
+  }
 
   useEffect(() => {
     setWeeks(getWeeksOfMonth(calendar.year, calendar.month));
@@ -72,7 +76,7 @@ const MonthView = () => {
                           calendar.month - 1,
                           Number(day)
                         ).getTime() && (
-                        <TaskContainer
+                        <MonthTaskContainer
                           key={task.id}
                           onClick={(e: any) => {
                             e.stopPropagation();
@@ -83,7 +87,7 @@ const MonthView = () => {
                           {task.title}
 
                           {`, ${getFormattedHour(task.hour)}`}
-                        </TaskContainer>
+                        </MonthTaskContainer>
                       )
                   )}
                 </DayTasksContainer>

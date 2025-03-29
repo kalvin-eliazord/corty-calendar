@@ -109,7 +109,6 @@ export const HeaderButton = styled.img`
   margin-top: 20px;
   position: relative;
   bottom: 12px;
-  margin-right: 30px;
   padding: 5px;
   border-radius: 5px;
   &:hover {

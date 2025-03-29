@@ -21,7 +21,6 @@ export const MainContainer = styled.div`
 export const Header = styled.div`
   padding-top: 30px;
   display: flex;
-
   @media (min-width: 2000px) {
     gap: 120px;
   }
@@ -55,10 +54,10 @@ export const LogoContainer = styled.div`
   justify-content: space-between;
   gap: 35px;
   position: relative;
-  right: 4%;
+  right: 2%;
 
-  @media (min-width: 2000px) {
-    right: 4.5%;
+  @media (min-width: 2100px) {
+    right: 7%;
   }
 
   &:hover {
@@ -86,7 +85,7 @@ export const CalendarDateText = styled.p`
   bottom: 15px;
   margin-right: 90px;
   text-wrap: nowrap;
-  width:100px;
+  width: 100px;
 `;
 
 export const ArrowsContainer = styled.div`

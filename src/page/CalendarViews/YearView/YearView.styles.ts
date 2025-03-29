@@ -10,6 +10,10 @@ export const MonthContainer = styled.div``;
 
 export const MonthNameContainer = styled.p`
   text-align: left;
-  padding-left: 19px;
+  padding-left: 7%;
+
+  @media (min-width: 2100px) {
+    padding-left: 8%;
+  }
   font-weight: bold;
 `;

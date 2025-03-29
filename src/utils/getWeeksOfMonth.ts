@@ -7,18 +7,43 @@ import {
   format,
 } from "date-fns";
 
-export const getWeekIndexOfMonth = (
+export const getDatePosition = (
   weeks: string[][],
+  weekIndex: number,
+  dayIndex: number
+): string => {
+  let datePosition = "previousMonth";
+
+  weeks.forEach((week, currWeekIndex) => {
+    week.forEach((day) => {
+      const dayCasted = Number(day);
+
+      if (dayCasted === 1 && datePosition === "currentMonth")
+        datePosition = "nextMonth";
+      else if (dayCasted === 1 && datePosition === "previousMonth")
+        datePosition = "currentMonth";
+
+      if (weekIndex === currWeekIndex && dayIndex === dayCasted)
+        return datePosition;
+    });
+  });
+
+  return "";
+};
+
+export const getWeekIndexOfMonth = (
+  weeksDays: string[][],
   calendarDate: Date
 ): number => {
   let isCurrentMonthDate = false;
   let foundWeekIndex = 0;
 
-  weeks.forEach((week, weekIndex) => {
-    week.forEach((day) => {
+  weeksDays.forEach((weekDays, weekIndex) => {
+    weekDays.forEach((day) => {
       const dayCasted = Number(day);
 
       if (dayCasted === 1) isCurrentMonthDate = !isCurrentMonthDate;
+      console.log("dayCasted", dayCasted);
 
       if (isCurrentMonthDate) {
         const currentDate = new Date(

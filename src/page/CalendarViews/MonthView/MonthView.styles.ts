@@ -4,11 +4,15 @@ export const DaysLetterContainer = styled.div`
   position: sticky;
   top: 0;
   display: flex;
-  z-index: 70;
-  padding-left: 85px;
-  justify-content: space-between;
+  gap: 14.2%;
+
+  z-index: 10;
+  padding-left: 6.5%;
+  @media (min-width: 2100px) {
+    padding-left: 6.8%;
+    gap: 14.8%;
+  }
   font-weight: bold;
-  padding-inline: 155px;
   font-size: 20px;
   background-color: rgb(116, 116, 116);
 `;
@@ -17,7 +21,6 @@ export const DayTasksContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-inline: 10px;
   max-width: 300px;
   @media (max-width: 2000px) {
     max-height: 100px;
@@ -66,31 +69,54 @@ export const DayTasksContainer = styled.div`
 
 export const MonthCalendarContainer = styled.div`
   background-color: #37393b;
-  border-right: 1px solid #37393b;
+  border: 1px solid #37393b;
+  display: flex;
+  flex-direction: column;
 `;
 
 export const WeekCalendarContainer = styled.div`
-  border: 1px solid #37393b;
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 1px;
+  display: flex;
   overflow-x: hidden;
   overflow-y: hidden;
 `;
 
 export const DayCalendarContainer = styled.div`
   text-align: center;
-  aspect-ratio: 1;
+  width: 30%;
+  height: 20vh;
+  max-height: 20vh;
+  border: 1px solid #37393b;
 
-  @media (max-width: 2000px) {
-    width: 170px;
-    height: 170px;
-    max-width: 170px;
-    max-height: 170px;
+  @media (min-width: 2100px) {
+    padding-inline: 2%;
   }
 
   background-color: #0f1110;
   &:hover {
     background-color: rgba(116, 116, 116, 0.08);
+  }
+`;
+
+export const MonthTaskContainer = styled.div<{ $isDone: boolean }>`
+  background-color: ${({ $isDone }) => ($isDone ? "#425682" : "#1a3b86")};
+  border-radius: 15px;
+  height: 100%;
+  z-index: 1;
+  padding-inline: 5%;
+  color: white;
+  font-weight: bold;
+  text-wrap: nowrap;
+  text-decoration: ${({ $isDone }) => $isDone && "line-through"};
+  animation: slideIn 1s linear;
+  @keyframes slideIn {
+    from {
+      transform: translateX(-40%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  &:hover {
+    cursor: pointer;
   }
 `;

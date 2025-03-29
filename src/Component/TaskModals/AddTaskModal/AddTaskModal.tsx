@@ -413,7 +413,7 @@ const AddTaskModal = () => {
                 <MonthCalendarWrapper
                   onClick={() => setIsCalendarClicked(true)}
                 >
-                  <MonthCalendar customCssProps={false} />
+                  <MonthCalendar customCssProps={false} isYearView={false}/>
                 </MonthCalendarWrapper>
               )}
             </TimeSettingsContainerLink>

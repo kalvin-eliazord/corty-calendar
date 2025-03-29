@@ -3,7 +3,6 @@ import styled from "styled-components";
 export const HeaderContainer = styled.div`
   position: sticky;
   top: 0;
-  width: 100%;
   display: flex;
   justify-content: flex-end;
   margin-bottom: 15px;

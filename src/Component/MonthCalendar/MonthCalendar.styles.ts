@@ -2,14 +2,16 @@ import styled from "styled-components";
 
 export const CalendarContainer = styled.div`
   color: white;
-  width: 87%;
+  width: 83.6%;
   border-radius: 20px;
   background-color: #0f1011;
-  margin-top: 1%;
-  max-height: 80vh;
+  height: 90vh;
+  max-height: 90vh;
 
-  @media (min-width: 2000px) {
-    max-height: 90vh;
+  @media (min-width: 2100px) {
+    width: 90%;
+    height: 94vh;
+    max-height: 94vh;
   }
 
   overflow-y: auto;
@@ -146,32 +148,25 @@ export const DaysLetterContainer = styled.div`
   font-size: 12px;
   padding-left: 12px;
   gap: 26.9px;
-
-  @media (max-width: 768px) {
-    height: 30px;
-    font-size: 9px;
-    padding-inline: 10px;
-  }
 `;
 
 export const WeekContainer = styled.div`
   display: flex;
   justify-content: space-evenly;
   background-color: #0f1110;
-
-  @media (max-width: 768px) {
-    justify-content: space-around;
-  }
 `;
 
 export const DayContainer = styled.div<{
   $isCurrentDay: boolean;
   $isTaskHere: boolean;
+  $isYearView: boolean;
 }>`
-  text-align: center;
-  width: 35px;
-  height: 35px;
-  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: ${({ $isYearView }) => ($isYearView ? `9%` : `35px`)};
+  height: ${({ $isYearView }) => ($isYearView ? `4vh` : `35px`)};
+  font-size: ${({ $isYearView }) => ($isYearView ? `1rem` : `10px`)};
   margin-bottom: 10px;
   border-radius: 50%;
   color: ${({ $isCurrentDay }) => $isCurrentDay && `#C2E6FE`};
@@ -181,12 +176,5 @@ export const DayContainer = styled.div<{
   &:hover {
     cursor: pointer;
     background-color: rgba(103, 104, 104, 0.45);
-  }
-
-  @media (max-width: 768px) {
-    width: 30px;
-    height: 30px;
-    font-size: 9px;
-    margin-bottom: 8px;
   }
 `;

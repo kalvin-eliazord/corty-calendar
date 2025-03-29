@@ -4,7 +4,6 @@ export const MainContainer = styled.div`
   padding: 20px;
   background-color: #0f1011;
   overflow-x: hidden;
-
   div {
     display: flex;
   }
@@ -21,14 +20,16 @@ export const HeaderTasksContainer = styled.div`
   position: sticky;
   top: 0;
   z-index: 4;
-  width: 100%;
   background-color: #2a2e31;
   padding: 20px;
   display: flex;
-  @media (min-width: 2000px) {
-    gap: 200px;
+  justify-content: space-between;
+  padding-right: 5%;
+  padding-left: 3%;
+  @media (min-width: 2100px) {
+    gap: 50%;
   }
-  justify-content: space-evenly;
+
   select {
     postion: relative;
     top: 0.5px;
@@ -38,6 +39,32 @@ export const HeaderTasksContainer = styled.div`
     width: 30px;
     height: 30px;
   }
+`;
+
+export const HeaderLeftPart = styled.div`
+  display: flex;
+  gap: 5%;
+`;
+
+export const SearchTaskInput = styled.input`
+  color: #e2e3e2;
+  background-color: #2a2f30;
+  border: 0;
+  font-size: 25px;
+  border-bottom: 2px solid grey;
+  &:focus {
+    outline: 0;
+    border-bottom: 2px solid rgb(22, 85, 187);
+  }
+  &::placeholder {
+    color: #777472;
+    padding-left: 10px;
+  }
+`;
+
+export const HeaderRightPart = styled.div`
+  display: flex;
+  gap: 5%;
 `;
 
 export const TaskContainer = styled.div<{
@@ -125,23 +152,6 @@ export const LabelSelected = styled.div`
   &:hover {
     cursor: pointer;
     background-color: red;
-  }
-`;
-
-export const SearchTaskInput = styled.input`
-  color: #e2e3e2;
-  left: 80px;
-  background-color: #2a2f30;
-  border: 0;
-  font-size: 25px;
-  border-bottom: 2px solid grey;
-  &:focus {
-    outline: 0;
-    border-bottom: 2px solid rgb(22, 85, 187);
-  }
-  &::placeholder {
-    color: #777472;
-    padding-left: 10px;
   }
 `;
 
