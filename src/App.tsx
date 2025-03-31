@@ -54,7 +54,7 @@ export default function App() {
           {(isViewTaskModalVisible ||
             isAddTaskModalVisible ||
             isYearViewTasksModalVisible) && (
-            <ModalBackground onClick={() => handleModalBackgroundClick()} />
+            <ModalBackground onClick={handleModalBackgroundClick} />
           )}
           <TopNavbar />
           <NavbarBodyContainer>

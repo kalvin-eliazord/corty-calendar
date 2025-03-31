@@ -249,7 +249,7 @@ const Tasks = () => {
           <HeaderButton
             alt="powerMode"
             src="https://cdn-icons-png.flaticon.com/512/159/159607.png"
-            onClick={() => handlePowerModeButtonClick()}
+            onClick={handlePowerModeButtonClick}
           />
           <SearchTaskInput
             value={taskSearchedInput}

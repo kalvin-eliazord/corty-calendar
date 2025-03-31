@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { CalendarContainer } from "../../../component/MonthCalendar/MonthCalendar.styles";
-import { useTasksContext } from "../../../context/TasksContext";
+import { Task, useTasksContext } from "../../../context/TasksContext";
 import { useAreModalsVisibleContext } from "../../../context/ModalsContext";
 import { getFormattedHour } from "../../../utils/getFormattedHour";
 import { useTaskSelectedIdContext } from "../../../context/TaskSelectedIdContext";
@@ -56,7 +56,8 @@ const DayView: React.FC<DayViewProps> = ({ dayRangeProps, isWeekView }) => {
     setDateSelected(clickedDate);
   };
 
-  const handleTaskContainerClick = (taskId: string) => {
+  const handleTaskContainerClick = (e: any, taskId: string) => {
+    e.stopPropagation();
     setTaskSelectedId(taskId);
     setIsViewTaskModalVisible(true);
   };
@@ -77,6 +78,19 @@ const DayView: React.FC<DayViewProps> = ({ dayRangeProps, isWeekView }) => {
     );
   }, [calendar.day, dayRangeProps]);
 
+  const isSameTaskDayDate = (task: Task, day: DayType) => {
+    return task.dueDate.getTime() === day.date.getTime();
+  };
+
+  const isSameDatePlaceholder = (currentDay: DayType, currentHour: number) => {
+    return (
+      isAddTaskModalVisible &&
+      !taskSelectedId &&
+      calendar.hour === currentHour &&
+      currentDay.date.getTime() === dateSelected.getTime()
+    );
+  };
+
   return (
     <CalendarContainer>
       <Calendar>
@@ -92,10 +106,10 @@ const DayView: React.FC<DayViewProps> = ({ dayRangeProps, isWeekView }) => {
                 {day.name}. <br /> <span>{day.index} </span>
               </p>
               <AllDayTasksContainer>
-                {tasks.map(
+                {tasks.flatMap(
                   (task) =>
                     task.isAllDay &&
-                    task.dueDate.getTime() === day.date.getTime() && (
+                    isSameTaskDayDate(task, day) && (
                       <AllDayTask key={task.id}>{task.title} </AllDayTask>
                     )
                 )}
@@ -109,26 +123,22 @@ const DayView: React.FC<DayViewProps> = ({ dayRangeProps, isWeekView }) => {
                 onClick={() => handleHourRangeClick(i, day.date)}
               >
                 <TaskPlaceholderContainer>
-                  {isAddTaskModalVisible &&
-                    !taskSelectedId &&
-                    calendar.hour === i &&
-                    day.date.getTime() === dateSelected.getTime() && (
-                      <TaskContainer $isDone={false}>
-                        (No title), {getFormattedHour(calendar.hour)}
-                      </TaskContainer>
-                    )}
+                  {isSameDatePlaceholder(day, i) && (
+                    <TaskContainer $isDone={false}>
+                      (No title), {getFormattedHour(calendar.hour)}
+                    </TaskContainer>
+                  )}
                 </TaskPlaceholderContainer>
 
-                {tasks.map(
+                {tasks.flatMap(
                   (task) =>
                     !task.isAllDay &&
-                    task.dueDate.getTime() === day.date.getTime() &&
+                    isSameTaskDayDate(task, day) &&
                     task.hour === i && (
                       <TaskContainer
                         key={task.id}
                         onClick={(e: any) => {
-                          e.stopPropagation();
-                          handleTaskContainerClick(task.id);
+                          handleTaskContainerClick(e, task.id);
                         }}
                         $isDone={task.isDone}
                       >

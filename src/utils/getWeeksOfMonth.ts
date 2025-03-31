@@ -44,7 +44,6 @@ export const getWeekIndexOfMonth = (
       const dayCasted = Number(day);
 
       if (dayCasted === 1) isCurrentMonthDate = !isCurrentMonthDate;
-      console.log("dayCasted", dayCasted);
 
       if (isCurrentMonthDate) {
         const currentDate = new Date(

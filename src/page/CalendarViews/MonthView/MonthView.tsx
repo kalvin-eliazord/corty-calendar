@@ -13,7 +13,7 @@ import {
   MonthTaskContainer,
 } from "./MonthView.styles";
 import { useCalendarContext } from "../../../context/CalendarContext";
-import { useTasksContext } from "../../../context/TasksContext";
+import { Task, useTasksContext } from "../../../context/TasksContext";
 import { useTaskSelectedIdContext } from "../../../context/TaskSelectedIdContext";
 import { useDateSelectedContext } from "../../../context/DateSelectedContext";
 import { useAreModalsVisibleContext } from "../../../context/ModalsContext";
@@ -38,14 +38,23 @@ const MonthView = () => {
     setIsAddTaskModalVisible(true);
   };
 
-  const handleTaskContainerClick = (taskId: string) => {
+  const handleTaskContainerClick = (e: any, taskId: string) => {
+    e.stopPropagation();
     setTaskSelectedId(taskId);
     setIsViewTaskModalVisible(true);
   };
 
-  const isSameDay = (weekIndex: number, dayIndex: number) => {
+  const isSameDay = (currentTask: Task, weekIndex: number, day: string) => {
+    const dayCasted = Number(day);
+
+    if (
+      currentTask.dueDate.getTime() !==
+      new Date(calendar.year, calendar.month - 1, dayCasted).getTime()
+    )
+      return false;
+
     const weeksDays = getWeeksOfMonth(calendar.year, calendar.month);
-    const datePosition = getDatePosition(weeksDays, weekIndex, dayIndex);
+    const datePosition = getDatePosition(weeksDays, weekIndex, dayCasted);
 
     return datePosition === "currentMonth" ? true : false;
   };
@@ -73,20 +82,13 @@ const MonthView = () => {
               >
                 {day}
                 <DayTasksContainer>
-                  {tasks.map(
+                  {tasks.flatMap(
                     (task) =>
-                      task.dueDate.getTime() ===
-                        new Date(
-                          calendar.year,
-                          calendar.month - 1,
-                          Number(day)
-                        ).getTime() &&
-                      isSameDay(weekIndex, Number(day)) && (
+                      isSameDay(task, weekIndex, day) && (
                         <MonthTaskContainer
                           key={task.id}
                           onClick={(e: any) => {
-                            e.stopPropagation();
-                            handleTaskContainerClick(task.id);
+                            handleTaskContainerClick(e, task.id);
                           }}
                           $isDone={task.isDone}
                         >
