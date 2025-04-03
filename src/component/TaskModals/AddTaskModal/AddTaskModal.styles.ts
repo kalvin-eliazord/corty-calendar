@@ -434,9 +434,9 @@ export const HoursDropDown = styled.div`
   &::-webkit-scrollbar-corner {
     background: #1e1e1e;
   }
-  left: 56%;
-  top: 32%;
-  width: 140px;
+
+  transform: translate(195%, 20%);
+  width: 145px;
   height: 200px;
   overflow-y: scroll;
   background-color: #0f1110;

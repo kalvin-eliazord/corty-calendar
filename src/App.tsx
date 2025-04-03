@@ -7,7 +7,7 @@ import {
 import GlobalStyle from "./utils/GlobalStyle";
 import { useAreModalsVisibleContext } from "./context/ModalsContext";
 import { TasksProvider } from "./context/TasksContext";
-import ViewTaskModal from "./component/TaskModals/ViewTaskModal/ViewTaskModal";
+import ViewTaskModal from "./component/TaskModals/ViewTaskModal";
 import AddTaskModal from "./component/TaskModals/AddTaskModal/AddTaskModal";
 import YearViewTasksModal from "./component/TaskModals/ViewTaskModal/YearViewTasksModal";
 import { ModalBackground } from "./component/TaskModals/AddTaskModal/AddTaskModal.styles";
