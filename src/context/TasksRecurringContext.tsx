@@ -5,30 +5,52 @@ import {
   useContext,
   useEffect,
 } from "react";
+import { addDays, addWeeks, addMonths, addYears } from "date-fns";
 
-export type Check = {
-  id: string;
-  name: string;
-  isDone: boolean;
-};
+import {Task} from "./TasksContext";
 
-export type Label = {
-  id: string;
-  name: string;
-};
-
-export type Task = {
-  id: string;
-  title: string;
-  description: string;
-  isAllDay: boolean;
-  hour: number;
-  complexity: number;
-  priority: number;
-  dueDate: Date;
-  checks: Check[];
-  labels: Label[];
-  isDone: boolean;
+const handleTaskRecurring = (task: Task, recurringValue: string): Task[] => {
+  switch (recurringValue) {
+    case "everyDay":
+      return Array.from(
+        { length: 36500 },
+        (_, i): Task => ({
+          ...task,
+          id: crypto.randomUUID(),
+          dueDate: addDays(new Date(task.dueDate), i),
+        })
+      );
+    case "everyWeek":
+      return Array.from(
+        { length: 5200 },
+        (_, i): Task => ({
+          ...task,
+          id: crypto.randomUUID(),
+          dueDate: addWeeks(new Date(task.dueDate), i),
+        })
+      );
+    case "everyMonth":
+      return Array.from(
+        { length: 1200 },
+        (_, i): Task => ({
+          ...task,
+          id: crypto.randomUUID(),
+          dueDate: addMonths(new Date(task.dueDate), i),
+        })
+      );
+    case "everyYear":
+      return Array.from(
+        { length: 100 },
+        (_, i): Task => ({
+          ...task,
+          id: crypto.randomUUID(),
+          dueDate: addYears(new Date(task.dueDate), i),
+        })
+      );
+    default:
+      console.error(recurringValue, ": unknown task recurring type.");
+      return [];
+  }
 };
 
 const tasksReducer = (state: Task[], action: TasksAction): Task[] => {
@@ -37,6 +59,8 @@ const tasksReducer = (state: Task[], action: TasksAction): Task[] => {
       return action.state;
     case "ADD_TASK":
       return [...state, { ...action.state, id: crypto.randomUUID() }];
+    case "ADD_TASKS_RECURRING":
+      return [...state, ...handleTaskRecurring(action.task, action.recurring)];
     case "REMOVE_TASK":
       return state.filter((task: Task) => task.id !== action.state);
     default:
@@ -69,7 +93,7 @@ type TasksContextType = {
 
 const LOCAL_STORAGE_KEY = "calendarTasks";
 
-const TasksContext = createContext<TasksContextType | undefined>(undefined);
+const TasksRecurringContext = createContext<TasksContextType | undefined>(undefined);
 
 const TasksProvider = ({ children }: { children: ReactNode }) => {
   const [tasks, tasksDispatch] = useReducer(tasksReducer, [], () => {
@@ -150,7 +174,7 @@ const TasksProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <TasksContext.Provider
+    <TasksRecurringContext.Provider
       value={{
         tasks,
         tasksDispatch,
@@ -163,15 +187,15 @@ const TasksProvider = ({ children }: { children: ReactNode }) => {
       }}
     >
       {children}
-    </TasksContext.Provider>
+    </TasksRecurringContext.Provider>
   );
 };
 
-export const useTasksContext = () => {
-  const context = useContext(TasksContext);
+export const useTasksRecurringContext = () => {
+  const context = useContext(TasksRecurringContext);
   if (!context)
-    throw new Error("Tasks component must be wrapped within TasksProvider.");
+    throw new Error("Tasks Recurring component must be wrapped within TasksRecurringProvider.");
   return context;
 };
 
-export { TasksProvider, TasksContext };
+export { TasksProvider, TasksRecurringContext };
