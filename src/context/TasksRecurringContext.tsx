@@ -96,15 +96,7 @@ const LOCAL_STORAGE_KEY = "calendarTasks";
 const TasksRecurringContext = createContext<TasksContextType | undefined>(undefined);
 
 const TasksProvider = ({ children }: { children: ReactNode }) => {
-  const [tasks, tasksDispatch] = useReducer(tasksReducer, [], () => {
-    const savedTasks = localStorage.getItem(LOCAL_STORAGE_KEY);
-    return savedTasks
-      ? JSON.parse(savedTasks).map((task: Task) => ({
-          ...task,
-          dueDate: new Date(task.dueDate),
-        }))
-      : [];
-  });
+
 
   useEffect(() => {
     const timeout = setTimeout(() => {
