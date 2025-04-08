@@ -72,7 +72,8 @@ const LOCAL_STORAGE_KEY = "calendarTasks";
 const TasksContext = createContext<TasksContextType | undefined>(undefined);
 
 const TasksProvider = ({ children }: { children: ReactNode }) => {
-  const [tasksRecurring, tasksDispatch] = useReducer(tasksReducer, [], () => {
+  // Add Tasks recurring
+  /* const [tasksRecurring, tasksDispatch] = useReducer(tasksReducer, [], () => {
     const savedTasks = localStorage.getItem(LOCAL_STORAGE_KEY+"Recurring");
     return savedTasks
       ? JSON.parse(savedTasks).map((task: Task) => ({
@@ -80,7 +81,7 @@ const TasksProvider = ({ children }: { children: ReactNode }) => {
           dueDate: new Date(task.dueDate),
         }))
       : [];
-  });
+  });*/
   const [tasks, tasksDispatch] = useReducer(tasksReducer, [], () => {
     const savedTasks = localStorage.getItem(LOCAL_STORAGE_KEY);
     return savedTasks
